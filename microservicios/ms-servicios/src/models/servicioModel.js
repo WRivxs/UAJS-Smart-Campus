@@ -48,16 +48,18 @@ const ServicioModel = {
     return rows[0];
   },
 
-  createServicio: async ({ categoria_id, nombre, descripcion, requisitos, tiempo_respuesta_estimado, requiere_aprobacion, encargado_departamento }) => {
+  createServicio: async ({ categoria_id, nombre, descripcion, icono_url, url_ruta, requisitos, tiempo_respuesta_estimado, requiere_aprobacion, encargado_departamento }) => {
     const query = `
-      INSERT INTO servicios (categoria_id, nombre, descripcion, requisitos, tiempo_respuesta_estimado, requiere_aprobacion, encargado_departamento)
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      INSERT INTO servicios (categoria_id, nombre, descripcion, icono_url, url_ruta, requisitos, tiempo_respuesta_estimado, requiere_aprobacion, encargado_departamento)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       RETURNING *;
     `;
     const values = [
       categoria_id, 
       nombre, 
       descripcion, 
+      icono_url || 'file-text',
+      url_ruta || '/solicitudes/crear',
       requisitos, 
       tiempo_respuesta_estimado || '24-48 horas hábiles', 
       requiere_aprobacion ?? true, 
@@ -67,22 +69,24 @@ const ServicioModel = {
     return rows[0];
   },
 
-  updateServicio: async (id, { categoria_id, nombre, descripcion, requisitos, tiempo_respuesta_estimado, requiere_aprobacion, encargado_departamento, estado }) => {
+  updateServicio: async (id, { categoria_id, nombre, descripcion, icono_url, url_ruta, requisitos, tiempo_respuesta_estimado, requiere_aprobacion, encargado_departamento, estado }) => {
     const query = `
       UPDATE servicios
       SET categoria_id = COALESCE($1, categoria_id),
           nombre = COALESCE($2, nombre),
           descripcion = COALESCE($3, descripcion),
-          requisitos = COALESCE($4, requisitos),
-          tiempo_respuesta_estimado = COALESCE($5, tiempo_respuesta_estimado),
-          requiere_aprobacion = COALESCE($6, requiere_aprobacion),
-          encargado_departamento = COALESCE($7, encargado_departamento),
-          estado = COALESCE($8, estado),
+          icono_url = COALESCE($4, icono_url),
+          url_ruta = COALESCE($5, url_ruta),
+          requisitos = COALESCE($6, requisitos),
+          tiempo_respuesta_estimado = COALESCE($7, tiempo_respuesta_estimado),
+          requiere_aprobacion = COALESCE($8, requiere_aprobacion),
+          encargado_departamento = COALESCE($9, encargado_departamento),
+          estado = COALESCE($10, estado),
           actualizado_en = CURRENT_TIMESTAMP
-      WHERE id = $9
+      WHERE id = $11
       RETURNING *;
     `;
-    const values = [categoria_id, nombre, descripcion, requisitos, tiempo_respuesta_estimado, requiere_aprobacion, encargado_departamento, estado, id];
+    const values = [categoria_id, nombre, descripcion, icono_url, url_ruta, requisitos, tiempo_respuesta_estimado, requiere_aprobacion, encargado_departamento, estado, id];
     const { rows } = await db.query(query, values);
     return rows[0];
   },
