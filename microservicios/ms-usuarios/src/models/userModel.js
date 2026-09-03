@@ -24,6 +24,17 @@ const UserModel = {
     return rows[0];
   },
 
+  getPermisosByRolId: async (rolId) => {
+    const query = `
+      SELECT p.nombre, p.descripcion
+      FROM permisos p
+      JOIN roles_permisos rp ON p.id = rp.permiso_id
+      WHERE rp.rol_id = $1;
+    `;
+    const { rows } = await db.query(query, [rolId]);
+    return rows.map(r => r.nombre);
+  },
+
   createUser: async ({ nombre, email, password_hash, rol_id, facultad_departamento, codigo_estudiantil }) => {
     const query = `
       INSERT INTO usuarios (nombre, email, password_hash, rol_id, facultad_departamento, codigo_estudiantil)
@@ -54,11 +65,47 @@ const UserModel = {
           email = COALESCE($2, email),
           rol_id = COALESCE($3, rol_id),
           facultad_departamento = COALESCE($4, facultad_departamento),
-          estado = COALESCE($5, estado)
+          estado = COALESCE($5, estado),
+          actualizado_en = CURRENT_TIMESTAMP
       WHERE id = $6
       RETURNING id, nombre, email, rol_id, facultad_departamento, estado;
     `;
     const { rows } = await db.query(query, [nombre, email, rol_id, facultad_departamento, estado, id]);
+    return rows[0];
+  },
+
+  updatePassword: async (id, hashedPassword) => {
+    const query = `
+      UPDATE usuarios
+      SET password_hash = $1,
+          token_recuperacion = NULL,
+          token_expira_en = NULL,
+          actualizado_en = CURRENT_TIMESTAMP
+      WHERE id = $2
+      RETURNING id;
+    `;
+    const { rows } = await db.query(query, [hashedPassword, id]);
+    return rows[0];
+  },
+
+  setRecoveryToken: async (email, token, expiresAt) => {
+    const query = `
+      UPDATE usuarios
+      SET token_recuperacion = $1,
+          token_expira_en = $2
+      WHERE email = $3
+      RETURNING id, email, token_recuperacion;
+    `;
+    const { rows } = await db.query(query, [token, expiresAt, email]);
+    return rows[0];
+  },
+
+  findByRecoveryToken: async (token) => {
+    const query = `
+      SELECT * FROM usuarios
+      WHERE token_recuperacion = $1 AND token_expira_en > CURRENT_TIMESTAMP;
+    `;
+    const { rows } = await db.query(query, [token]);
     return rows[0];
   },
 
