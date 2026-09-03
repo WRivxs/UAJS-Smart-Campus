@@ -20,6 +20,24 @@ const NotificacionModel = {
     return rows[0];
   },
 
+  // Emisión masiva/difusión a múltiples usuarios (Ej: Todos los Estudiantes, Docentes o Comunidad Campus)
+  createMasivo: async (usuariosLista = [], { tipo, titulo, mensaje, referencia_id, referencia_tipo }) => {
+    const notificacionesCreadas = [];
+    for (const u of usuariosLista) {
+      const notif = await NotificacionModel.create({
+        usuario_id: u.id,
+        usuario_nombre: u.nombre,
+        tipo: tipo || 'ALERTA_SISTEMA',
+        titulo,
+        mensaje,
+        referencia_id,
+        referencia_tipo
+      });
+      notificacionesCreadas.push(notif);
+    }
+    return notificacionesCreadas;
+  },
+
   findByUsuarioId: async (usuario_id, leidaFiltro = null) => {
     let query = `SELECT * FROM notificaciones WHERE usuario_id = $1`;
     const params = [usuario_id];

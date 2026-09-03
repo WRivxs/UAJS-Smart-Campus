@@ -9,8 +9,11 @@ router.use(authMiddleware.verifyToken);
 // Obtener notificaciones del usuario autenticado (Filtro opcional: ?leida=false)
 router.get('/', notificacionController.getMisNotificaciones);
 
-// Emitir nueva notificación (Protegido: Administrativo, Administrador o peticiones de microservicios)
+// Emitir nueva notificación individual
 router.post('/', notificacionController.createNotificacion);
+
+// Emitir notificación masiva / difusión a múltiples destinatarios (Protegido: Administrativo, Admin)
+router.post('/difusion', authMiddleware.checkRole(['Administrativo', 'Administrador']), notificacionController.emitirDifusion);
 
 // Marcar todas las notificaciones del usuario como leídas
 router.put('/marcar-todas-leidas', notificacionController.marcarTodasComoLeidas);

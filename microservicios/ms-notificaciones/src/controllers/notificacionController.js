@@ -29,6 +29,33 @@ const notificacionController = {
     }
   },
 
+  emitirDifusion: async (req, res) => {
+    try {
+      const { destinatarios, tipo, titulo, mensaje, referencia_id, referencia_tipo } = req.body;
+
+      if (!destinatarios || !Array.isArray(destinatarios) || destinatarios.length === 0 || !titulo || !mensaje) {
+        return res.status(400).json({ error: 'destinatarios (arreglo con objetos {id, nombre}), titulo y mensaje son obligatorios.' });
+      }
+
+      const enviadas = await NotificacionModel.createMasivo(destinatarios, {
+        tipo: tipo || 'ALERTA_SISTEMA',
+        titulo,
+        mensaje,
+        referencia_id,
+        referencia_tipo
+      });
+
+      return res.status(201).json({
+        message: `Difusión emitida exitosamente a ${enviadas.length} usuarios.`,
+        total_enviadas: enviadas.length,
+        notificaciones: enviadas
+      });
+    } catch (error) {
+      console.error('Error en notificacionController.emitirDifusion:', error);
+      return res.status(500).json({ error: 'Error al emitir la difusión masiva de notificaciones.' });
+    }
+  },
+
   getMisNotificaciones: async (req, res) => {
     try {
       const { id: usuario_id } = req.user;
