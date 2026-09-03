@@ -1,0 +1,222 @@
+version: '3.8'
+
+services:
+  # ==========================================
+  # BASE DE DATOS CENTRALIZADA POSTGRESQL
+  # ==========================================
+  db:
+    image: postgres:15-alpine
+    container_name: uajs-postgres-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: uajs_secure_password_2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./docker/init-scripts:/docker-entrypoint-initdb.d
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - uajs-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==========================================
+  # API GATEWAY
+  # ==========================================
+  api-gateway:
+    build: ./api-gateway
+    container_name: uajs-api-gateway
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+      JWT_SECRET: uajs_smart_campus_jwt_secret_key_2026
+      MS_USUARIOS_URL: http://ms-usuarios:3001
+      MS_SERVICIOS_URL: http://ms-servicios:3002
+      MS_SOLICITUDES_URL: http://ms-solicitudes:3003
+      MS_PQRS_URL: http://ms-pqrs:3004
+      MS_RECURSOS_URL: http://ms-recursos:3005
+      MS_RESERVAS_URL: http://ms-reservas:3006
+      MS_NOTIFICACIONES_URL: http://ms-notificaciones:3007
+      MS_EVENTOS_URL: http://ms-eventos:3008
+    networks:
+      - uajs-network
+    depends_on:
+      - ms-usuarios
+
+  # ==========================================
+  # MICROSERVICIOS INDEPENDIENTES
+  # ==========================================
+
+  # 1. Microservicio de Usuarios y Autenticación
+  ms-usuarios:
+    build: ./microservicios/ms-usuarios
+    container_name: uajs-ms-usuarios
+    restart: always
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: uajs_secure_password_2026
+      DB_NAME: db_usuarios
+      JWT_SECRET: uajs_smart_campus_jwt_secret_key_2026
+    networks:
+      - uajs-network
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # 2. Microservicio de Servicios Universitarios
+  ms-servicios:
+    build: ./microservicios/ms-servicios
+    container_name: uajs-ms-servicios
+    restart: always
+    ports:
+      - "3002:3002"
+    environment:
+      PORT: 3002
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: uajs_secure_password_2026
+      DB_NAME: db_servicios
+    networks:
+      - uajs-network
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # 3. Microservicio de Solicitudes
+  ms-solicitudes:
+    build: ./microservicios/ms-solicitudes
+    container_name: uajs-ms-solicitudes
+    restart: always
+    ports:
+      - "3003:3003"
+    environment:
+      PORT: 3003
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: uajs_secure_password_2026
+      DB_NAME: db_solicitudes
+    networks:
+      - uajs-network
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # 4. Microservicio de PQRS
+  ms-pqrs:
+    build: ./microservicios/ms-pqrs
+    container_name: uajs-ms-pqrs
+    restart: always
+    ports:
+      - "3004:3004"
+    environment:
+      PORT: 3004
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: uajs_secure_password_2026
+      DB_NAME: db_pqrs
+    networks:
+      - uajs-network
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # 5. Microservicio de Recursos
+  ms-recursos:
+    build: ./microservicios/ms-recursos
+    container_name: uajs-ms-recursos
+    restart: always
+    ports:
+      - "3005:3005"
+    environment:
+      PORT: 3005
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: uajs_secure_password_2026
+      DB_NAME: db_recursos
+    networks:
+      - uajs-network
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # 6. Microservicio de Reservas
+  ms-reservas:
+    build: ./microservicios/ms-reservas
+    container_name: uajs-ms-reservas
+    restart: always
+    ports:
+      - "3006:3006"
+    environment:
+      PORT: 3006
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: uajs_secure_password_2026
+      DB_NAME: db_reservas
+    networks:
+      - uajs-network
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # 7. Microservicio de Notificaciones
+  ms-notificaciones:
+    build: ./microservicios/ms-notificaciones
+    container_name: uajs-ms-notificaciones
+    restart: always
+    ports:
+      - "3007:3007"
+    environment:
+      PORT: 3007
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: uajs_secure_password_2026
+      DB_NAME: db_notificaciones
+    networks:
+      - uajs-network
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # 8. Microservicio de Eventos
+  ms-eventos:
+    build: ./microservicios/ms-eventos
+    container_name: uajs-ms-eventos
+    restart: always
+    ports:
+      - "3008:3008"
+    environment:
+      PORT: 3008
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: uajs_secure_password_2026
+      DB_NAME: db_eventos
+    networks:
+      - uajs-network
+    depends_on:
+      db:
+        condition: service_healthy
+
+networks:
+  uajs-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
