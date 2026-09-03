@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build Outputs
+dist/
+build/
+.next/
+out/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Database & Docker volumes
+postgres_data/
+*.sqlite
+
+# IDE & System Files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Temporary scripts
+read_pdf.js
+read_pdf2.js
+pdf_text.txt
