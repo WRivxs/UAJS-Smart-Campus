@@ -12,6 +12,9 @@ router.post('/', reservaController.createReserva);
 // Listar reservas (Estudiantes ven solo las suyas; Administrativos/Admin ven todas o por ?recurso_id=X&fecha_reserva=Y)
 router.get('/', reservaController.getReservas);
 
+// Consultar franjas horarias ocupadas de un recurso en una fecha (GET /api/reservas/disponibilidad?recurso_id=X&fecha_reserva=YYYY-MM-DD)
+router.get('/disponibilidad', reservaController.getDisponibilidad);
+
 // Detalle de una reserva
 router.get('/:id', reservaController.getReservaById);
 

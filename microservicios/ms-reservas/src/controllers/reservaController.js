@@ -57,6 +57,26 @@ const reservaController = {
     }
   },
 
+  getDisponibilidad: async (req, res) => {
+    try {
+      const { recurso_id, fecha_reserva } = req.query;
+
+      if (!recurso_id || !fecha_reserva) {
+        return res.status(400).json({ error: 'recurso_id y fecha_reserva son obligatorios en los query params.' });
+      }
+
+      const ocupados = await ReservaModel.getHorariosOcupados(recurso_id, fecha_reserva);
+      return res.json({
+        recurso_id,
+        fecha_reserva,
+        horarios_ocupados: ocupados
+      });
+    } catch (error) {
+      console.error('Error en reservaController.getDisponibilidad:', error);
+      return res.status(500).json({ error: 'Error al consultar la disponibilidad de horarios.' });
+    }
+  },
+
   getReservaById: async (req, res) => {
     try {
       const { id } = req.params;

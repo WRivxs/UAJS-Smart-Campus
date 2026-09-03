@@ -21,6 +21,20 @@ const ReservaModel = {
     return rows.length > 0; // Retorna true si hay un conflicto de solapamiento
   },
 
+  // Consulta de franjas horarias ocupadas para un recurso en una fecha (Útil para el calendario React)
+  getHorariosOcupados: async (recurso_id, fecha_reserva) => {
+    const query = `
+      SELECT id, hora_inicio, hora_fin, estado_reserva, usuario_nombre, motivo
+      FROM reservas
+      WHERE recurso_id = $1
+        AND fecha_reserva = $2
+        AND estado_reserva IN ('PENDIENTE', 'APROBADA')
+      ORDER BY hora_inicio ASC;
+    `;
+    const { rows } = await db.query(query, [recurso_id, fecha_reserva]);
+    return rows;
+  },
+
   create: async ({ recurso_id, recurso_nombre, usuario_id, usuario_nombre, usuario_email, fecha_reserva, hora_inicio, hora_fin, motivo, observaciones }) => {
     // 1. Validar si existe choque de horarios antes de registrar
     const hayChoque = await ReservaModel.validarSolapamiento(recurso_id, fecha_reserva, hora_inicio, hora_fin);
