@@ -2,9 +2,9 @@ const db = require('./db');
 
 const initDb = async () => {
   try {
-    console.log('🔄 Verificando e inicializando tablas en db_solicitudes...');
+    console.log('🔄 Verificando e inicializando tablas completas en db_solicitudes...');
 
-    // 1. Tabla solicitudes
+    // 1. Tabla solicitudes (con respuesta_final para resolución oficial de trámites)
     await db.query(`
       CREATE TABLE IF NOT EXISTS solicitudes (
         id SERIAL PRIMARY KEY,
@@ -21,6 +21,7 @@ const initDb = async () => {
         responsable_nombre VARCHAR(150) DEFAULT NULL,
         estado VARCHAR(50) DEFAULT 'REGISTRADA',
         observaciones TEXT DEFAULT NULL,
+        respuesta_final TEXT DEFAULT NULL,
         fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         actualizado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
@@ -44,7 +45,7 @@ const initDb = async () => {
     const { rows: existingSol } = await db.query(`SELECT COUNT(*) FROM solicitudes;`);
 
     if (parseInt(existingSol[0].count) === 0) {
-      console.log('🌱 Poblando solicitudes semilla para pruebas...');
+      console.log('🌱 Poblando solicitudes semilla para pruebas con trazabilidad...');
 
       const solicitudesSemilla = [
         {
@@ -60,7 +61,8 @@ const initDb = async () => {
           responsable_id: null,
           responsable_nombre: null,
           estado: 'REGISTRADA',
-          observaciones: 'Solicitud recibida correctamente en el sistema.'
+          observaciones: 'Solicitud ingresada por el estudiante.',
+          respuesta_final: null
         },
         {
           usuario_id: 2,
@@ -75,7 +77,8 @@ const initDb = async () => {
           responsable_id: 3,
           responsable_nombre: 'Carlos Pérez',
           estado: 'EN_REVISION',
-          observaciones: 'En proceso de verificación de entrega de materiales en laboratorio.'
+          observaciones: 'Verificando firmas en acta de cierre.',
+          respuesta_final: null
         },
         {
           usuario_id: 4,
@@ -90,7 +93,8 @@ const initDb = async () => {
           responsable_id: 3,
           responsable_nombre: 'Carlos Pérez',
           estado: 'EN_PROCESO',
-          observaciones: 'Documentos SOAT y Licencia aprobados. Sticker pendiente de impresión.'
+          observaciones: 'Documentos validados. Sticker pendiente de expedición.',
+          respuesta_final: null
         },
         {
           usuario_id: 2,
@@ -105,16 +109,17 @@ const initDb = async () => {
           responsable_id: 1,
           responsable_nombre: 'Administrador General',
           estado: 'RESUELTA',
-          observaciones: 'Certificación expedida y enviada al correo institucional del docente.'
+          observaciones: 'Trámite completado satisfactoriamente.',
+          respuesta_final: 'Se expidió la sábana de notas autenticada y se envió en formato PDF firmado digitalmente al correo institucional.'
         }
       ];
 
       for (const s of solicitudesSemilla) {
         const { rows } = await db.query(`
-          INSERT INTO solicitudes (usuario_id, usuario_nombre, usuario_email, servicio_id, tipo, dependencia, asunto, descripcion, prioridad, responsable_id, responsable_nombre, estado, observaciones)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+          INSERT INTO solicitudes (usuario_id, usuario_nombre, usuario_email, servicio_id, tipo, dependencia, asunto, descripcion, prioridad, responsable_id, responsable_nombre, estado, observaciones, respuesta_final)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
           RETURNING id;
-        `, [s.usuario_id, s.usuario_nombre, s.usuario_email, s.servicio_id, s.tipo, s.dependencia, s.asunto, s.descripcion, s.prioridad, s.responsable_id, s.responsable_nombre, s.estado, s.observaciones]);
+        `, [s.usuario_id, s.usuario_nombre, s.usuario_email, s.servicio_id, s.tipo, s.dependencia, s.asunto, s.descripcion, s.prioridad, s.responsable_id, s.responsable_nombre, s.estado, s.observaciones, s.respuesta_final]);
 
         const solId = rows[0].id;
 

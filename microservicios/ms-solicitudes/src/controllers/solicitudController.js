@@ -81,7 +81,7 @@ const solicitudController = {
   updateEstado: async (req, res) => {
     try {
       const { id } = req.params;
-      const { estado_nuevo, observacion } = req.body;
+      const { estado_nuevo, observacion, respuesta_final } = req.body;
       const { id: cambiado_por_id, nombre: cambiado_por_nombre } = req.user;
 
       const estadosValidos = ['REGISTRADA', 'EN_REVISION', 'ASIGNADA', 'EN_PROCESO', 'RESUELTA', 'CERRADA'];
@@ -91,15 +91,15 @@ const solicitudController = {
         });
       }
 
-      const actualizada = await SolicitudModel.updateEstado(id, estado_nuevo, cambiado_por_id, cambiado_por_nombre, observacion);
+      const resultado = await SolicitudModel.updateEstado(id, estado_nuevo, cambiado_por_id, cambiado_por_nombre, observacion, respuesta_final);
 
-      if (!actualizada) {
-        return res.status(404).json({ error: 'Solicitud no encontrada.' });
+      if (resultado.error) {
+        return res.status(400).json({ error: resultado.error });
       }
 
       return res.json({
-        message: `Estado de la solicitud actualizado a '${estado_nuevo}'.`,
-        solicitud: actualizada
+        message: `Estado de la solicitud actualizado exitosamente a '${estado_nuevo}'.`,
+        solicitud: resultado.solicitud
       });
     } catch (error) {
       console.error('Error en solicitudController.updateEstado:', error);

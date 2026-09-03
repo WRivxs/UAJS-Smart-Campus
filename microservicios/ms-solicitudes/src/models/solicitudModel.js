@@ -1,5 +1,14 @@
 const db = require('../config/db');
 
+const TRANSICIONES_PERMITIDAS = {
+  'REGISTRADA': ['EN_REVISION', 'ASIGNADA', 'CERRADA'],
+  'EN_REVISION': ['ASIGNADA', 'EN_PROCESO', 'RESUELTA', 'CERRADA'],
+  'ASIGNADA': ['EN_PROCESO', 'RESUELTA', 'CERRADA'],
+  'EN_PROCESO': ['RESUELTA', 'CERRADA'],
+  'RESUELTA': ['CERRADA'],
+  'CERRADA': []
+};
+
 const SolicitudModel = {
   create: async ({ usuario_id, usuario_nombre, usuario_email, servicio_id, tipo, dependencia, asunto, descripcion, prioridad, observaciones }) => {
     const query = `
@@ -78,39 +87,50 @@ const SolicitudModel = {
     return rows;
   },
 
-  updateEstado: async (id, estado_nuevo, cambiado_por_id, cambiado_por_nombre, observacion) => {
-    // 1. Obtener estado actual
+  validarTransicionEstado: (estadoActual, estadoNuevo) => {
+    const permitidos = TRANSICIONES_PERMITIDAS[estadoActual] || [];
+    return permitidos.includes(estadoNuevo);
+  },
+
+  updateEstado: async (id, estado_nuevo, cambiado_por_id, cambiado_por_nombre, observacion, respuesta_final) => {
     const solActual = await SolicitudModel.findById(id);
-    if (!solActual) return null;
+    if (!solActual) return { error: 'Solicitud no encontrada.' };
 
     const estado_anterior = solActual.estado;
 
-    // 2. Actualizar estado y observaciones
+    // Validar máquina de estados estricta
+    if (!SolicitudModel.validarTransicionEstado(estado_anterior, estado_nuevo)) {
+      return { 
+        error: `Transición de estado no permitida de '${estado_anterior}' a '${estado_nuevo}'. Transiciones permitidas desde '${estado_anterior}': [${(TRANSICIONES_PERMITIDAS[estado_anterior] || []).join(', ')}]` 
+      };
+    }
+
     const updateQuery = `
       UPDATE solicitudes
       SET estado = $1,
           observaciones = COALESCE($2, observaciones),
+          respuesta_final = COALESCE($3, respuesta_final),
           actualizado_en = CURRENT_TIMESTAMP
-      WHERE id = $3
+      WHERE id = $4
       RETURNING *;
     `;
-    const { rows } = await db.query(updateQuery, [estado_nuevo, observacion, id]);
+    const { rows } = await db.query(updateQuery, [estado_nuevo, observacion, respuesta_final || null, id]);
     const solActualizada = rows[0];
 
-    // 3. Registrar en historial de trazabilidad
+    // Registrar en historial de trazabilidad
     await db.query(`
       INSERT INTO historial_estados_solicitud (solicitud_id, estado_anterior, estado_nuevo, cambiado_por_id, cambiado_por_nombre, observacion)
       VALUES ($1, $2, $3, $4, $5, $6);
-    `, [id, estado_anterior, estado_nuevo, cambiado_por_id, cambiado_por_nombre, observacion || 'Cambio de estado en el sistema']);
+    `, [id, estado_anterior, estado_nuevo, cambiado_por_id, cambiado_por_nombre, observacion || `Transición a ${estado_nuevo}`]);
 
-    return solActualizada;
+    return { solicitud: solActualizada };
   },
 
   assignResponsable: async (id, responsable_id, responsable_nombre, cambiado_por_id, cambiado_por_nombre) => {
     const solActual = await SolicitudModel.findById(id);
     if (!solActual) return null;
 
-    const estado_nuevo = solActual.estado === 'REGISTRADA' ? 'ASIGNADA' : solActual.estado;
+    const estado_nuevo = (solActual.estado === 'REGISTRADA' || solActual.estado === 'EN_REVISION') ? 'ASIGNADA' : solActual.estado;
 
     const query = `
       UPDATE solicitudes
@@ -128,7 +148,7 @@ const SolicitudModel = {
     await db.query(`
       INSERT INTO historial_estados_solicitud (solicitud_id, estado_anterior, estado_nuevo, cambiado_por_id, cambiado_por_nombre, observacion)
       VALUES ($1, $2, $3, $4, $5, $6);
-    `, [id, solActual.estado, estado_nuevo, cambiado_por_id, cambiado_por_nombre, `Asignado responsable: ${responsable_nombre}`]);
+    `, [id, solActual.estado, estado_nuevo, cambiado_por_id, cambiado_por_nombre, `Asignado funcionario responsable: ${responsable_nombre}`]);
 
     return solActualizada;
   },
