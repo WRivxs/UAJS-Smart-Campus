@@ -27,7 +27,7 @@ const pqrsController = {
       });
 
       return res.status(201).json({
-        message: 'Ticket de PQRS registrado exitosamente.',
+        message: `Ticket de PQRS registrado exitosamente con radicado ${nuevaPqrs.numero_ticket}.`,
         pqrs: nuevaPqrs
       });
     } catch (error) {
@@ -65,7 +65,6 @@ const pqrsController = {
         return res.status(404).json({ error: 'Ticket de PQRS no encontrado.' });
       }
 
-      // Si es estudiante, solo puede consultar el suyo
       if (req.user.rol_nombre === 'Estudiante' && ticket.usuario_id !== req.user.id) {
         return res.status(403).json({ error: 'No tienes permiso para consultar este ticket de PQRS.' });
       }
@@ -82,17 +81,42 @@ const pqrsController = {
     }
   },
 
+  getPqrsByTicket: async (req, res) => {
+    try {
+      const { numero_ticket } = req.params;
+      const ticket = await PqrsModel.findByTicket(numero_ticket);
+
+      if (!ticket) {
+        return res.status(404).json({ error: `No se encontró ningún radicado con el número '${numero_ticket}'.` });
+      }
+
+      if (req.user.rol_nombre === 'Estudiante' && ticket.usuario_id !== req.user.id) {
+        return res.status(403).json({ error: 'No tienes permiso para consultar este radicado.' });
+      }
+
+      const respuestas = await PqrsModel.findRespuestasByPqrsId(ticket.id);
+
+      return res.json({
+        pqrs: ticket,
+        respuestas
+      });
+    } catch (error) {
+      console.error('Error en pqrsController.getPqrsByTicket:', error);
+      return res.status(500).json({ error: 'Error al consultar por número de radicado.' });
+    }
+  },
+
   responderPqrs: async (req, res) => {
     try {
       const { id } = req.params;
-      const { mensaje } = req.body;
+      const { mensaje, adjunto_url } = req.body;
       const { id: respondido_por_id, nombre: respondido_por_nombre } = req.user;
 
       if (!mensaje) {
         return res.status(400).json({ error: 'El mensaje de respuesta es obligatorio.' });
       }
 
-      const respondida = await PqrsModel.responderPqrs(id, respondido_por_id, respondido_por_nombre, mensaje);
+      const respondida = await PqrsModel.responderPqrs(id, respondido_por_id, respondido_por_nombre, mensaje, adjunto_url);
 
       if (!respondida) {
         return res.status(404).json({ error: 'Ticket de PQRS no encontrado.' });

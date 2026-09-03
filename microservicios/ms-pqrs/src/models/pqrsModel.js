@@ -1,16 +1,33 @@
 const db = require('../config/db');
 
+const DIAS_SLA = {
+  'PETICION': 15,
+  'QUEJA': 10,
+  'RECLAMO': 10,
+  'SUGERENCIA': 30
+};
+
 const PqrsModel = {
   create: async ({ usuario_id, usuario_nombre, usuario_email, tipo, asunto, descripcion, dependencia_destino, anonimo }) => {
     const isAnonimo = Boolean(anonimo);
     const displayName = isAnonimo ? 'Usuario Anónimo' : usuario_nombre;
+    const tipoValido = tipo || 'PETICION';
+
+    // Generar número de ticket radicado único
+    const { rows: countRows } = await db.query(`SELECT COUNT(*) FROM pqrs;`);
+    const nextNum = parseInt(countRows[0].count) + 1;
+    const numero_ticket = `PQRS-2026-${String(nextNum).padStart(4, '0')}`;
+
+    // Calcular fecha límite SLA según el tipo de solicitud
+    const diasSla = DIAS_SLA[tipoValido] || 15;
+    const fecha_limite_respuesta = new Date(Date.now() + diasSla * 24 * 60 * 60 * 1000);
 
     const query = `
-      INSERT INTO pqrs (usuario_id, usuario_nombre, usuario_email, tipo, asunto, descripcion, dependencia_destino, anonimo)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      INSERT INTO pqrs (numero_ticket, usuario_id, usuario_nombre, usuario_email, tipo, asunto, descripcion, dependencia_destino, anonimo, fecha_limite_respuesta)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
       RETURNING *;
     `;
-    const values = [usuario_id, displayName, usuario_email, tipo || 'PETICION', asunto, descripcion, dependencia_destino, isAnonimo];
+    const values = [numero_ticket, usuario_id, displayName, usuario_email, tipoValido, asunto, descripcion, dependencia_destino, isAnonimo, fecha_limite_respuesta];
     const { rows } = await db.query(query, values);
     return rows[0];
   },
@@ -57,6 +74,12 @@ const PqrsModel = {
     return rows[0];
   },
 
+  findByTicket: async (numero_ticket) => {
+    const query = `SELECT * FROM pqrs WHERE numero_ticket = $1;`;
+    const { rows } = await db.query(query, [numero_ticket]);
+    return rows[0];
+  },
+
   findRespuestasByPqrsId: async (pqrs_id) => {
     const query = `
       SELECT * FROM respuestas_pqrs
@@ -67,7 +90,7 @@ const PqrsModel = {
     return rows;
   },
 
-  responderPqrs: async (id, respondido_por_id, respondido_por_nombre, mensaje) => {
+  responderPqrs: async (id, respondido_por_id, respondido_por_nombre, mensaje, adjunto_url) => {
     // 1. Actualizar el ticket de PQRS
     const updateQuery = `
       UPDATE pqrs
@@ -87,9 +110,9 @@ const PqrsModel = {
 
     // 2. Registrar en la tabla respuestas_pqrs
     await db.query(`
-      INSERT INTO respuestas_pqrs (pqrs_id, respondido_por_id, respondido_por_nombre, mensaje)
-      VALUES ($1, $2, $3, $4);
-    `, [id, respondido_por_id, respondido_por_nombre, mensaje]);
+      INSERT INTO respuestas_pqrs (pqrs_id, respondido_por_id, respondido_por_nombre, mensaje, adjunto_url)
+      VALUES ($1, $2, $3, $4, $5);
+    `, [id, respondido_por_id, respondido_por_nombre, mensaje, adjunto_url || null]);
 
     return pqrsActualizada;
   },

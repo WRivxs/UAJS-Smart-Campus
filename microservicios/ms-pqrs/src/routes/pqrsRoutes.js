@@ -12,7 +12,10 @@ router.post('/', pqrsController.createPqrs);
 // Listar tickets PQRS (Estudiante ve solo los suyos; Admin/Administrativo ven todos o filtrados ?estado=X&tipo=Y)
 router.get('/', pqrsController.getPqrs);
 
-// Detalle de un ticket PQRS + sus respuestas registradas
+// Consultar ticket PQRS por código de radicado único (ej: PQRS-2026-0001)
+router.get('/ticket/:numero_ticket', pqrsController.getPqrsByTicket);
+
+// Detalle de un ticket PQRS por ID + sus respuestas registradas
 router.get('/:id', pqrsController.getPqrsById);
 
 // Responder ticket PQRS (Protegido: Administrativo, Admin)
