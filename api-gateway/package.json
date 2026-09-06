@@ -1,7 +1,7 @@
 {
-  "name": "uajs-api-gateway",
-  "version": "1.0.0",
-  "description": "API Gateway para UAJS Smart Campus",
+  "name": "api-gateway",
+  "version": "2.0.0",
+  "description": "API Gateway — Punto único de entrada para UAJS Smart Campus",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
