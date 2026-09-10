@@ -214,9 +214,26 @@ services:
       db:
         condition: service_healthy
 
+  # ==========================================
+  # FRONTEND REACT (PUERTO: 3000)
+  # ==========================================
+  frontend:
+    build: ./frontend
+    container_name: uajs-frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_GATEWAY_URL=http://localhost:8080
+    networks:
+      - uajs-network
+    depends_on:
+      - api-gateway
+
 networks:
   uajs-network:
     driver: bridge
 
 volumes:
   postgres_data:
+
