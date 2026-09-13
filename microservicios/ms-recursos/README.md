@@ -6,6 +6,7 @@ Administración del catálogo de recursos físicos de la universidad (laboratori
 
 - **Puerto Interno Docker:** `3005`
 - **Base de Datos:** `db_recursos` (PostgreSQL)
+- **Índice Elasticsearch:** `idx_recursos` (Búsqueda Full-Text por nombre, ubicación y tipo de recurso)
 - **Ruta Gateway Externa:** `http://localhost:8080/api/recursos`
 - **Contenedor Docker:** `uajs-ms-recursos`
 

@@ -1,11 +1,11 @@
 # 🛡️ API Gateway — UAJS Smart Campus
 
-Punto único de entrada (Reverse Proxy) y capa de seguridad centralizada para la plataforma **UAJS Smart Campus**.
+Punto único de entrada (Reverse Proxy), capa de seguridad centralizada y motor de búsqueda inteligente para la plataforma **UAJS Smart Campus**.
 
 ## 📌 Ficha Técnica
 
 - **Puerto Expuesto:** `8080` (Único puerto público hacia el exterior / Frontend React)
-- **Tecnología:** Node.js, Express.js, `express-http-proxy`, `jsonwebtoken`
+- **Tecnología:** Node.js, Express.js, `express-http-proxy`, `jsonwebtoken`, `@elastic/elasticsearch`
 - **Contenedor Docker:** `uajs-api-gateway`
 - **Red Interna Docker:** `uajs-network`
 
@@ -17,6 +17,7 @@ Punto único de entrada (Reverse Proxy) y capa de seguridad centralizada para la
 2. **Validación JWT (`authVerify`):** Verifica el token en el encabezado `Authorization: Bearer <token>`.
 3. **Control de Acceso (RBAC):** Verifica que el rol del usuario tenga permisos suficientes.
 4. **Header Enrichment:** Inyecta automáticamente los encabezados `x-user-id` y `x-user-rol` en la petición que se reenvía al microservicio.
+5. **Búsqueda Inteligente Multicampo:** Expone el endpoint `GET /api/search?q=palabra` consultando los índices de Elasticsearch.
 
 ---
 
@@ -25,25 +26,28 @@ Punto único de entrada (Reverse Proxy) y capa de seguridad centralizada para la
 ```text
 api-gateway/
 ├── Dockerfile                   # Configuración de imagen Docker
-├── package.json                 # Dependencias (express, express-http-proxy, jsonwebtoken, dotenv, morgan)
-├── .env                         # Variables de entorno (JWT_SECRET y URLs de microservicios)
+├── package.json                 # Dependencias (@elastic/elasticsearch, express, express-http-proxy, jsonwebtoken)
+├── .env                         # Variables de entorno (JWT_SECRET, ELASTICSEARCH_URL y URLs de microservicios)
 ├── README.md                    # Documentación técnica
 └── src/
     ├── index.js                 # Servidor Express y endpoint /health
+    ├── config/
+    │   └── elasticsearch_manager.js # Cliente y ejecutor de búsquedas en Elasticsearch
     ├── middlewares/
     │   ├── authVerify.js        # Middleware de verificación de token JWT
     │   └── checkRole.js         # Middleware de verificación de roles
     └── routes/
-        └── gateway.routes.js    # Enrutador principal del proxy
+        └── gateway.routes.js    # Enrutador principal del proxy y endpoint /api/search
 ```
 
 ---
 
-## 📡 Tabla de Enrutamiento (Proxy Mappings)
+## 📡 Tabla de Enrutamiento (Proxy Mappings & Search)
 
-| Ruta Pública Gateway | Microservicio Destino | Puerto Interno | Requiere JWT |
+| Ruta Pública Gateway | Destino / Función | Puerto Interno | Requiere JWT |
 |---|---|---|---|
 | `/api/auth/*` | `ms-usuarios` | 3001 | ❌ No (Público) |
+| `/api/search?q=...` | `Elasticsearch Engine` | 9200 | 🔒 Sí (`authVerify`) |
 | `/api/usuarios/*` | `ms-usuarios` | 3001 | 🔒 Sí (`authVerify`) |
 | `/api/servicios/*` | `ms-servicios` | 3002 | 🔒 Sí (`authVerify`) |
 | `/api/solicitudes/*` | `ms-solicitudes` | 3003 | 🔒 Sí (`authVerify`) |
@@ -60,6 +64,7 @@ api-gateway/
 ```env
 PORT=8080
 JWT_SECRET=uajs_smart_campus_jwt_secret_key_2026
+ELASTICSEARCH_URL=http://elasticsearch:9200
 
 MS_USUARIOS_URL=http://ms-usuarios:3001
 MS_SERVICIOS_URL=http://ms-servicios:3002

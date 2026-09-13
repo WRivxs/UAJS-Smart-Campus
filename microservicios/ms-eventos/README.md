@@ -6,6 +6,7 @@ Gestión de la agenda de eventos y conferencias del campus con **control dinámi
 
 - **Puerto Interno Docker:** `3008`
 - **Base de Datos:** `db_eventos` (PostgreSQL)
+- **Índice Elasticsearch:** `idx_eventos` (Búsqueda Full-Text por título, organizador y lugar)
 - **Ruta Gateway Externa:** `http://localhost:8080/api/eventos`
 - **Contenedor Docker:** `uajs-ms-eventos`
 

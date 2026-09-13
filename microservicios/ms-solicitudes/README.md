@@ -6,6 +6,7 @@ Gestión del ciclo de vida completo de solicitudes universitarias (certificados,
 
 - **Puerto Interno Docker:** `3003`
 - **Base de Datos:** `db_solicitudes` (PostgreSQL)
+- **Índice Elasticsearch:** `idx_solicitudes` (Búsqueda Full-Text por tipo de trámite y descripción)
 - **Ruta Gateway Externa:** `http://localhost:8080/api/solicitudes`
 - **Contenedor Docker:** `uajs-ms-solicitudes`
 

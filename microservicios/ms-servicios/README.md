@@ -6,6 +6,7 @@ Administración y consulta del catálogo centralizado de servicios del campus pa
 
 - **Puerto Interno Docker:** `3002`
 - **Base de Datos:** `db_servicios` (PostgreSQL)
+- **Índice Elasticsearch:** `idx_servicios` (Búsqueda Full-Text por nombre, descripción, categoría)
 - **Ruta Gateway Externa:** `http://localhost:8080/api/servicios`
 - **Contenedor Docker:** `uajs-ms-servicios`
 

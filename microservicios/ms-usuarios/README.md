@@ -6,6 +6,7 @@ Gestión centralizada de identidad, autenticación mediante JSON Web Tokens (JWT
 
 - **Puerto Interno Docker:** `3001`
 - **Base de Datos:** `db_usuarios` (PostgreSQL)
+- **Índice Elasticsearch:** `idx_usuarios` (Búsqueda Full-Text por nombre, email, programa)
 - **Ruta Gateway Externa:** `http://localhost:8080/api/auth` y `http://localhost:8080/api/usuarios`
 - **Contenedor Docker:** `uajs-ms-usuarios`
 

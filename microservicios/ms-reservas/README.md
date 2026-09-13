@@ -6,6 +6,7 @@ Gestión de reservación de espacios físicos y equipos del campus con un **algo
 
 - **Puerto Interno Docker:** `3006`
 - **Base de Datos:** `db_reservas` (PostgreSQL)
+- **Índice Elasticsearch:** `idx_reservas` (Búsqueda Full-Text por motivo de reserva y usuario)
 - **Ruta Gateway Externa:** `http://localhost:8080/api/reservas`
 - **Contenedor Docker:** `uajs-ms-reservas`
 

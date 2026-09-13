@@ -25,6 +25,22 @@ services:
       retries: 5
 
   # ==========================================
+  # MOTOR DE BÚSQUEDA DISTRIBUIDO ELASTICSEARCH
+  # ==========================================
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: uajs-elasticsearch
+    restart: always
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    networks:
+      - uajs-network
+
+  # ==========================================
   # API GATEWAY
   # ==========================================
   api-gateway:
@@ -36,6 +52,7 @@ services:
     environment:
       PORT: 8080
       JWT_SECRET: uajs_smart_campus_jwt_secret_key_2026
+      ELASTICSEARCH_URL: http://elasticsearch:9200
       MS_USUARIOS_URL: http://ms-usuarios:3001
       MS_SERVICIOS_URL: http://ms-servicios:3002
       MS_SOLICITUDES_URL: http://ms-solicitudes:3003
@@ -48,6 +65,7 @@ services:
       - uajs-network
     depends_on:
       - ms-usuarios
+      - elasticsearch
 
   # ==========================================
   # MICROSERVICIOS INDEPENDIENTES

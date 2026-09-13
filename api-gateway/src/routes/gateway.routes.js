@@ -14,12 +14,33 @@ const MS_RESERVAS_URL       = process.env.MS_RESERVAS_URL       || 'http://ms-re
 const MS_NOTIFICACIONES_URL = process.env.MS_NOTIFICACIONES_URL || 'http://ms-notificaciones:3007';
 const MS_EVENTOS_URL        = process.env.MS_EVENTOS_URL        || 'http://ms-eventos:3008';
 
+const { searchSmartAllIndices } = require('../config/elasticsearch_manager');
+
 // ─────────────────────────────────────────────────────────────────────────────
 // 🔐 RUTAS PÚBLICAS — Únicamente Autenticación (Login, Recuperación)
 // ─────────────────────────────────────────────────────────────────────────────
 router.use('/auth', proxy(MS_USUARIOS_URL, {
   proxyReqPathResolver: (req) => `/api/auth${req.url}`
 }));
+
+// 🔍 RUTA CENTRALIZADA DE BÚSQUEDA INTELIGENTE (ELASTICSEARCH)
+router.get('/search', authVerify, async (req, res) => {
+  try {
+    const query = req.query.q || req.query.query || '';
+    if (!query) {
+      return res.status(400).json({ error: 'Debes proporcionar un término de búsqueda en el parámetro ?q=' });
+    }
+    const resultados = await searchSmartAllIndices(query);
+    res.json({
+      status: 'OK',
+      total: resultados.length,
+      query: query,
+      resultados: resultados
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Error procesando búsqueda en Elasticsearch', detalle: err.message });
+  }
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 🔒 RUTAS PROTEGIDAS — Requieren token JWT válido (authVerify) para los 8 Microservicios

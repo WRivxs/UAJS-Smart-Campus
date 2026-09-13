@@ -6,6 +6,7 @@ Emisión, consulta y seguimiento del estado de lectura de notificaciones para lo
 
 - **Puerto Interno Docker:** `3007`
 - **Base de Datos:** `db_notificaciones` (PostgreSQL)
+- **Índice Elasticsearch:** `idx_notificaciones` (Búsqueda Full-Text por título y mensaje)
 - **Ruta Gateway Externa:** `http://localhost:8080/api/notificaciones`
 - **Contenedor Docker:** `uajs-ms-notificaciones`
 

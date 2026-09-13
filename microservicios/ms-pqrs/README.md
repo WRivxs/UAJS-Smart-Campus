@@ -6,6 +6,7 @@ Atención a solicitudes institucionales con **generación automática de radicad
 
 - **Puerto Interno Docker:** `3004`
 - **Base de Datos:** `db_pqrs` (PostgreSQL)
+- **Índice Elasticsearch:** `idx_pqrs` (Búsqueda Full-Text por radicado, asunto y descripción)
 - **Ruta Gateway Externa:** `http://localhost:8080/api/pqrs`
 - **Contenedor Docker:** `uajs-ms-pqrs`
 
