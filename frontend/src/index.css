@@ -1,1 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --font-space: 'Space Grotesk', sans-serif;
+  --font-jakarta: 'Plus Jakarta Sans', sans-serif;
+  
+  --color-background: #02132d;
+  --color-surface-lowest: #000e25;
+  --color-surface-container: #0e203a;
+  --color-surface-high: #1a2a45;
+  --color-surface-variant: #253550;
+  
+  --color-primary-container: #00d2ff;
+  --color-primary-fixed-dim: #47d6ff;
+  --color-primary: #a5e7ff;
+  --color-secondary: #aac7ff;
+  --color-secondary-container: #07488f;
+  
+  --color-on-background: #d6e3ff;
+  --color-on-surface: #d6e3ff;
+  --color-on-surface-variant: #bbc9cf;
+  --color-outline-variant: #3c494e;
+}
+
+body {
+  font-family: var(--font-jakarta);
+  background-color: var(--color-background);
+  color: var(--color-on-background);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6, .font-space {
+  font-family: var(--font-space);
+}
+
+.glass-base {
+  background: rgba(14, 32, 58, 0.55);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(0, 210, 255, 0.22);
+  box-shadow: 0 20px 50px rgba(0, 14, 37, 0.6), inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
+}
+
+.glass-card-subtle {
+  background: rgba(19, 61, 115, 0.22);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(56, 189, 248, 0.16);
+}
+
+.grid-mesh {
+  background-size: 36px 36px;
+  background-image:
+    linear-gradient(to right, rgba(0, 210, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 210, 255, 0.04) 1px, transparent 1px);
+}
+
+.glow-cyan {
+  box-shadow: 0 0 32px -4px rgba(0, 210, 255, 0.45);
+}
+
+.glow-cyan-soft {
+  box-shadow: 0 0 20px -2px rgba(0, 210, 255, 0.25);
+}
