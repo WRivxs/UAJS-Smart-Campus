@@ -3,6 +3,37 @@ import { useState, useEffect } from 'react';
 const API_GATEWAY_URL =
   import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080';
 
+const FALLBACK_SOLICITUDES = [
+  {
+    id: 1,
+    codigo: 'SOL-001',
+    asunto: 'Solicitud de Certificado de Estudio 2026-1',
+    tipo: 'ACADEMICA',
+    estado: 'REGISTRADA',
+  },
+  {
+    id: 2,
+    codigo: 'SOL-002',
+    asunto: 'Paz y Salvo Académico de Investigación',
+    tipo: 'ADMINISTRATIVA',
+    estado: 'EN_REVISION',
+  },
+  {
+    id: 3,
+    codigo: 'SOL-003',
+    asunto: 'Asignación de Sticker de Parqueadero Vehicular',
+    tipo: 'SERVICIO',
+    estado: 'EN_PROCESO',
+  },
+  {
+    id: 4,
+    codigo: 'SOL-004',
+    asunto: 'Sábana de Notas Autenticada',
+    tipo: 'ACADEMICA',
+    estado: 'RESUELTA',
+  },
+];
+
 export const useSolicitudes = () => {
   const [solicitudes, setSolicitudes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,40 +56,15 @@ export const useSolicitudes = () => {
         }
 
         const data = await response.json();
-        setSolicitudes(Array.isArray(data) ? data : []);
+        // Extraer array si viene envuelto en objeto { solicitudes: [...] } o directo
+        const items = Array.isArray(data)
+          ? data
+          : data.solicitudes || data.data || [];
+
+        setSolicitudes(items.length > 0 ? items : FALLBACK_SOLICITUDES);
       } catch (err) {
         setError(err.message);
-        // Fallback institucional en caso de desconexión
-        setSolicitudes([
-          {
-            id: 1,
-            codigo: 'SOL-001',
-            asunto: 'Solicitud de Certificado de Estudio 2026-1',
-            tipo: 'ACADEMICA',
-            estado: 'REGISTRADA',
-          },
-          {
-            id: 2,
-            codigo: 'SOL-002',
-            asunto: 'Paz y Salvo Académico de Investigación',
-            tipo: 'ADMINISTRATIVA',
-            estado: 'EN_REVISION',
-          },
-          {
-            id: 3,
-            codigo: 'SOL-003',
-            asunto: 'Asignación de Sticker de Parqueadero Vehicular',
-            tipo: 'SERVICIO',
-            estado: 'EN_PROCESO',
-          },
-          {
-            id: 4,
-            codigo: 'SOL-004',
-            asunto: 'Sábana de Notas Autenticada',
-            tipo: 'ACADEMICA',
-            estado: 'RESUELTA',
-          },
-        ]);
+        setSolicitudes(FALLBACK_SOLICITUDES);
       } finally {
         setLoading(false);
       }

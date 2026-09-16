@@ -3,6 +3,25 @@ import { useState, useEffect } from 'react';
 const API_GATEWAY_URL =
   import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080';
 
+const FALLBACK_EVENTOS = [
+  {
+    id: 1,
+    nombre: 'Congreso Internacional de IA y Robótica 2026',
+    tipo: 'INSTITUCIONAL',
+    fecha: '03 SEP',
+    hora_lugar: '09:00 · Auditorio Principal',
+    estado: 'PROGRAMADO',
+  },
+  {
+    id: 2,
+    nombre: 'Taller Práctico: Despliegue de Microservicios con Docker y Node.js',
+    tipo: 'FACULTAD INGENIERÍA',
+    fecha: '05 SEP',
+    hora_lugar: '14:00 · Laboratorio de Sistemas',
+    estado: 'EN_CURSO',
+  },
+];
+
 export const useEventos = () => {
   const [eventos, setEventos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,28 +44,15 @@ export const useEventos = () => {
         }
 
         const data = await response.json();
-        setEventos(Array.isArray(data) ? data : []);
+        // Extraer array si viene envuelto en objeto { eventos: [...] } o directo
+        const items = Array.isArray(data)
+          ? data
+          : data.eventos || data.data || [];
+
+        setEventos(items.length > 0 ? items : FALLBACK_EVENTOS);
       } catch (err) {
         setError(err.message);
-        // Fallback institucional en caso de desconexión
-        setEventos([
-          {
-            id: 1,
-            nombre: 'Congreso Internacional de IA y Robótica 2026',
-            tipo: 'INSTITUCIONAL',
-            fecha: '03 SEP',
-            hora_lugar: '09:00 · Auditorio Principal',
-            estado: 'PROGRAMADO',
-          },
-          {
-            id: 2,
-            nombre: 'Taller Práctico: Despliegue de Microservicios con Docker y Node.js',
-            tipo: 'FACULTAD INGENIERÍA',
-            fecha: '05 SEP',
-            hora_lugar: '14:00 · Laboratorio de Sistemas',
-            estado: 'EN_CURSO',
-          },
-        ]);
+        setEventos(FALLBACK_EVENTOS);
       } finally {
         setLoading(false);
       }
