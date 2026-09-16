@@ -1,6 +1,6 @@
 /**
  * =================================================================================
- * 🔍 UAJS SMART CAMPUS — GESTOR CENTRALIZADO DE ELASTICSEARCH (API GATEWAY)
+ * UAJS SMART CAMPUS — GESTOR CENTRALIZADO DE ELASTICSEARCH (API GATEWAY)
  * =================================================================================
  */
 

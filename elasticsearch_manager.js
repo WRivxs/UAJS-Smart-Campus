@@ -1,6 +1,6 @@
 /**
  * =================================================================================
- * 🔍 UAJS SMART CAMPUS — GESTOR CENTRALIZADO DE ELASTICSEARCH
+ *  UAJS SMART CAMPUS — GESTOR CENTRALIZADO DE ELASTICSEARCH
  * =================================================================================
  * Este archivo contiene el algoritmo centralizado de mapeo, inicialización,
  * sincronización e ingesta masiva (Bulk Sync) de las 8 bases de datos relacionales
@@ -167,7 +167,7 @@ const ELASTIC_INDEXES = {
 // 3. Algoritmo de Inicialización de Índices en Elasticsearch
 // ─────────────────────────────────────────────────────────────────────────────
 async function initElasticIndices() {
-  console.log('🔍 Iniciando verificación de Índices en Elasticsearch...');
+  console.log(' Iniciando verificación de Índices en Elasticsearch...');
   try {
     const health = await elasticClient.cluster.health();
     console.log(`✅ Conectado a Elasticsearch Cluster [Status: ${health.status}]`);
