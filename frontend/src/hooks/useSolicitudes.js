@@ -1,10 +1,9 @@
-feature/dashboard-solicitudes-eventos
 import { useState, useEffect } from 'react';
 
 const API_GATEWAY_URL =
   import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080';
 
-const useSolicitudes = () => {
+export const useSolicitudes = () => {
   const [solicitudes, setSolicitudes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,32 +25,35 @@ const useSolicitudes = () => {
         }
 
         const data = await response.json();
-
         setSolicitudes(Array.isArray(data) ? data : []);
       } catch (err) {
         setError(err.message);
-
+        // Fallback institucional en caso de desconexión
         setSolicitudes([
           {
-            id: 'SOL-001',
+            id: 1,
+            codigo: 'SOL-001',
             asunto: 'Solicitud de Certificado de Estudio 2026-1',
             tipo: 'ACADEMICA',
             estado: 'REGISTRADA',
           },
           {
-            id: 'SOL-002',
+            id: 2,
+            codigo: 'SOL-002',
             asunto: 'Paz y Salvo Académico de Investigación',
             tipo: 'ADMINISTRATIVA',
             estado: 'EN_REVISION',
           },
           {
-            id: 'SOL-003',
+            id: 3,
+            codigo: 'SOL-003',
             asunto: 'Asignación de Sticker de Parqueadero Vehicular',
             tipo: 'SERVICIO',
             estado: 'EN_PROCESO',
           },
           {
-            id: 'SOL-004',
+            id: 4,
+            codigo: 'SOL-004',
             asunto: 'Sábana de Notas Autenticada',
             tipo: 'ACADEMICA',
             estado: 'RESUELTA',
@@ -69,13 +71,3 @@ const useSolicitudes = () => {
 };
 
 export default useSolicitudes;
-
-// Archivo reservado para la tarea de Edimer (ms-solicitudes)
-// Pegar aquí el código documentado en implementation_plan.md
-
-export const useSolicitudes = () => {
-  return { solicitudes: [], loading: false, error: null };
-};
-
-export default useSolicitudes;
-main

@@ -1,10 +1,9 @@
- feature/dashboard-solicitudes-eventos
 import { useState, useEffect } from 'react';
 
 const API_GATEWAY_URL =
   import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080';
 
-const useEventos = () => {
+export const useEventos = () => {
   const [eventos, setEventos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,27 +25,25 @@ const useEventos = () => {
         }
 
         const data = await response.json();
-
         setEventos(Array.isArray(data) ? data : []);
       } catch (err) {
         setError(err.message);
-
+        // Fallback institucional en caso de desconexión
         setEventos([
           {
             id: 1,
             nombre: 'Congreso Internacional de IA y Robótica 2026',
             tipo: 'INSTITUCIONAL',
             fecha: '03 SEP',
-            horaLugar: '09:00 · Auditorio principal',
+            hora_lugar: '09:00 · Auditorio Principal',
             estado: 'PROGRAMADO',
           },
           {
             id: 2,
-            nombre:
-              'Taller Práctico: Despliegue de Microservicios con Docker y Node.js',
+            nombre: 'Taller Práctico: Despliegue de Microservicios con Docker y Node.js',
             tipo: 'FACULTAD INGENIERÍA',
             fecha: '05 SEP',
-            horaLugar: '14:00 · Laboratorio de Sistemas',
+            hora_lugar: '14:00 · Laboratorio de Sistemas',
             estado: 'EN_CURSO',
           },
         ]);
@@ -62,13 +59,3 @@ const useEventos = () => {
 };
 
 export default useEventos;
-
-// Archivo reservado para la tarea de Edimer (ms-eventos)
-// Pegar aquí el código documentado en implementation_plan.md
-
-export const useEventos = () => {
-  return { eventos: [], loading: false, error: null };
-};
-
-export default useEventos;
- main
