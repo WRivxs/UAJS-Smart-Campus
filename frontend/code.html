@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UAJS Smart Campus - Módulo de Eventos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            space: ['"Space Grotesk"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eef5ff',
+              100: '#d9e8ff',
+              200: '#bcd7ff',
+              300: '#8ec0ff',
+              400: '#589eff',
+              500: '#2f7bff',
+              600: '#1459f5',
+              700: '#0a47b8', // Color institucional
+              800: '#0b3ba4',
+              900: '#0d3282',
+              950: '#081f56',
+            },
+            cyanAccent: {
+              400: '#00d2ff',
+              500: '#00b4db',
+            }
+          },
+          backgroundImage: {
+            'grid-pattern': "radial-gradient(rgba(10, 71, 184, 0.08) 1px, transparent 1px)",
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .bg-grid {
+      background-size: 24px 24px;
+      background-image: radial-gradient(circle, #0a47b8 0.75px, transparent 0.75px);
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 450, 'GRAD' 0, 'opsz' 24;
+    }
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1;
+    }
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="h-full bg-[#f8faff] text-slate-800 font-sans antialiased overflow-x-hidden flex flex-col justify-between">
+
+  <!-- Main App Shell -->
+  <div class="min-h-screen flex flex-col">
+    
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-sm transition-all duration-200">
+      <div class="flex items-center justify-between px-4 sm:px-6 lg:px-8 h-16 w-full max-w-[1720px] mx-auto">
+        
+        <!-- Left Brand & Sidebar Toggle -->
+        <div class="flex items-center gap-4">
+          <button id="sidebar-toggle" class="p-2 rounded-xl text-slate-500 hover:text-brand-700 hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500/20" title="Alternar menú lateral">
+            <span class="material-symbols-outlined text-[24px]">menu</span>
+          </button>
+          
+          <div class="flex items-center gap-2.5">
+            <!-- UNIAJS Logo SVG nativo -->
+            <div class="flex items-baseline font-black tracking-tight text-brand-700 select-none">
+              <span class="text-2xl font-black tracking-tighter leading-none">UN<span class="text-brand-500 lowercase text-xl">i</span>AJS</span>
+            </div>
+            <div class="h-5 w-px bg-slate-200 hidden sm:block"></div>
+            <div class="hidden sm:flex flex-col">
+              <span class="text-[13px] font-bold text-slate-800 leading-none">UAJS SMART CAMPUS</span>
+              <span class="text-[10px] text-slate-400 font-medium tracking-wide">Campus Digital Institucional</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Center Global Search -->
+        <div class="hidden md:flex flex-1 max-w-md mx-6">
+          <div class="relative w-full">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <span class="material-symbols-outlined text-[20px]">search</span>
+            </span>
+            <input type="text" id="global-search-input" placeholder="Buscar conferencias, talleres, ponentes o auditorios... (⌘K)" 
+                   class="w-full pl-10 pr-12 py-2 bg-slate-50 hover:bg-slate-100/80 focus:bg-white text-sm text-slate-800 placeholder-slate-400 rounded-xl border border-slate-200/80 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all shadow-inner">
+            <span class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+              <kbd class="text-[10px] font-semibold text-slate-400 bg-white border border-slate-200 rounded px-1.5 py-0.5 shadow-sm">⌘K</kbd>
+            </span>
+          </div>
+        </div>
+
+        <!-- Right Quick Actions & Student Profile -->
+        <div class="flex items-center gap-3">
+          
+          <!-- Telemetry indicator -->
+          <div class="hidden xl:flex items-center gap-2 bg-emerald-50 border border-emerald-200/60 px-2.5 py-1 rounded-full text-[11px] font-medium text-emerald-700">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>ms-eventos • 99.8% Online</span>
+          </div>
+
+          <!-- Help and Notifications -->
+          <button class="p-2 text-slate-500 hover:text-brand-700 hover:bg-slate-100 rounded-xl transition-colors relative" title="Centro de ayuda">
+            <span class="material-symbols-outlined text-[22px]">help</span>
+          </button>
+          <button class="p-2 text-slate-500 hover:text-brand-700 hover:bg-slate-100 rounded-xl transition-colors relative" title="Notificaciones">
+            <span class="material-symbols-outlined text-[22px]">notifications</span>
+            <span class="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white"></span>
+          </button>
+
+          <div class="h-6 w-px bg-slate-200"></div>
+
+          <!-- User profile chip -->
+          <div class="flex items-center gap-2.5 pl-1 pr-2 py-1 rounded-xl hover:bg-slate-100/70 transition-colors cursor-pointer group">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-700 to-brand-500 text-white font-bold text-xs flex items-center justify-center shadow-md shadow-brand-500/20">
+              LP
+            </div>
+            <div class="hidden lg:flex flex-col text-left">
+              <span class="text-xs font-bold text-slate-800 group-hover:text-brand-700 leading-tight transition-colors">Laura Paternina</span>
+              <span class="text-[10px] text-slate-500 font-medium">Estudiante de Ingeniería</span>
+            </div>
+            <span class="material-symbols-outlined text-slate-400 text-sm hidden lg:inline">expand_more</span>
+          </div>
+
+        </div>
+
+      </div>
+    </header>
+
+    <!-- App Body Layout -->
+    <div class="flex flex-1 relative max-w-[1720px] w-full mx-auto">
+      
+      <!-- Collapsible Sidebar -->
+      <aside id="main-sidebar" class="w-64 bg-white border-r border-slate-200/80 flex flex-col justify-between shrink-0 transition-all duration-300 ease-in-out z-30 sticky top-16 h-[calc(100vh-4rem)]">
+        
+        <div class="p-4 flex flex-col gap-6 overflow-y-auto">
+          
+          <!-- Quick Status Card -->
+          <div class="bg-gradient-to-br from-brand-50 to-blue-50/50 border border-brand-100 rounded-2xl p-3.5 flex items-center gap-3 transition-opacity duration-200 sidebar-text">
+            <div class="w-10 h-10 rounded-xl bg-white border border-brand-200/70 text-brand-700 flex items-center justify-center shadow-sm shrink-0">
+              <span class="material-symbols-outlined text-[20px]">badge</span>
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5">
+                <span class="text-[11px] font-bold text-brand-900 uppercase tracking-wide">Pase Digital</span>
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              </div>
+              <p class="text-[11px] text-slate-500 truncate">Habilitado • ID 2025-091</p>
+            </div>
+          </div>
+
+          <!-- Navigation Links -->
+          <nav class="space-y-1.5">
+            <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-3 mb-2 sidebar-text">Menú Principal</p>
+            
+            <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 hover:text-brand-700 hover:bg-slate-50 font-medium text-sm transition-all group">
+              <span class="material-symbols-outlined text-[22px] text-slate-400 group-hover:text-brand-600 transition-colors">space_dashboard</span>
+              <span class="sidebar-text truncate">Dashboard</span>
+            </a>
+
+            <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 hover:text-brand-700 hover:bg-slate-50 font-medium text-sm transition-all group">
+              <span class="material-symbols-outlined text-[22px] text-slate-400 group-hover:text-brand-600 transition-colors">assignment</span>
+              <span class="sidebar-text truncate">Solicitudes</span>
+              <span class="ml-auto text-[11px] font-bold px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-600 sidebar-text">2</span>
+            </a>
+
+            <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 hover:text-brand-700 hover:bg-slate-50 font-medium text-sm transition-all group">
+              <span class="material-symbols-outlined text-[22px] text-slate-400 group-hover:text-brand-600 transition-colors">calendar_today</span>
+              <span class="sidebar-text truncate">Reservas</span>
+            </a>
+
+            <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 hover:text-brand-700 hover:bg-slate-50 font-medium text-sm transition-all group">
+              <span class="material-symbols-outlined text-[22px] text-slate-400 group-hover:text-brand-600 transition-colors">inventory_2</span>
+              <span class="sidebar-text truncate">Recursos</span>
+            </a>
+
+            <!-- Active: Eventos -->
+            <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl bg-brand-50/90 text-brand-700 font-bold text-sm border border-brand-200/80 shadow-sm transition-all group">
+              <span class="material-symbols-outlined text-[22px] text-brand-700 fill">event</span>
+              <span class="sidebar-text truncate">Eventos Campus</span>
+              <span class="ml-auto w-2 h-2 rounded-full bg-brand-600 sidebar-text"></span>
+            </a>
+
+            <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 hover:text-brand-700 hover:bg-slate-50 font-medium text-sm transition-all group">
+              <span class="material-symbols-outlined text-[22px] text-slate-400 group-hover:text-brand-600 transition-colors">notifications</span>
+              <span class="sidebar-text truncate">Notificaciones</span>
+              <span class="ml-auto text-[11px] font-bold px-1.5 py-0.5 rounded-md bg-rose-50 text-rose-600 border border-rose-200/50 sidebar-text">2</span>
+            </a>
+
+            <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 hover:text-brand-700 hover:bg-slate-50 font-medium text-sm transition-all group">
+              <span class="material-symbols-outlined text-[22px] text-slate-400 group-hover:text-brand-600 transition-colors">support_agent</span>
+              <span class="sidebar-text truncate">PQRS</span>
+            </a>
+          </nav>
+
+        </div>
+
+        <!-- Sidebar Footer Action -->
+        <div class="p-4 border-t border-slate-200/80 bg-slate-50/50">
+          <button id="btn-open-create-modal" class="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-brand-700 hover:bg-brand-800 active:scale-[0.98] text-white font-bold text-xs shadow-md shadow-brand-700/20 transition-all">
+            <span class="material-symbols-outlined text-[18px]">add_circle</span>
+            <span class="sidebar-text truncate">Publicar Evento</span>
+          </button>
+
+          <div class="mt-3 pt-3 border-t border-slate-200/60 flex items-center justify-between text-xs text-slate-400 sidebar-text">
+            <span class="flex items-center gap-1.5 text-slate-500 hover:text-slate-700 cursor-pointer">
+              <span class="material-symbols-outlined text-[16px]">account_circle</span>
+              <span>Mi perfil</span>
+            </span>
+            <span class="hover:text-rose-600 cursor-pointer flex items-center gap-1" title="Cerrar sesión">
+              <span class="material-symbols-outlined text-[16px]">logout</span>
+            </span>
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- Main Content Area: Módulo de Eventos -->
+      <main class="flex-1 p-4 sm:p-6 lg:p-8 bg-grid overflow-y-auto">
+        
+        <!-- Breadcrumb & Top Indicator -->
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+          <div class="flex items-center gap-2 text-xs font-medium text-slate-500">
+            <a href="#" class="hover:text-brand-700 flex items-center gap-1">
+              <span class="material-symbols-outlined text-[15px]">home</span>
+              <span>Inicio</span>
+            </a>
+            <span class="material-symbols-outlined text-[12px] text-slate-300">chevron_right</span>
+            <span class="text-slate-400">Servicios Universitarios</span>
+            <span class="material-symbols-outlined text-[12px] text-slate-300">chevron_right</span>
+            <span class="text-brand-700 font-semibold bg-brand-50 px-2 py-0.5 rounded-md border border-brand-200/60">Agenda de Eventos Campus</span>
+          </div>
+
+          <!-- Live Network Sync Status -->
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-1.5 text-xs text-slate-500 font-medium bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-sm">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span>Control dinámico de aforo sincronizado</span>
+            </div>
+            <button id="btn-refresh" class="p-1.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-slate-600 hover:text-brand-700 shadow-sm transition-transform active:rotate-180 duration-300" title="Actualizar eventos">
+              <span class="material-symbols-outlined text-[18px]">refresh</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Page Header & Banner -->
+        <div class="bg-gradient-to-r from-brand-900 via-brand-700 to-blue-600 rounded-3xl p-6 sm:p-8 text-white relative overflow-hidden shadow-xl shadow-brand-950/10 mb-8">
+          <!-- Background geometric shapes -->
+          <div class="absolute -right-12 -bottom-12 w-64 h-64 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
+          <div class="absolute right-24 top-0 w-32 h-32 rounded-full bg-cyanAccent-400/20 blur-xl pointer-events-none"></div>
+
+          <div class="relative z-10 max-w-3xl">
+            <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-cyan-200 border border-white/20 mb-3">
+              <span class="material-symbols-outlined text-[15px]">school</span>
+              <span>CORPORACIÓN UNIVERSITARIA ANTONIO JOSÉ DE SUCRE</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight font-space text-white">
+              Agenda de Eventos Campus
+            </h1>
+            <p class="mt-2 text-sm sm:text-base text-blue-100/90 leading-relaxed">
+              Explora el catálogo de conferencias, talleres, foros y actividades universitarias. Inscríbete con validación inmediata de aforo en tiempo real y gestiona tus reservas académicas.
+            </p>
+
+            <div class="mt-6 flex flex-wrap items-center gap-3">
+              <button onclick="document.getElementById('events-grid').scrollIntoView({behavior: 'smooth'})" class="px-5 py-2.5 rounded-xl bg-white text-brand-800 hover:bg-brand-50 font-bold text-xs shadow-lg shadow-black/10 transition-all flex items-center gap-2">
+                <span>Explorar Catálogo</span>
+                <span class="material-symbols-outlined text-[16px]">arrow_downward</span>
+              </button>
+              <button id="btn-quick-create" class="px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/30 text-white font-semibold text-xs backdrop-blur-sm transition-all flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">campaign</span>
+                <span>Proponer actividad (Docente / Admin)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1. Encabezado y Barra de Métricas (KPIs Compactas) -->
+        <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          
+          <!-- KPI 1: Total Eventos Activos -->
+          <div class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-between group">
+            <div>
+              <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Eventos Activos</p>
+              <h3 id="kpi-total-eventos" class="text-3xl font-extrabold text-slate-900 font-space mt-1 group-hover:text-brand-700 transition-colors">6</h3>
+              <p class="text-[11px] text-emerald-600 font-medium flex items-center gap-1 mt-1">
+                <span class="material-symbols-outlined text-[14px]">check_circle</span>
+                <span>Disponibles para inscripción</span>
+              </p>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 flex items-center justify-center group-hover:scale-105 group-hover:bg-brand-700 group-hover:text-white transition-all shadow-sm">
+              <span class="material-symbols-outlined text-[26px]">calendar_month</span>
+            </div>
+          </div>
+
+          <!-- KPI 2: Mis Inscripciones -->
+          <div class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-between group">
+            <div>
+              <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Mis Inscripciones</p>
+              <h3 id="kpi-mis-inscripciones" class="text-3xl font-extrabold text-brand-700 font-space mt-1">1</h3>
+              <p class="text-[11px] text-brand-600 font-medium flex items-center gap-1 mt-1">
+                <span class="material-symbols-outlined text-[14px]">confirmation_number</span>
+                <span id="kpi-inscripcion-text">1 evento reservado para ti</span>
+              </p>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 text-blue-600 flex items-center justify-center group-hover:scale-105 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm">
+              <span class="material-symbols-outlined text-[26px]">local_activity</span>
+            </div>
+          </div>
+
+          <!-- KPI 3: Eventos en Curso -->
+          <div class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-between group">
+            <div>
+              <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Eventos en Curso</p>
+              <h3 id="kpi-en-curso" class="text-3xl font-extrabold text-emerald-600 font-space mt-1 flex items-center gap-2">
+                <span>1</span>
+                <span class="relative flex h-3 w-3">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                </span>
+              </h3>
+              <p class="text-[11px] text-slate-500 font-medium flex items-center gap-1 mt-1">
+                <span class="material-symbols-outlined text-[14px]">bolt</span>
+                <span>Actividades hoy en campus</span>
+              </p>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-600 flex items-center justify-center group-hover:scale-105 group-hover:bg-emerald-600 group-hover:text-white transition-all shadow-sm">
+              <span class="material-symbols-outlined text-[26px]">sensors</span>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- 2. Filtros, Selector de Vista (Tabs) y Búsqueda Inteligente -->
+        <section class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm mb-8">
+          
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+            
+            <!-- Selector de Vista (Tabs Principales) -->
+            <div class="flex items-center p-1 bg-slate-100/90 rounded-xl max-w-md w-full sm:w-auto">
+              <button id="tab-catalog" class="tab-btn flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all bg-white text-brand-700 shadow-sm border border-slate-200/60">
+                <span class="material-symbols-outlined text-[18px]">view_agenda</span>
+                <span>Catálogo General</span>
+                <span id="badge-count-all" class="text-[10px] bg-brand-50 text-brand-700 px-1.5 py-0.2 rounded-full font-bold">6</span>
+              </button>
+              <button id="tab-registered" class="tab-btn flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all text-slate-500 hover:text-slate-800">
+                <span class="material-symbols-outlined text-[18px]">how_to_reg</span>
+                <span>Mis Eventos Inscritos</span>
+                <span id="badge-count-my" class="text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.2 rounded-full font-bold">1</span>
+              </button>
+            </div>
+
+            <!-- Buscador en tiempo real -->
+            <div class="relative flex-1 lg:max-w-md">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                <span class="material-symbols-outlined text-[18px]">search</span>
+              </span>
+              <input type="text" id="filter-search-input" placeholder="Buscar por título, lugar u organizador..." 
+                     class="w-full pl-9 pr-9 py-2 bg-slate-50 focus:bg-white text-xs text-slate-800 placeholder-slate-400 rounded-xl border border-slate-200 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all">
+              <button id="clear-search" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 hidden">
+                <span class="material-symbols-outlined text-[16px]">close</span>
+              </button>
+            </div>
+
+          </div>
+
+          <!-- Pills de Categoría -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-4">
+            <div class="flex flex-wrap items-center gap-1.5" id="category-pills">
+              <span class="text-xs font-bold text-slate-400 mr-1 flex items-center gap-1">
+                <span class="material-symbols-outlined text-[16px]">filter_list</span>
+                <span>Categoría:</span>
+              </span>
+              <button data-category="ALL" class="cat-pill px-3 py-1.5 rounded-xl text-xs font-bold bg-brand-700 text-white shadow-sm transition-all">
+                Todos
+              </button>
+              <button data-category="Conferencias" class="cat-pill px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200/70 text-slate-600 transition-all">
+                Conferencias
+              </button>
+              <button data-category="Talleres" class="cat-pill px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200/70 text-slate-600 transition-all">
+                Talleres
+              </button>
+              <button data-category="Seminarios" class="cat-pill px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200/70 text-slate-600 transition-all">
+                Seminarios
+              </button>
+              <button data-category="Institucional" class="cat-pill px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200/70 text-slate-600 transition-all">
+                Institucional
+              </button>
+            </div>
+
+            <!-- View Layout Mode & Order -->
+            <div class="flex items-center gap-2 text-xs text-slate-500">
+              <span>Ordenar por:</span>
+              <select id="sort-select" class="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 text-xs font-medium text-slate-700 focus:outline-none focus:ring-1 focus:ring-brand-500">
+                <option value="date-asc">Fecha más próxima</option>
+                <option value="spots-desc">Más cupos disponibles</option>
+                <option value="name-asc">Nombre (A-Z)</option>
+              </select>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- 3. Grid de Tarjetas de Eventos (EventCard.jsx) -->
+        <section>
+          <div class="flex items-center justify-between mb-4">
+            <h2 id="section-view-title" class="text-base font-bold text-slate-800 flex items-center gap-2">
+              <span class="material-symbols-outlined text-brand-700 text-[20px]">event_available</span>
+              <span>Eventos Disponibles</span>
+              <span id="active-results-badge" class="text-xs bg-slate-100 text-slate-600 font-medium px-2 py-0.5 rounded-full border border-slate-200">Mostrando 6</span>
+            </h2>
+            
+            <span class="text-xs text-slate-400">Actualización en tiempo real vía API ms-eventos</span>
+          </div>
+
+          <!-- Event Cards Container -->
+          <div id="events-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Renderizado dinámico vía JavaScript con soporte para inscripción, aforo y modales -->
+          </div>
+
+          <!-- Empty State (Hidden by default) -->
+          <div id="empty-state" class="hidden bg-white rounded-3xl p-12 border border-slate-200/90 text-center max-w-lg mx-auto my-8 shadow-sm">
+            <div class="w-16 h-16 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center mx-auto mb-4 border border-brand-100">
+              <span class="material-symbols-outlined text-[32px]">event_busy</span>
+            </div>
+            <h3 class="text-base font-bold text-slate-800">No se encontraron eventos</h3>
+            <p id="empty-state-desc" class="text-xs text-slate-500 mt-1 mb-5">
+              No hay actividades disponibles con los filtros o en la categoría seleccionada.
+            </p>
+            <button id="btn-reset-filters" class="px-4 py-2 bg-brand-700 text-white rounded-xl text-xs font-bold hover:bg-brand-800 transition-colors shadow-sm">
+              Restablecer filtros
+            </button>
+          </div>
+        </section>
+
+      </main>
+
+    </div>
+
+    <!-- Universal Academic Footer -->
+    <footer class="bg-white border-t border-slate-200/90 py-4 px-6 sm:px-8 mt-auto z-20">
+      <div class="max-w-[1720px] mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-brand-700">UNiAJS Smart Campus</span>
+          <span>•</span>
+          <span>© Corporación Universitaria Antonio José de Sucre • Microservicio <code class="text-slate-700 font-mono bg-slate-100 px-1 py-0.5 rounded">ms-eventos:8080</code></span>
+        </div>
+        <div class="flex flex-wrap items-center gap-4 text-[11px]">
+          <a href="#" class="hover:text-brand-700 transition-colors">Términos de servicio</a>
+          <a href="#" class="hover:text-brand-700 transition-colors">Mesa de ayuda</a>
+          <a href="#" class="hover:text-brand-700 transition-colors">Seguridad digital & SHA-384</a>
+          <span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full border border-emerald-200 font-medium">Gateway v2.5</span>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- 4. Modal Detalle de Evento (EventDetailModal.jsx) -->
+  <div id="event-detail-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-200 shadow-2xl relative transform scale-95 transition-transform duration-200">
+      
+      <!-- Modal Header Banner -->
+      <div id="modal-banner-bg" class="h-44 w-full bg-gradient-to-r from-brand-800 to-blue-600 relative p-6 flex flex-col justify-between text-white rounded-t-3xl overflow-hidden">
+        <div class="absolute inset-0 bg-black/20"></div>
+        <div class="relative z-10 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span id="modal-event-category-badge" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white/20 backdrop-blur-md border border-white/30 text-white">
+              Conferencias
+            </span>
+            <span id="modal-event-status-badge" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-cyan-400 text-slate-900">
+              PROGRAMADO
+            </span>
+          </div>
+          <button id="modal-close-btn" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition-colors">
+            <span class="material-symbols-outlined text-[18px]">close</span>
+          </button>
+        </div>
+        <div class="relative z-10">
+          <h2 id="modal-event-title" class="text-xl sm:text-2xl font-bold font-space text-white leading-tight">
+            Feria de Innovación y Tecnología UAJS
+          </h2>
+        </div>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6 sm:p-8 space-y-6">
+        
+        <!-- Metadata bar -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
+          <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-700 flex items-center justify-center shrink-0 border border-brand-100">
+              <span class="material-symbols-outlined text-[22px]">calendar_today</span>
+            </div>
+            <div>
+              <p class="text-[11px] font-bold text-slate-400 uppercase">Fecha y Horario</p>
+              <p id="modal-event-datetime" class="text-xs sm:text-sm font-bold text-slate-800">15 OCT · 09:00 AM - 13:00 PM</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-100">
+              <span class="material-symbols-outlined text-[22px]">pin_drop</span>
+            </div>
+            <div>
+              <p class="text-[11px] font-bold text-slate-400 uppercase">Ubicación física</p>
+              <p id="modal-event-location" class="text-xs sm:text-sm font-bold text-slate-800">Auditorio Magno - Edificio Central</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Barra de Aforo Dinámica -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200">
+          <div class="flex items-center justify-between text-xs mb-2">
+            <span class="font-bold text-slate-700 flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-brand-600 text-[18px]">group</span>
+              <span>Control de Capacidad y Aforo</span>
+            </span>
+            <span id="modal-event-spots" class="font-bold text-brand-700">198 de 200 cupos disponibles</span>
+          </div>
+          <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+            <div id="modal-event-progress" class="h-full bg-gradient-to-r from-brand-600 to-cyanAccent-400 rounded-full transition-all duration-500" style="width: 1%;"></div>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-2 flex items-center justify-between">
+            <span>Inscripción inmediata vinculada al carnet digital</span>
+            <span id="modal-event-percent" class="font-semibold text-slate-600">1% ocupado</span>
+          </p>
+        </div>
+
+        <!-- Descripción Completa -->
+        <div>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Descripción de la Actividad</h3>
+          <p id="modal-event-desc" class="text-xs sm:text-sm text-slate-600 leading-relaxed bg-slate-50/50 p-4 rounded-2xl border border-slate-200/60">
+            Espacio universitario para exponer proyectos de emprendimiento, robótica y desarrollo tecnológico con participación de docentes y semilleros de investigación.
+          </p>
+        </div>
+
+        <!-- Perfil Organizador / Ponente -->
+        <div class="border-t border-slate-200 pt-4 flex items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-700 to-blue-500 text-white font-bold flex items-center justify-center text-sm shadow-md shrink-0" id="modal-speaker-avatar">
+            FI
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[11px] font-bold text-slate-400 uppercase">Organizador / Ponente</p>
+            <p id="modal-speaker-name" class="text-sm font-bold text-slate-800 truncate">Facultad de Ingeniería & Semilleros</p>
+            <p class="text-xs text-slate-500">Corporación Universitaria Antonio José de Sucre</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Actions Footer -->
+      <div class="p-6 bg-slate-50 border-t border-slate-200/80 rounded-b-3xl flex items-center justify-between gap-3">
+        <button id="modal-btn-close-secondary" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold text-xs transition-colors">
+          Cerrar
+        </button>
+        <div id="modal-action-slot">
+          <!-- Botón de Inscribirse o Cancelar se inyecta dinámicamente -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 5. Modal de Creación (Rol: Administrador / Docente) -->
+  <div id="create-event-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-white rounded-3xl max-w-xl w-full max-h-[90vh] overflow-y-auto border border-slate-200 shadow-2xl relative transform scale-95 transition-transform duration-200">
+      
+      <!-- Modal Header -->
+      <div class="p-6 border-b border-slate-200/80 flex items-center justify-between bg-slate-50/50 rounded-t-3xl">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-brand-700 text-white flex items-center justify-center shadow-md shadow-brand-700/20">
+            <span class="material-symbols-outlined text-[22px]">add_circle</span>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-slate-900 font-space">Publicar Nuevo Evento Campus</h3>
+            <p class="text-xs text-slate-500">Habilitado para Administrador o Docente (ms-eventos)</p>
+          </div>
+        </div>
+        <button id="create-modal-close-btn" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <!-- Formulario de Creación -->
+      <form id="create-event-form" class="p-6 space-y-4">
+        
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Título del Evento *</label>
+          <input type="text" id="new-event-title" required placeholder="Ej: Simposio de Inteligencia Artificial 2025" 
+                 class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-300 focus:border-brand-600 focus:ring-2 focus:ring-brand-500/20 focus:outline-none">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Categoría *</label>
+            <select id="new-event-category" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 focus:border-brand-600 focus:ring-2 focus:ring-brand-500/20 focus:outline-none bg-white">
+              <option value="Conferencias">Conferencias</option>
+              <option value="Talleres">Talleres</option>
+              <option value="Seminarios">Seminarios</option>
+              <option value="Institucional">Institucional</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Aforo Máximo (Cupos) *</label>
+            <input type="number" id="new-event-capacity" min="10" max="1000" value="100" required 
+                   class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-300 focus:border-brand-600 focus:ring-2 focus:ring-brand-500/20 focus:outline-none">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Fecha y Hora *</label>
+            <input type="text" id="new-event-datetime" placeholder="Ej: 24 OCT · 10:00 AM" required 
+                   class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-300 focus:border-brand-600 focus:ring-2 focus:ring-brand-500/20 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Ubicación Física *</label>
+            <input type="text" id="new-event-location" placeholder="Ej: Auditorio B o Lab de Cómputo" required 
+                   class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-300 focus:border-brand-600 focus:ring-2 focus:ring-brand-500/20 focus:outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Organizador / Ponente *</label>
+          <input type="text" id="new-event-speaker" placeholder="Ej: Dra. Carmen Valdés - Depto. Ciencias Básicas" required 
+                 class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-300 focus:border-brand-600 focus:ring-2 focus:ring-brand-500/20 focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Descripción de la Actividad *</label>
+          <textarea id="new-event-desc" rows="3" required placeholder="Detalla el programa, requisitos previos y objetivos del evento académico..." 
+                    class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-300 focus:border-brand-600 focus:ring-2 focus:ring-brand-500/20 focus:outline-none resize-none"></textarea>
+        </div>
+
+        <div class="pt-3 border-t border-slate-200 flex items-center justify-end gap-3">
+          <button type="button" id="create-modal-cancel-btn" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold text-xs">
+            Cancelar
+          </button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs shadow-md shadow-brand-700/25 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[18px]">publish</span>
+            <span>Publicar en Agenda</span>
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Toast Notification Feedback System -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 max-w-md bg-slate-900 text-white p-4 rounded-2xl shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <div id="toast-icon" class="w-8 h-8 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center shrink-0">
+      <span class="material-symbols-outlined text-[20px]">info</span>
+    </div>
+    <div class="flex-1">
+      <p id="toast-title" class="text-xs font-bold text-white">Notificación</p>
+      <p id="toast-desc" class="text-[11px] text-slate-300">Mensaje de confirmación del gateway.</p>
+    </div>
+  </div>
+
+  <!-- JavaScript Interactivo: Estado en Memoria, Hooks y Operaciones Mock ms-eventos -->
+  <script>
+    // Modelo de datos inicial con el contrato de endpoints ms-eventos
+    let state = {
+      user: {
+        nombre: "Laura Paternina",
+        rol: "Estudiante", // Cambiable a "Admin" o "Docente"
+        carrera: "Ingeniería de Sistemas",
+        email: "laura.paternina@uajs.edu.co"
+      },
+      currentTab: "ALL", // "ALL" o "REGISTERED"
+      activeCategory: "ALL",
+      searchQuery: "",
+      sortBy: "date-asc",
+      sidebarOpen: true,
+      eventos: [
+        {
+          id: "EVT-001",
+          titulo: "Feria de Innovación y Tecnología UAJS 2025",
+          categoria: "Institucional",
+          fecha_texto: "15 OCT · 09:00 AM",
+          ubicacion: "Auditorio Magno (Campus Central)",
+          cupos_disponibles: 198,
+          aforo_maximo: 200,
+          estado: "PROGRAMADO",
+          organizador: "Dirección de Investigaciones UAJS",
+          descripcion: "Exposición anual de proyectos de robótica, transformación digital e iniciativas de desarrollo sustentable de los semilleros de la Corporación.",
+          inscrito: false,
+          color_gradient: "from-blue-600 to-brand-800",
+          banner_icon: "lightbulb"
+        },
+        {
+          id: "EVT-002",
+          titulo: "Taller Avanzado de Desarrollo Web & Microservicios",
+          categoria: "Talleres",
+          fecha_texto: "Hoy · En Desarrollo",
+          ubicacion: "Laboratorio de Sistemas 3",
+          cupos_disponibles: 3,
+          aforo_maximo: 35,
+          estado: "EN_CURSO",
+          organizador: "Facultad de Ingeniería",
+          descripcion: "Sesión intensiva práctica de patrones de arquitectura distribuida con Spring Boot, Node.js y Tailwind CSS.",
+          inscrito: true, // Registrado por defecto para satisfacer el KPI inicial
+          color_gradient: "from-cyan-600 to-brand-700",
+          banner_icon: "terminal"
+        },
+        {
+          id: "EVT-003",
+          titulo: "Conferencia Internacional: Inteligencia Artificial Ética",
+          categoria: "Conferencias",
+          fecha_texto: "22 OCT · 10:30 AM",
+          ubicacion: "Aula Virtual & Auditorio 2",
+          cupos_disponibles: 120,
+          aforo_maximo: 150,
+          estado: "PROGRAMADO",
+          organizador: "Dpto. de Humanidades y Tecnología",
+          descripcion: "Análisis sobre el impacto de modelos fundacionales, privacidad algorítmica y marcos regulatorios en la academia contemporánea.",
+          inscrito: false,
+          color_gradient: "from-indigo-600 to-brand-900",
+          banner_icon: "smart_toy"
+        },
+        {
+          id: "EVT-004",
+          titulo: "Seminario de Metodologías Ágiles y Scrum Universitario",
+          categoria: "Seminarios",
+          fecha_texto: "28 OCT · 02:00 PM",
+          ubicacion: "Sala de Conferencias B",
+          cupos_disponibles: 42,
+          aforo_maximo: 60,
+          estado: "PROGRAMADO",
+          organizador: "Centro de Emprendimiento Sucre",
+          descripcion: "Técnicas de gestión iterativa de productos digitales y preparación para certificaciones profesionales.",
+          inscrito: false,
+          color_gradient: "from-emerald-700 to-teal-800",
+          banner_icon: "trending_up"
+        },
+        {
+          id: "EVT-005",
+          titulo: "Taller de Ciberseguridad y Auditoría Redes Campus",
+          categoria: "Talleres",
+          fecha_texto: "04 NOV · 03:30 PM",
+          ubicacion: "Laboratorio Redes & Telecom",
+          cupos_disponibles: 18,
+          aforo_maximo: 25,
+          estado: "PROGRAMADO",
+          organizador: "Capítulo Estudiantil IEEE UAJS",
+          descripcion: "Pruebas de concepto sobre defensa perimetral, criptografía simétrica y análisis de vulnerabilidades.",
+          inscrito: false,
+          color_gradient: "from-slate-700 to-brand-950",
+          banner_icon: "security"
+        },
+        {
+          id: "EVT-006",
+          titulo: "Encuentro de Egresados y Liderazgo Profesional",
+          categoria: "Institucional",
+          fecha_texto: "12 NOV · 06:00 PM",
+          ubicacion: "Centro de Convenciones UAJS",
+          cupos_disponibles: 280,
+          aforo_maximo: 300,
+          estado: "PROGRAMADO",
+          organizador: "Vicerrectoría de Bienestar",
+          descripcion: "Networking institucional, paneles de inserción laboral y experiencias de éxito de graduados sucreños.",
+          inscrito: false,
+          color_gradient: "from-blue-700 to-indigo-900",
+          banner_icon: "diversity_3"
+        }
+      ]
+    };
+
+    // DOM Elements Cache
+    const eventsGrid = document.getElementById('events-grid');
+    const emptyState = document.getElementById('empty-state');
+    const emptyStateDesc = document.getElementById('empty-state-desc');
+    const kpiTotal = document.getElementById('kpi-total-eventos');
+    const kpiMisInscripciones = document.getElementById('kpi-mis-inscripciones');
+    const kpiInscripcionText = document.getElementById('kpi-inscripcion-text');
+    const kpiEnCurso = document.getElementById('kpi-en-curso');
+    const badgeCountAll = document.getElementById('badge-count-all');
+    const badgeCountMy = document.getElementById('badge-count-my');
+    const activeResultsBadge = document.getElementById('active-results-badge');
+    const sectionViewTitle = document.getElementById('section-view-title');
+
+    // Modals
+    const detailModal = document.getElementById('event-detail-modal');
+    const createModal = document.getElementById('create-event-modal');
+
+    // Toasts helper
+    function showToast(title, message, isSuccess = true) {
+      const toast = document.getElementById('toast');
+      const toastTitle = document.getElementById('toast-title');
+      const toastDesc = document.getElementById('toast-desc');
+      const toastIcon = document.getElementById('toast-icon');
+
+      toastTitle.textContent = title;
+      toastDesc.textContent = message;
+
+      if (isSuccess) {
+        toastIcon.className = "w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0";
+        toastIcon.innerHTML = '<span class="material-symbols-outlined text-[20px]">check_circle</span>';
+      } else {
+        toastIcon.className = "w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0";
+        toastIcon.innerHTML = '<span class="material-symbols-outlined text-[20px]">info</span>';
+      }
+
+      toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+      }, 3500);
+    }
+
+    // Actualización de KPIs
+    function updateKPIs() {
+      const total = state.eventos.length;
+      const inscritos = state.eventos.filter(e => e.inscrito).length;
+      const enCurso = state.eventos.filter(e => e.estado === "EN_CURSO").length;
+
+      kpiTotal.textContent = total;
+      kpiMisInscripciones.textContent = inscritos;
+      kpiInscripcionText.textContent = inscritos === 1 ? '1 evento reservado para ti' : `${inscritos} eventos reservados`;
+      kpiEnCurso.querySelector('span:first-child').textContent = enCurso;
+
+      badgeCountAll.textContent = total;
+      badgeCountMy.textContent = inscritos;
+    }
+
+    // Filtrado y Renderizado de Tarjetas
+    function renderEvents() {
+      let filtered = [...state.eventos];
+
+      // Tab selector: Todos vs Mis Inscritos
+      if (state.currentTab === "REGISTERED") {
+        filtered = filtered.filter(e => e.inscrito);
+        sectionViewTitle.innerHTML = `
+          <span class="material-symbols-outlined text-brand-700 text-[20px]">how_to_reg</span>
+          <span>Mis Eventos Inscritos</span>
+          <span class="text-xs bg-brand-50 text-brand-700 font-bold px-2 py-0.5 rounded-full border border-brand-200">Solo mis reservas activas</span>
+        `;
+      } else {
+        sectionViewTitle.innerHTML = `
+          <span class="material-symbols-outlined text-brand-700 text-[20px]">event_available</span>
+          <span>Eventos Disponibles</span>
+          <span class="text-xs bg-slate-100 text-slate-600 font-medium px-2 py-0.5 rounded-full border border-slate-200">Catálogo General</span>
+        `;
+      }
+
+      // Filtro de Categoría
+      if (state.activeCategory !== "ALL") {
+        filtered = filtered.filter(e => e.categoria.toLowerCase() === state.activeCategory.toLowerCase());
+      }
+
+      // Filtro de Búsqueda
+      if (state.searchQuery.trim() !== "") {
+        const q = state.searchQuery.toLowerCase();
+        filtered = filtered.filter(e => 
+          e.titulo.toLowerCase().includes(q) ||
+          e.ubicacion.toLowerCase().includes(q) ||
+          e.organizador.toLowerCase().includes(q) ||
+          e.categoria.toLowerCase().includes(q)
+        );
+      }
+
+      // Ordenamiento
+      if (state.sortBy === "spots-desc") {
+        filtered.sort((a, b) => b.cupos_disponibles - a.cupos_disponibles);
+      } else if (state.sortBy === "name-asc") {
+        filtered.sort((a, b) => a.titulo.localeCompare(b.titulo));
+      }
+
+      activeResultsBadge.textContent = `Mostrando ${filtered.length}`;
+
+      if (filtered.length === 0) {
+        eventsGrid.innerHTML = "";
+        emptyState.classList.remove('hidden');
+        if (state.currentTab === "REGISTERED") {
+          emptyStateDesc.textContent = "Aún no te has inscrito a ningún evento. ¡Explora el Catálogo General y asegura tu cupo!";
+        } else {
+          emptyStateDesc.textContent = "No hay eventos que coincidan con la búsqueda o categoría seleccionada.";
+        }
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      eventsGrid.innerHTML = filtered.map(evento => {
+        const ocupados = evento.aforo_maximo - evento.cupos_disponibles;
+        const porcentaje = Math.min(100, Math.round((ocupados / evento.aforo_maximo) * 100));
+        const esEnCurso = evento.estado === "EN_CURSO";
+
+        return `
+          <div class="bg-white rounded-3xl border border-slate-200/90 hover:border-brand-300 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden group hover:-translate-y-1">
+            
+            <div>
+              <!-- Banner / Miniatura de la tarjeta -->
+              <div class="h-36 bg-gradient-to-r ${evento.color_gradient} relative p-4 flex flex-col justify-between text-white overflow-hidden">
+                <div class="absolute -right-6 -bottom-6 w-32 h-32 rounded-full bg-white/10 blur-lg group-hover:scale-125 transition-transform duration-500"></div>
+                <span class="material-symbols-outlined text-white/10 text-8xl absolute -right-2 -top-2 select-none pointer-events-none">${evento.banner_icon}</span>
+                
+                <div class="relative z-10 flex items-center justify-between">
+                  <!-- Badge de Categoría -->
+                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-[11px] font-bold bg-white/20 backdrop-blur-md border border-white/30 text-white shadow-sm">
+                    <span class="material-symbols-outlined text-[13px]">label</span>
+                    ${evento.categoria}
+                  </span>
+
+                  <!-- Badge de Estado con pulso animado si EN_CURSO -->
+                  ${esEnCurso ? `
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-bold bg-emerald-400 text-slate-950 shadow-md">
+                      <span class="w-2 h-2 rounded-full bg-slate-950 animate-ping"></span>
+                      EN CURSO
+                    </span>
+                  ` : `
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-[11px] font-bold bg-cyan-400 text-slate-900 shadow-sm">
+                      PROGRAMADO
+                    </span>
+                  `}
+                </div>
+
+                <!-- Organizador / Subtexto -->
+                <div class="relative z-10">
+                  <span class="text-[11px] font-medium text-blue-100 flex items-center gap-1 truncate">
+                    <span class="material-symbols-outlined text-[14px]">account_balance</span>
+                    ${evento.organizador}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Información Principal -->
+              <div class="p-5">
+                <h3 class="text-base font-bold text-slate-900 font-space group-hover:text-brand-700 transition-colors leading-snug line-clamp-2">
+                  ${evento.titulo}
+                </h3>
+
+                <!-- Metadatos: Fecha & Ubicación -->
+                <div class="mt-3 space-y-1.5">
+                  <div class="flex items-center gap-2 text-xs font-semibold text-slate-600">
+                    <span class="material-symbols-outlined text-[17px] text-brand-600">schedule</span>
+                    <span>${evento.fecha_texto}</span>
+                  </div>
+                  <div class="flex items-center gap-2 text-xs text-slate-500">
+                    <span class="material-symbols-outlined text-[17px] text-slate-400">location_on</span>
+                    <span class="truncate">${evento.ubicacion}</span>
+                  </div>
+                </div>
+
+                <!-- Barra de Aforo y Cupos (cupos_disponibles / aforo_maximo) -->
+                <div class="mt-4 pt-3 border-t border-slate-100">
+                  <div class="flex items-center justify-between text-xs mb-1.5">
+                    <span class="text-[11px] font-medium text-slate-500">Aforo ocupado</span>
+                    <span class="text-xs font-bold ${evento.cupos_disponibles < 10 ? 'text-amber-600' : 'text-slate-700'}">
+                      ${evento.cupos_disponibles} de ${evento.aforo_maximo} cupos libres
+                    </span>
+                  </div>
+                  
+                  <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div class="h-full rounded-full transition-all duration-500 ${porcentaje > 85 ? 'bg-amber-500' : 'bg-brand-600'}" style="width: ${porcentaje}%"></div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Acciones Rápidas (Inscribirme / Cancelar / Detalle) -->
+            <div class="p-5 pt-0 mt-2 flex items-center gap-2 border-t border-slate-100/80">
+              <button onclick="openDetailModal('${evento.id}')" class="flex-1 py-2 px-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 hover:text-brand-700 text-xs font-bold transition-all flex items-center justify-center gap-1 group/btn">
+                <span>Ver Detalle</span>
+                <span class="material-symbols-outlined text-[15px] group-hover/btn:translate-x-0.5 transition-transform">visibility</span>
+              </button>
+
+              ${evento.inscrito ? `
+                <div class="flex items-center gap-1.5">
+                  <span class="inline-flex items-center gap-1 px-2.5 py-2 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold" title="Inscrito correctamente">
+                    <span class="material-symbols-outlined text-[16px]">check_circle</span>
+                    <span class="hidden sm:inline">Inscrito</span>
+                  </span>
+                  <button onclick="cancelarInscripcion('${evento.id}')" class="py-2 px-2.5 rounded-xl border border-rose-200 hover:bg-rose-50 text-rose-600 text-xs font-bold transition-colors" title="Cancelar inscripción (libera cupo)">
+                    <span class="material-symbols-outlined text-[16px]">cancel</span>
+                  </button>
+                </div>
+              ` : `
+                <button onclick="inscribirme('${evento.id}')" ${evento.cupos_disponibles <= 0 ? 'disabled' : ''} 
+                        class="py-2 px-4 rounded-xl ${evento.cupos_disponibles <= 0 ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-brand-700 hover:bg-brand-800 text-white shadow-sm shadow-brand-700/20 active:scale-95'} text-xs font-bold transition-all flex items-center justify-center gap-1.5">
+                  <span class="material-symbols-outlined text-[16px]">how_to_reg</span>
+                  <span>Inscribirme</span>
+                </button>
+              `}
+            </div>
+
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Funciones API Mock correspondientes a los endpoints solicitados
+
+    // POST /api/eventos/:id/inscribirse
+    window.inscribirme = function(id) {
+      const ev = state.eventos.find(e => e.id === id);
+      if (!ev) return;
+      if (ev.cupos_disponibles <= 0) {
+        showToast("Aforo Completo", "Lo sentimos, no hay cupos disponibles para este evento.", false);
+        return;
+      }
+      if (ev.inscrito) {
+        showToast("Ya registrado", "Ya estás inscrito en esta actividad.", false);
+        return;
+      }
+
+      // Decrementar aforo y marcar inscrito
+      ev.inscrito = true;
+      ev.cupos_disponibles -= 1;
+
+      updateKPIs();
+      renderEvents();
+      showToast("¡Inscripción Exitosa!", `Te has inscrito correctamente a: ${ev.titulo}`);
+
+      // Si el modal de detalle está abierto, refrescarlo
+      if (!detailModal.classList.contains('hidden')) {
+        openDetailModal(id);
+      }
+    };
+
+    // DELETE /api/eventos/:id/inscripcion
+    window.cancelarInscripcion = function(id) {
+      const ev = state.eventos.find(e => e.id === id);
+      if (!ev || !ev.inscrito) return;
+
+      // Incrementar aforo y cancelar
+      ev.inscrito = false;
+      ev.cupos_disponibles += 1;
+
+      updateKPIs();
+      renderEvents();
+      showToast("Inscripción Cancelada", `Se ha liberado 1 cupo en: ${ev.titulo}`, false);
+
+      if (!detailModal.classList.contains('hidden')) {
+        openDetailModal(id);
+      }
+    };
+
+    // Modal Detalle
+    window.openDetailModal = function(id) {
+      const ev = state.eventos.find(e => e.id === id);
+      if (!ev) return;
+
+      document.getElementById('modal-event-title').textContent = ev.titulo;
+      document.getElementById('modal-event-category-badge').textContent = ev.categoria;
+      document.getElementById('modal-event-status-badge').textContent = ev.estado;
+      document.getElementById('modal-event-status-badge').className = ev.estado === "EN_CURSO" ? "px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-400 text-slate-950" : "px-2.5 py-1 rounded-lg text-xs font-bold bg-cyan-400 text-slate-900";
+      document.getElementById('modal-event-datetime').textContent = ev.fecha_texto;
+      document.getElementById('modal-event-location').textContent = ev.ubicacion;
+      document.getElementById('modal-event-desc').textContent = ev.descripcion;
+      document.getElementById('modal-speaker-name').textContent = ev.organizador;
+      document.getElementById('modal-event-spots').textContent = `${ev.cupos_disponibles} de ${ev.aforo_maximo} cupos disponibles`;
+
+      const ocupados = ev.aforo_maximo - ev.cupos_disponibles;
+      const porcentaje = Math.min(100, Math.round((ocupados / ev.aforo_maximo) * 100));
+      document.getElementById('modal-event-progress').style.width = `${porcentaje}%`;
+      document.getElementById('modal-event-percent').textContent = `${porcentaje}% de ocupación`;
+
+      // Botón en modal
+      const actionSlot = document.getElementById('modal-action-slot');
+      if (ev.inscrito) {
+        actionSlot.innerHTML = `
+          <button onclick="cancelarInscripcion('${ev.id}')" class="px-5 py-2.5 rounded-xl bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 text-xs font-bold transition-all flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[16px]">cancel</span>
+            <span>Cancelar Inscripción</span>
+          </button>
+        `;
+      } else {
+        actionSlot.innerHTML = `
+          <button onclick="inscribirme('${ev.id}')" ${ev.cupos_disponibles <= 0 ? 'disabled' : ''} class="px-5 py-2.5 rounded-xl ${ev.cupos_disponibles <= 0 ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-brand-700 hover:bg-brand-800 text-white shadow-md shadow-brand-700/20'} text-xs font-bold transition-all flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[16px]">how_to_reg</span>
+            <span>Inscribirme Ahora</span>
+          </button>
+        `;
+      }
+
+      detailModal.classList.remove('hidden');
+      setTimeout(() => {
+        detailModal.classList.remove('opacity-0');
+        detailModal.querySelector('div').classList.remove('scale-95');
+      }, 10);
+    };
+
+    function closeDetailModal() {
+      detailModal.classList.add('opacity-0');
+      detailModal.querySelector('div').classList.add('scale-95');
+      setTimeout(() => {
+        detailModal.classList.add('hidden');
+      }, 200);
+    }
+
+    // Modal Crear Evento
+    function openCreateModal() {
+      createModal.classList.remove('hidden');
+      setTimeout(() => {
+        createModal.classList.remove('opacity-0');
+        createModal.querySelector('div').classList.remove('scale-95');
+      }, 10);
+    }
+
+    function closeCreateModal() {
+      createModal.classList.add('opacity-0');
+      createModal.querySelector('div').classList.add('scale-95');
+      setTimeout(() => {
+        createModal.classList.add('hidden');
+      }, 200);
+    }
+
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      updateKPIs();
+      renderEvents();
+
+      // Sidebar Toggle
+      const sidebarToggle = document.getElementById('sidebar-toggle');
+      const sidebar = document.getElementById('main-sidebar');
+      sidebarToggle.addEventListener('click', () => {
+        state.sidebarOpen = !state.sidebarOpen;
+        if (state.sidebarOpen) {
+          sidebar.classList.remove('w-20');
+          sidebar.classList.add('w-64');
+          document.querySelectorAll('.sidebar-text').forEach(el => el.classList.remove('hidden'));
+        } else {
+          sidebar.classList.remove('w-64');
+          sidebar.classList.add('w-20');
+          document.querySelectorAll('.sidebar-text').forEach(el => el.classList.add('hidden'));
+        }
+      });
+
+      // Tabs: Catálogo vs Mis Inscritos
+      const tabCatalog = document.getElementById('tab-catalog');
+      const tabRegistered = document.getElementById('tab-registered');
+
+      tabCatalog.addEventListener('click', () => {
+        state.currentTab = "ALL";
+        tabCatalog.className = "tab-btn flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all bg-white text-brand-700 shadow-sm border border-slate-200/60";
+        tabRegistered.className = "tab-btn flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all text-slate-500 hover:text-slate-800";
+        renderEvents();
+      });
+
+      tabRegistered.addEventListener('click', () => {
+        state.currentTab = "REGISTERED";
+        tabRegistered.className = "tab-btn flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all bg-white text-brand-700 shadow-sm border border-slate-200/60";
+        tabCatalog.className = "tab-btn flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all text-slate-500 hover:text-slate-800";
+        renderEvents();
+      });
+
+      // Category Pills
+      document.querySelectorAll('.cat-pill').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.cat-pill').forEach(p => {
+            p.className = "cat-pill px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200/70 text-slate-600 transition-all";
+          });
+          btn.className = "cat-pill px-3 py-1.5 rounded-xl text-xs font-bold bg-brand-700 text-white shadow-sm transition-all";
+          state.activeCategory = btn.getAttribute('data-category');
+          renderEvents();
+        });
+      });
+
+      // Buscadores
+      const searchInput = document.getElementById('filter-search-input');
+      const clearSearch = document.getElementById('clear-search');
+      searchInput.addEventListener('input', (e) => {
+        state.searchQuery = e.target.value;
+        if (state.searchQuery.length > 0) {
+          clearSearch.classList.remove('hidden');
+        } else {
+          clearSearch.classList.add('hidden');
+        }
+        renderEvents();
+      });
+      clearSearch.addEventListener('click', () => {
+        searchInput.value = "";
+        state.searchQuery = "";
+        clearSearch.classList.add('hidden');
+        renderEvents();
+      });
+
+      // Global Search sync
+      const globalSearch = document.getElementById('global-search-input');
+      globalSearch.addEventListener('input', (e) => {
+        searchInput.value = e.target.value;
+        state.searchQuery = e.target.value;
+        renderEvents();
+      });
+
+      // Sort
+      document.getElementById('sort-select').addEventListener('change', (e) => {
+        state.sortBy = e.target.value;
+        renderEvents();
+      });
+
+      // Reset filters button
+      document.getElementById('btn-reset-filters').addEventListener('click', () => {
+        state.activeCategory = "ALL";
+        state.searchQuery = "";
+        searchInput.value = "";
+        clearSearch.classList.add('hidden');
+        document.querySelector('[data-category="ALL"]').click();
+      });
+
+      // Refresh Button
+      document.getElementById('btn-refresh').addEventListener('click', () => {
+        showToast("Sincronización Completada", "Catálogo y aforos actualizados con el Gateway ms-eventos");
+        updateKPIs();
+        renderEvents();
+      });
+
+      // Modal Closures
+      document.getElementById('modal-close-btn').addEventListener('click', closeDetailModal);
+      document.getElementById('modal-btn-close-secondary').addEventListener('click', closeDetailModal);
+      detailModal.addEventListener('click', (e) => {
+        if (e.target === detailModal) closeDetailModal();
+      });
+
+      // Modal Creación
+      document.getElementById('btn-open-create-modal').addEventListener('click', openCreateModal);
+      document.getElementById('btn-quick-create').addEventListener('click', openCreateModal);
+      document.getElementById('create-modal-close-btn').addEventListener('click', closeCreateModal);
+      document.getElementById('create-modal-cancel-btn').addEventListener('click', closeCreateModal);
+      createModal.addEventListener('click', (e) => {
+        if (e.target === createModal) closeCreateModal();
+      });
+
+      // Formulario de Creación (POST /api/eventos)
+      document.getElementById('create-event-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const cap = parseInt(document.getElementById('new-event-capacity').value) || 50;
+        const nuevo = {
+          id: `EVT-00${state.eventos.length + 1}`,
+          titulo: document.getElementById('new-event-title').value,
+          categoria: document.getElementById('new-event-category').value,
+          fecha_texto: document.getElementById('new-event-datetime').value,
+          ubicacion: document.getElementById('new-event-location').value,
+          organizador: document.getElementById('new-event-speaker').value,
+          descripcion: document.getElementById('new-event-desc').value,
+          cupos_disponibles: cap,
+          aforo_maximo: cap,
+          estado: "PROGRAMADO",
+          inscrito: false,
+          color_gradient: "from-brand-700 to-indigo-800",
+          banner_icon: "event_note"
+        };
+
+        state.eventos.unshift(nuevo);
+        updateKPIs();
+        renderEvents();
+        closeCreateModal();
+        e.target.reset();
+        showToast("Evento Publicado", `"${nuevo.titulo}" ya está disponible en la agenda campus.`);
+      });
+
+    });
+  </script>
+</body>
+</html>
