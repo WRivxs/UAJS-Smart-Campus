@@ -185,7 +185,7 @@ export const DashboardPrincipal = () => {
                     <div
                       key={card.id}
                       onClick={() => setActiveTab(card.id)}
-                      className="bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-xs hover:shadow-md hover:border-[#0284c7]/50 transition-all duration-200 group cursor-pointer flex flex-col justify-between"
+                      className="bg-white border border-slate-200/90 rounded-none overflow-hidden shadow-xs hover:shadow-md hover:border-[#0284c7]/50 transition-all duration-200 group cursor-pointer flex flex-col justify-between"
                     >
                       {/* Banner con imagen de portada */}
                       <div className="relative h-36 w-full overflow-hidden bg-slate-900">
