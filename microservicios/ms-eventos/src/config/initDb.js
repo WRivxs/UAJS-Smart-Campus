@@ -24,6 +24,15 @@ const initDb = async () => {
       );
     `);
 
+    // 1b. Migración Idempotente: Agregar columnas si la tabla ya existía previamente
+    await db.query(`
+      ALTER TABLE eventos ADD COLUMN IF NOT EXISTS organizador_nombre VARCHAR(150) DEFAULT NULL;
+      ALTER TABLE eventos ADD COLUMN IF NOT EXISTS aforo_maximo INT DEFAULT NULL;
+      ALTER TABLE eventos ADD COLUMN IF NOT EXISTS cupos_disponibles INT DEFAULT NULL;
+      ALTER TABLE eventos ADD COLUMN IF NOT EXISTS imagen_url VARCHAR(255) DEFAULT NULL;
+      ALTER TABLE eventos ADD COLUMN IF NOT EXISTS estado VARCHAR(50) DEFAULT 'PROGRAMADO';
+    `);
+
     // 2. Tabla inscripciones_evento
     await db.query(`
       CREATE TABLE IF NOT EXISTS inscripciones_evento (
@@ -46,17 +55,17 @@ const initDb = async () => {
 
       const inThreeDays = new Date();
       inThreeDays.setDate(inThreeDays.getDate() + 3);
-      inThreeDays.setHours(09, 00, 00);
+      inThreeDays.setHours(9, 0, 0);
 
       const inThreeDaysEnd = new Date(inThreeDays);
-      inThreeDaysEnd.setHours(17, 00, 00);
+      inThreeDaysEnd.setHours(17, 0, 0);
 
       const inFiveDays = new Date();
       inFiveDays.setDate(inFiveDays.getDate() + 5);
-      inFiveDays.setHours(14, 00, 00);
+      inFiveDays.setHours(14, 0, 0);
 
       const inFiveDaysEnd = new Date(inFiveDays);
-      inFiveDaysEnd.setHours(18, 00, 00);
+      inFiveDaysEnd.setHours(18, 0, 0);
 
       const eventosSemilla = [
         {
@@ -138,7 +147,13 @@ const initDb = async () => {
       console.log('✅ Eventos e inscripciones semilla creados exitosamente.');
     }
 
-    console.log('✅ Base de datos db_eventos totalmente inicializada.');
+    // 4. Sincronizar secuencias de PostgreSQL para evitar errores de clave duplicada al insertar nuevos registros desde el rol Admin
+    await db.query(`
+      SELECT setval('eventos_id_seq', COALESCE((SELECT MAX(id) FROM eventos), 1));
+      SELECT setval('inscripciones_evento_id_seq', COALESCE((SELECT MAX(id) FROM inscripciones_evento), 1));
+    `);
+
+    console.log('✅ Base de datos db_eventos totalmente inicializada y secuencias sincronizadas.');
   } catch (error) {
     console.error('❌ Error al inicializar db_eventos:', error);
   }
