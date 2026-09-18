@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import useProfile from '../../hooks/useProfile';
 
-export const Navbar = ({ title = "Smart Campus" }) => {
+export const Navbar = ({ title = "Smart Campus", onToggleSidebar }) => {
   const { user, logout, rol } = useAuth();
   const { profile } = useProfile();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -40,14 +40,23 @@ export const Navbar = ({ title = "Smart Campus" }) => {
   }, []);
 
   return (
-    <header className="w-full fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-6 md:px-12 h-16 bg-white border-b border-slate-200/90 shadow-xs">
+    <header className="w-full fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-4 md:px-8 h-16 bg-white border-b border-slate-200/90 shadow-xs">
       
-      {/* Izquierda: Logo Oficial y Marca */}
+      {/* Izquierda: Botón de Menú + Logo Oficial y Marca */}
       <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={onToggleSidebar}
+          title="Alternar Menú Lateral"
+          className="p-2 rounded-xl text-slate-600 hover:text-[#0284c7] hover:bg-slate-100 transition-colors flex items-center justify-center cursor-pointer select-none"
+        >
+          <span className="material-symbols-outlined text-[24px]">menu</span>
+        </button>
+
         <img 
           src="/Logo-SPLAVIA-5.0.png" 
           alt="Logo Corporación Universitaria Antonio José de Sucre" 
-          className="h-10 md:h-11 w-auto object-contain cursor-pointer"
+          className="h-9 md:h-10 w-auto object-contain cursor-pointer"
         />
         <div className="h-6 w-[1px] bg-slate-200 hidden sm:block"></div>
         <div className="flex flex-col hidden sm:flex">

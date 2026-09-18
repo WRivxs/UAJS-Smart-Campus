@@ -15,8 +15,17 @@ export const DashboardPrincipal = () => {
   const { eventos, misInscripciones, loading: eventosLoading } = useEventos();
 
   const [activeTab, setActiveTab] = useState('inicio');
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const currentRole = rol || profile?.rol_nombre || user?.rol_nombre || 'Estudiante';
+
+  // Badges dinámicos para los ítems del menú lateral (Microservicios)
+  const counts = {
+    eventos: eventos?.length || 4,
+    solicitudes: solicitudes?.length || 4,
+    reservas: 2,
+    pqrs: 1
+  };
 
   // Helper para badges de estado de solicitudes (Alineado con DB ms-solicitudes)
   const getBadgeEstadoSolicitud = (estado) => {
@@ -77,16 +86,28 @@ export const DashboardPrincipal = () => {
     <div className="bg-slate-100 text-slate-800 min-h-screen flex flex-col relative overflow-x-hidden selection:bg-[#0284c7] selection:text-white">
       
       {/* Top Navbar Header */}
-      <Navbar title="Smart Campus" />
+      <Navbar
+        title="Smart Campus"
+        onToggleSidebar={() => setIsSidebarCollapsed((prev) => !prev)}
+      />
 
       {/* Main Workspace Layout */}
       <div className="flex flex-grow pt-16">
         
         {/* Sidebar Navigation */}
-        <SidebarMenu activeTab={activeTab} onTabChange={setActiveTab} />
+        <SidebarMenu
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          isCollapsed={isSidebarCollapsed}
+          counts={counts}
+        />
 
         {/* Main Content Workspace */}
-        <main className="flex-grow md:ml-64 p-4 md:p-6 max-w-[1400px] w-full mx-auto space-y-4">
+        <main
+          className={`flex-grow ${
+            isSidebarCollapsed ? 'md:ml-20' : 'md:ml-64'
+          } transition-all duration-300 ease-in-out p-4 md:p-6 max-w-[1400px] w-full mx-auto space-y-4`}
+        >
 
           {/* ── Vista: Inicio ───────────────────────────────────────────── */}
           {activeTab === 'inicio' && (
@@ -265,7 +286,9 @@ export const DashboardPrincipal = () => {
       </div>
 
       {/* ── Footer Institucional ─────────────────────────────────────── */}
-      <footer className="bg-white border-t border-slate-200/90 py-4 px-6 sm:px-8 z-20 md:ml-64">
+      <footer className={`bg-white border-t border-slate-200/90 py-4 px-6 sm:px-8 z-20 ${
+        isSidebarCollapsed ? 'md:ml-20' : 'md:ml-64'
+      } transition-all duration-300 ease-in-out`}>
         <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-slate-500">
           <div className="flex items-center gap-2">
             <span className="font-bold text-[#0a47b8]">UNiAJS Smart Campus</span>
