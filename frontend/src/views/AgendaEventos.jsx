@@ -4,14 +4,27 @@ import { useAuth } from '../hooks/useAuth';
 import EventCard from '../components/EventCard';
 import EventDetailModal from '../components/EventDetailModal';
 
-const CATEGORIAS = [
-  { id: 'ALL', label: 'Todos' },
-  { id: 'CONFERENCIA', label: 'Conferencias' },
-  { id: 'TALLER', label: 'Talleres' },
-  { id: 'SEMINARIO', label: 'Seminarios' },
-  { id: 'ACTIVIDAD_INSTITUCIONAL', label: 'Institucional' },
-  { id: 'EVENTO_ACADEMICO', label: 'Académicos' },
-];
+// Helper para formatear los nombres de categoría extraídos del backend
+const formatCategoryLabel = (tipo) => {
+  if (!tipo) return 'General';
+  const MAP = {
+    CONFERENCIA: 'Conferencias',
+    TALLER: 'Talleres',
+    SEMINARIO: 'Seminarios',
+    INSTITUCIONAL: 'Institucional',
+    ACTIVIDAD_INSTITUCIONAL: 'Institucional',
+    ACADEMICO: 'Académicos',
+    EVENTO_ACADEMICO: 'Académicos',
+    DEPORTIVO: 'Deportivos',
+    CULTURAL: 'Culturales',
+  };
+  if (MAP[tipo]) return MAP[tipo];
+  return tipo
+    .toLowerCase()
+    .split('_')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+};
 
 // Sistema Toast interno ------------------------------------------------
 const useToast = () => {
@@ -38,6 +51,22 @@ export const AgendaEventos = () => {
 
   // Rol para mostrar botón "Proponer actividad"
   const puedeCrear = ['Administrador', 'Docente', 'Administrativo'].includes(rol || user?.rol_nombre);
+
+  // ─── Extraer Categorías Dinámicas desde los datos reales ────────────
+  const categoriasDinamicas = useMemo(() => {
+    const tipos = new Set();
+    eventos.forEach((ev) => {
+      if (ev.tipo) tipos.add(ev.tipo);
+    });
+    const lista = [{ id: 'ALL', label: 'Todos' }];
+    tipos.forEach((tipo) => {
+      lista.push({
+        id: tipo,
+        label: formatCategoryLabel(tipo),
+      });
+    });
+    return lista;
+  }, [eventos]);
 
   // ─── Filtros ────────────────────────────────────────────────────────
   const eventosFiltrados = useMemo(() => {
@@ -252,7 +281,7 @@ export const AgendaEventos = () => {
               <span className="material-symbols-outlined text-[16px]">filter_list</span>
               Categoría:
             </span>
-            {CATEGORIAS.map((cat) => (
+            {categoriasDinamicas.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setCategoria(cat.id)}
