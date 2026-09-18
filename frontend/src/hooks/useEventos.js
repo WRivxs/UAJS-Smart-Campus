@@ -81,12 +81,14 @@ export const useEventos = () => {
         fetch(`${API_GATEWAY_URL}/api/eventos/mis-inscripciones`, { headers: getAuthHeaders() }),
       ]);
 
-      // Procesar catálogo general
+      // Procesar catálogo general desde la BD real (ms-eventos)
       if (evRes.ok) {
         const data = await evRes.json();
         const items = Array.isArray(data) ? data : data.eventos || data.data || [];
-        setEventos(items.length > 0 ? items : FALLBACK_EVENTOS);
+        // Si el backend respondió 200, usamos 100% los datos de la base de datos real
+        setEventos(items);
       } else {
+        // Solo si el backend falla con error HTTP, activamos fallback de desarrollo
         setEventos(FALLBACK_EVENTOS);
       }
 

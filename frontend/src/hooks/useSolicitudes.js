@@ -56,12 +56,12 @@ export const useSolicitudes = () => {
         }
 
         const data = await response.json();
-        // Extraer array si viene envuelto en objeto { solicitudes: [...] } o directo
         const items = Array.isArray(data)
           ? data
           : data.solicitudes || data.data || [];
 
-        setSolicitudes(items.length > 0 ? items : FALLBACK_SOLICITUDES);
+        // Si el backend respondió OK (200), reflejar 100% la base de datos real
+        setSolicitudes(items);
       } catch (err) {
         setError(err.message);
         setSolicitudes(FALLBACK_SOLICITUDES);
