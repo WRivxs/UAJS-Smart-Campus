@@ -138,7 +138,7 @@ export const DashboardPrincipal = () => {
                 </div>
               </div>
 
-              {/* Servicios Universitarios Grid */}
+              {/* Servicios Universitarios Grid (Microservicios con Imagen de Portada) */}
               <section className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg font-bold font-space text-slate-900 flex items-center gap-2">
@@ -149,26 +149,84 @@ export const DashboardPrincipal = () => {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                   {[
-                    { id: 'notas', icon: 'school', color: 'cyan', label: 'Notas & Materias', desc: 'Consulta tu promedio acumulado, materias inscritas y calificaciones en tiempo real.', cta: 'Consultar notas' },
-                    { id: 'solicitudes', icon: 'description', color: 'sky', label: 'Mis Solicitudes', desc: 'Registra certificados, supletorios y cancelaciones de materia con seguimiento de estado.', cta: 'Ver mis trámites' },
-                    { id: 'pqrs', icon: 'support_agent', color: 'blue', label: 'Atención PQRS', desc: 'Radica peticiones, quejas y sugerencias dirigidas a las dependencias universitarias.', cta: 'Radicar PQRS' },
-                    { id: 'reservas', icon: 'calendar_month', color: 'indigo', label: 'Reservas de Recursos', desc: 'Solicita préstamo de portátiles, salas de estudio y laboratorios académicos.', cta: 'Reservar espacio' },
+                    {
+                      id: 'solicitudes',
+                      ms: 'MS-SOLICITUDES',
+                      code: '00579-AA-08-S-2026-02',
+                      label: 'SOLICITUDES Y TRÁMITES ACADÉMICOS',
+                      desc: 'Certificados, supletorios y cancelaciones de asignatura en línea.',
+                      periodo: 'S-2026-02-07',
+                      imagen_url: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=600&auto=format&fit=crop'
+                    },
+                    {
+                      id: 'pqrs',
+                      ms: 'MS-PQRS',
+                      code: '00580-AG-08-S-2026-02',
+                      label: 'ATENCIÓN PQRS INSTITUCIONAL',
+                      desc: 'Radicación de peticiones, quejas y sugerencias con trazabilidad.',
+                      periodo: 'S-2026-02-07',
+                      imagen_url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&auto=format&fit=crop'
+                    },
+                    {
+                      id: 'reservas',
+                      ms: 'MS-RESERVAS',
+                      code: '00581-AA-08-S-2026-02',
+                      label: 'RESERVAS DE AULAS Y RECURSOS',
+                      desc: 'Préstamo de portátiles, laboratorios y salas de estudio.',
+                      periodo: 'S-2026-02-07',
+                      imagen_url: 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=600&auto=format&fit=crop'
+                    },
+                    {
+                      id: 'eventos',
+                      ms: 'MS-EVENTOS',
+                      code: '00582-AA-08-S-2026-02',
+                      label: 'AGENDA DE EVENTOS Y TALLERES',
+                      desc: 'Inscripción inmediata a seminarios, conferencias y talleres.',
+                      periodo: 'S-2026-02-07',
+                      imagen_url: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=600&auto=format&fit=crop'
+                    },
                   ].map((card) => (
                     <div
                       key={card.id}
                       onClick={() => setActiveTab(card.id)}
-                      className="bg-white border border-slate-200/90 rounded-sm p-5 hover:border-cyan-500/50 hover:shadow-md transition-all space-y-3 group cursor-pointer"
+                      className="bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-xs hover:shadow-md hover:border-[#0284c7]/50 transition-all duration-200 group cursor-pointer flex flex-col justify-between"
                     >
-                      <div className={`h-10 w-10 rounded-sm bg-${card.color}-50 flex items-center justify-center text-${card.color}-700 group-hover:scale-110 transition-transform`}>
-                        <span className="material-symbols-outlined text-[24px]">{card.icon}</span>
+                      {/* Banner con imagen de portada */}
+                      <div className="relative h-36 w-full overflow-hidden bg-slate-900">
+                        <img
+                          src={card.imagen_url}
+                          alt={card.label}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-90"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                        <span className="absolute top-3 left-3 px-2 py-0.5 rounded-md text-[9px] font-bold bg-white/20 backdrop-blur-md border border-white/30 text-white uppercase tracking-wider font-space">
+                          {card.ms}
+                        </span>
                       </div>
-                      <div className="space-y-1">
-                        <h3 className="text-sm font-bold font-space text-slate-900">{card.label}</h3>
-                        <p className="text-xs text-slate-500">{card.desc}</p>
-                      </div>
-                      <div className={`pt-2 flex items-center justify-between text-xs text-${card.color}-700 font-semibold font-space`}>
-                        <span>{card.cta}</span>
-                        <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+
+                      {/* Cuerpo con código y título */}
+                      <div className="p-4 space-y-2 flex-1 flex flex-col justify-between bg-white">
+                        <div className="space-y-1">
+                          <h3 className="text-xs font-bold font-space text-slate-800 tracking-tight leading-snug uppercase group-hover:text-[#0284c7] transition-colors line-clamp-2">
+                            {card.code}-{card.label}
+                          </h3>
+                        </div>
+
+                        {/* Pie de tarjeta con período y 3 puntos (Estilo Canvas UAJS) */}
+                        <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 font-mono">
+                          <span>{card.periodo}</span>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActiveTab(card.id);
+                            }}
+                            title="Opciones de servicio"
+                            className="w-7 h-7 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 flex items-center justify-center transition-colors cursor-pointer"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">more_vert</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
