@@ -155,8 +155,7 @@ export const DashboardPrincipal = () => {
                       code: '00579-AA-08-S-2026-02',
                       label: 'SOLICITUDES Y TRÁMITES ACADÉMICOS',
                       desc: 'Certificados, supletorios y cancelaciones de asignatura en línea.',
-                      periodo: 'S-2026-02-07',
-                      imagen_url: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=600&auto=format&fit=crop'
+                      imagen_url: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=600&auto=format&fit=crop'
                     },
                     {
                       id: 'pqrs',
@@ -164,7 +163,6 @@ export const DashboardPrincipal = () => {
                       code: '00580-AG-08-S-2026-02',
                       label: 'ATENCIÓN PQRS INSTITUCIONAL',
                       desc: 'Radicación de peticiones, quejas y sugerencias con trazabilidad.',
-                      periodo: 'S-2026-02-07',
                       imagen_url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&auto=format&fit=crop'
                     },
                     {
@@ -173,7 +171,6 @@ export const DashboardPrincipal = () => {
                       code: '00581-AA-08-S-2026-02',
                       label: 'RESERVAS DE AULAS Y RECURSOS',
                       desc: 'Préstamo de portátiles, laboratorios y salas de estudio.',
-                      periodo: 'S-2026-02-07',
                       imagen_url: 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=600&auto=format&fit=crop'
                     },
                     {
@@ -182,7 +179,6 @@ export const DashboardPrincipal = () => {
                       code: '00582-AA-08-S-2026-02',
                       label: 'AGENDA DE EVENTOS Y TALLERES',
                       desc: 'Inscripción inmediata a seminarios, conferencias y talleres.',
-                      periodo: 'S-2026-02-07',
                       imagen_url: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=600&auto=format&fit=crop'
                     },
                   ].map((card) => (
@@ -205,28 +201,13 @@ export const DashboardPrincipal = () => {
                       </div>
 
                       {/* Cuerpo con código y título */}
-                      <div className="p-4 space-y-2 flex-1 flex flex-col justify-between bg-white">
-                        <div className="space-y-1">
-                          <h3 className="text-xs font-bold font-space text-slate-800 tracking-tight leading-snug uppercase group-hover:text-[#0284c7] transition-colors line-clamp-2">
-                            {card.code}-{card.label}
-                          </h3>
-                        </div>
-
-                        {/* Pie de tarjeta con período y 3 puntos (Estilo Canvas UAJS) */}
-                        <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 font-mono">
-                          <span>{card.periodo}</span>
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setActiveTab(card.id);
-                            }}
-                            title="Opciones de servicio"
-                            className="w-7 h-7 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 flex items-center justify-center transition-colors cursor-pointer"
-                          >
-                            <span className="material-symbols-outlined text-[18px]">more_vert</span>
-                          </button>
-                        </div>
+                      <div className="p-4 space-y-1 flex-1 flex flex-col justify-between bg-white">
+                        <h3 className="text-xs font-bold font-space text-slate-800 tracking-tight leading-snug uppercase group-hover:text-[#0284c7] transition-colors line-clamp-2">
+                          {card.code}-{card.label}
+                        </h3>
+                        <p className="text-[11px] text-slate-500 line-clamp-2 leading-relaxed">
+                          {card.desc}
+                        </p>
                       </div>
                     </div>
                   ))}
