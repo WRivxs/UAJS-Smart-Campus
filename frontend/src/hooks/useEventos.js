@@ -124,7 +124,7 @@ export const useEventos = () => {
         const err = await res.json();
         throw new Error(err.error || 'Error al inscribirse');
       }
-      // Actualización optimista: descontar 1 cupo y marcar como inscrito
+      // Actualización optimista de UI
       setEventos((prev) =>
         prev.map((ev) =>
           ev.id === eventoId
@@ -133,6 +133,10 @@ export const useEventos = () => {
         )
       );
       setMisInscripciones((prev) => [...prev, eventoId]);
+
+      // Re-sincronizar inmediatamente con la base de datos real de PostgreSQL
+      setTimeout(() => fetchEventos(), 300);
+
       return { ok: true };
     } catch (err) {
       return { ok: false, message: err.message };
@@ -153,7 +157,7 @@ export const useEventos = () => {
         const err = await res.json();
         throw new Error(err.error || 'Error al cancelar inscripción');
       }
-      // Actualización optimista: sumar 1 cupo y desmarcar inscrito
+      // Actualización optimista de UI
       setEventos((prev) =>
         prev.map((ev) =>
           ev.id === eventoId
@@ -162,6 +166,10 @@ export const useEventos = () => {
         )
       );
       setMisInscripciones((prev) => prev.filter((id) => id !== eventoId));
+
+      // Re-sincronizar inmediatamente con la base de datos real de PostgreSQL
+      setTimeout(() => fetchEventos(), 300);
+
       return { ok: true };
     } catch (err) {
       return { ok: false, message: err.message };
