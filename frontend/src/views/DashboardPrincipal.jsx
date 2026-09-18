@@ -151,35 +151,39 @@ export const DashboardPrincipal = () => {
                   {[
                     {
                       id: 'solicitudes',
-                      ms: 'MS-SOLICITUDES',
+                      tag: 'Solicitudes',
+                      status: 'HABILITADO',
+                      entidad: 'Vicerrectoría Académica',
+                      gradient: 'from-emerald-800 via-teal-800 to-emerald-950',
                       code: '00579-AA-08-S-2026-02',
                       label: 'SOLICITUDES Y TRÁMITES ACADÉMICOS',
-                      desc: 'Certificados, supletorios y cancelaciones de asignatura en línea.',
-                      imagen_url: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=600&auto=format&fit=crop'
                     },
                     {
                       id: 'pqrs',
-                      ms: 'MS-PQRS',
+                      tag: 'Atención PQRS',
+                      status: 'HABILITADO',
+                      entidad: 'Secretaría General UAJS',
+                      gradient: 'from-slate-900 via-slate-800 to-indigo-950',
                       code: '00580-AG-08-S-2026-02',
                       label: 'ATENCIÓN PQRS INSTITUCIONAL',
-                      desc: 'Radicación de peticiones, quejas y sugerencias con trazabilidad.',
-                      imagen_url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&auto=format&fit=crop'
                     },
                     {
                       id: 'reservas',
-                      ms: 'MS-RESERVAS',
+                      tag: 'Reservas',
+                      status: 'HABILITADO',
+                      entidad: 'Dirección de Recursos & Aulas',
+                      gradient: 'from-blue-700 via-indigo-700 to-blue-900',
                       code: '00581-AA-08-S-2026-02',
                       label: 'RESERVAS DE AULAS Y RECURSOS',
-                      desc: 'Préstamo de portátiles, laboratorios y salas de estudio.',
-                      imagen_url: 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=600&auto=format&fit=crop'
                     },
                     {
                       id: 'eventos',
-                      ms: 'MS-EVENTOS',
+                      tag: 'Eventos Campus',
+                      status: 'HABILITADO',
+                      entidad: 'Vicerrectoría de Bienestar',
+                      gradient: 'from-purple-800 via-indigo-900 to-violet-950',
                       code: '00582-AA-08-S-2026-02',
                       label: 'AGENDA DE EVENTOS Y TALLERES',
-                      desc: 'Inscripción inmediata a seminarios, conferencias y talleres.',
-                      imagen_url: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=600&auto=format&fit=crop'
                     },
                   ].map((card) => (
                     <div
@@ -187,27 +191,36 @@ export const DashboardPrincipal = () => {
                       onClick={() => setActiveTab(card.id)}
                       className="bg-white border border-slate-200/90 rounded-none overflow-hidden shadow-xs hover:shadow-md hover:border-[#0284c7]/50 transition-all duration-200 group cursor-pointer flex flex-col justify-between"
                     >
-                      {/* Banner con imagen de portada */}
-                      <div className="relative h-36 w-full overflow-hidden bg-slate-900">
-                        <img
-                          src={card.imagen_url}
-                          alt={card.label}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-90"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                        <span className="absolute top-3 left-3 px-2 py-0.5 rounded-md text-[9px] font-bold bg-white/20 backdrop-blur-md border border-white/30 text-white uppercase tracking-wider font-space">
-                          {card.ms}
+                      {/* Banner estilizado con gradiente y badges (Estilo Prototipo) */}
+                      <div className={`relative h-32 w-full p-3.5 bg-gradient-to-r ${card.gradient} flex flex-col justify-between overflow-hidden`}>
+                        {/* Marca de agua de fondo */}
+                        <span className="material-symbols-outlined absolute -right-3 -bottom-3 text-[90px] text-white/5 select-none pointer-events-none">
+                          shield
                         </span>
+
+                        {/* Fila Superior: Badge Categoria + Badge Estado */}
+                        <div className="flex items-center justify-between z-10">
+                          <span className="px-2.5 py-0.5 rounded-full border border-white/30 bg-white/10 backdrop-blur-xs text-white text-[10px] font-medium flex items-center gap-1">
+                            <span className="material-symbols-outlined text-[12px]">label</span>
+                            {card.tag}
+                          </span>
+                          <span className="px-2.5 py-0.5 rounded-full bg-[#00d8f6] text-slate-950 text-[9px] font-bold font-space uppercase tracking-wider">
+                            {card.status}
+                          </span>
+                        </div>
+
+                        {/* Fila Inferior: Dependencia */}
+                        <div className="flex items-center gap-1.5 text-white/90 text-[11px] font-medium z-10">
+                          <span className="material-symbols-outlined text-[15px] text-white/80">account_balance</span>
+                          <span className="truncate">{card.entidad}</span>
+                        </div>
                       </div>
 
-                      {/* Cuerpo con código y título */}
-                      <div className="p-4 space-y-1 flex-1 flex flex-col justify-between bg-white">
+                      {/* Cuerpo con código y título (Sin descripción) */}
+                      <div className="p-4 bg-white flex-1 flex flex-col justify-center">
                         <h3 className="text-xs font-bold font-space text-slate-800 tracking-tight leading-snug uppercase group-hover:text-[#0284c7] transition-colors line-clamp-2">
                           {card.code}-{card.label}
                         </h3>
-                        <p className="text-[11px] text-slate-500 line-clamp-2 leading-relaxed">
-                          {card.desc}
-                        </p>
                       </div>
                     </div>
                   ))}
