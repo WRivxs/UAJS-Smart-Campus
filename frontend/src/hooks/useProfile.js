@@ -29,7 +29,7 @@ export const useProfile = () => {
         throw new Error(data.message || data.error || 'No se pudo obtener el perfil del usuario');
       }
 
-      setProfile(data.user || data);
+      setProfile(data.usuario || data.user || data);
     } catch (err) {
       console.warn('Error al cargar perfil desde Gateway, usando fallback de sesión:', err.message);
       // Fallback con datos de sesión almacenados en JWT

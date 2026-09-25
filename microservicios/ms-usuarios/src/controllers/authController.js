@@ -115,7 +115,11 @@ const authController = {
         return res.status(404).json({ error: 'Usuario no encontrado.' });
       }
       const permisos = await UserModel.getPermisosByRolId(usuario.rol_id);
-      return res.json({ usuario: { ...usuario, permisos } });
+      const perfilCompleto = { ...usuario, permisos };
+      return res.json({ 
+        usuario: perfilCompleto,
+        user: perfilCompleto 
+      });
     } catch (error) {
       console.error('Error en authController.getProfile:', error);
       return res.status(500).json({ error: 'Error interno al obtener el perfil.' });

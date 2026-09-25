@@ -5,18 +5,27 @@ const authMiddleware = {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
-    if (!token) {
-      return res.status(401).json({ error: 'Acceso denegado. No se proporcionó un token de autenticación.' });
+    if (token) {
+      try {
+        const secret = process.env.JWT_SECRET || 'uajs_smart_campus_jwt_secret_key_2026';
+        const decoded = jwt.verify(token, secret);
+        req.user = decoded;
+        return next();
+      } catch (err) {
+        // Si falla la verificación del token pero vienen cabeceras validadas por el Gateway
+      }
     }
 
-    try {
-      const secret = process.env.JWT_SECRET || 'uajs_smart_campus_jwt_secret_key_2026';
-      const decoded = jwt.verify(token, secret);
-      req.user = decoded;
-      next();
-    } catch (err) {
-      return res.status(403).json({ error: 'Token inválido o expirado.' });
+    // Soporte para propagación desde el API Gateway
+    if (req.headers['x-user-id']) {
+      req.user = {
+        id: parseInt(req.headers['x-user-id'], 10),
+        rol_nombre: req.headers['x-user-rol']
+      };
+      return next();
     }
+
+    return res.status(401).json({ error: 'Acceso denegado. No se proporcionó un token de autenticación válido.' });
   },
 
   checkRole: (rolesPermitidos = []) => {
