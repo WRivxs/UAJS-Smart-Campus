@@ -20,6 +20,7 @@ const { searchSmartAllIndices } = require('../config/elasticsearch_manager');
 // 🔐 RUTAS PÚBLICAS — Únicamente Autenticación (Login, Recuperación)
 // ─────────────────────────────────────────────────────────────────────────────
 router.use('/auth', proxy(MS_USUARIOS_URL, {
+  parseReqBody: false,
   proxyReqPathResolver: (req) => `/api/auth${req.url}`
 }));
 
@@ -48,6 +49,7 @@ router.get('/search', authVerify, async (req, res) => {
 
 // 1. Usuarios y roles (CRUD usuarios, perfil, roles)
 router.use('/usuarios', authVerify, proxy(MS_USUARIOS_URL, {
+  parseReqBody: false,
   proxyReqPathResolver: (req) => `/api/users${req.url}`,
   proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
     proxyReqOpts.headers['x-user-id']  = srcReq.user && srcReq.user.id;
@@ -58,6 +60,7 @@ router.use('/usuarios', authVerify, proxy(MS_USUARIOS_URL, {
 
 // 2. Catálogo de servicios universitarios (Dashboard)
 router.use('/servicios', authVerify, proxy(MS_SERVICIOS_URL, {
+  parseReqBody: false,
   proxyReqPathResolver: (req) => `/api/servicios${req.url}`,
   proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
     proxyReqOpts.headers['x-user-id']  = srcReq.user && srcReq.user.id;
@@ -68,6 +71,7 @@ router.use('/servicios', authVerify, proxy(MS_SERVICIOS_URL, {
 
 // 3. Gestión de solicitudes y trámites
 router.use('/solicitudes', authVerify, proxy(MS_SOLICITUDES_URL, {
+  parseReqBody: false,
   proxyReqPathResolver: (req) => `/api/solicitudes${req.url}`,
   proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
     proxyReqOpts.headers['x-user-id']  = srcReq.user && srcReq.user.id;
@@ -78,6 +82,7 @@ router.use('/solicitudes', authVerify, proxy(MS_SOLICITUDES_URL, {
 
 // 4. PQRS (Peticiones, Quejas, Reclamos y Sugerencias) - Protegido 100%
 router.use('/pqrs', authVerify, proxy(MS_PQRS_URL, {
+  parseReqBody: false,
   proxyReqPathResolver: (req) => `/api/pqrs${req.url}`,
   proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
     proxyReqOpts.headers['x-user-id']  = srcReq.user && srcReq.user.id;
@@ -88,6 +93,7 @@ router.use('/pqrs', authVerify, proxy(MS_PQRS_URL, {
 
 // 5. Catálogo de recursos universitarios (Equipos, Laboratorios, Espacios)
 router.use('/recursos', authVerify, proxy(MS_RECURSOS_URL, {
+  parseReqBody: false,
   proxyReqPathResolver: (req) => `/api/recursos${req.url}`,
   proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
     proxyReqOpts.headers['x-user-id']  = srcReq.user && srcReq.user.id;
@@ -98,6 +104,7 @@ router.use('/recursos', authVerify, proxy(MS_RECURSOS_URL, {
 
 // 6. Sistema de reservas de recursos
 router.use('/reservas', authVerify, proxy(MS_RESERVAS_URL, {
+  parseReqBody: false,
   proxyReqPathResolver: (req) => `/api/reservas${req.url}`,
   proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
     proxyReqOpts.headers['x-user-id']  = srcReq.user && srcReq.user.id;
@@ -108,6 +115,7 @@ router.use('/reservas', authVerify, proxy(MS_RESERVAS_URL, {
 
 // 7. Centro de notificaciones del usuario
 router.use('/notificaciones', authVerify, proxy(MS_NOTIFICACIONES_URL, {
+  parseReqBody: false,
   proxyReqPathResolver: (req) => `/api/notificaciones${req.url}`,
   proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
     proxyReqOpts.headers['x-user-id']  = srcReq.user && srcReq.user.id;
@@ -118,6 +126,7 @@ router.use('/notificaciones', authVerify, proxy(MS_NOTIFICACIONES_URL, {
 
 // 8. Gestión de eventos, inscripciones y asistencia - Protegido 100%
 router.use('/eventos', authVerify, proxy(MS_EVENTOS_URL, {
+  parseReqBody: false,
   proxyReqPathResolver: (req) => `/api/eventos${req.url}`,
   proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
     proxyReqOpts.headers['x-user-id']  = srcReq.user && srcReq.user.id;

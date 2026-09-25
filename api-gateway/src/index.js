@@ -10,9 +10,10 @@ const PORT = process.env.PORT || 8080;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Middlewares globales
+// NOTA: Se evita app.use(express.json()) global porque consume el stream HTTP
+// antes de que express-http-proxy pueda reenviarlo a los microservicios.
 // ─────────────────────────────────────────────────────────────────────────────
 app.use(cors());
-app.use(express.json());
 app.use(morgan('dev'));
 
 // ─────────────────────────────────────────────────────────────────────────────
