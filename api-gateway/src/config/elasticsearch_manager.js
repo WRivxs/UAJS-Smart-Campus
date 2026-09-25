@@ -18,24 +18,24 @@ async function searchSmartAllIndices(queryText) {
   if (!queryText || queryText.trim() === '') return [];
 
   try {
+    // ES 8.x: la query va directamente en el objeto (sin wrapper `body`)
     const result = await elasticClient.search({
       index: ['idx_servicios', 'idx_pqrs', 'idx_solicitudes', 'idx_recursos', 'idx_eventos'],
-      body: {
-        query: {
-          multi_match: {
-            query: queryText,
-            fields: [
-              'titulo^3',
-              'nombre^3',
-              'nombre_recurso^3',
-              'asunto^2',
-              'descripcion',
-              'categoria',
-              'ubicacion'
-            ],
-            fuzziness: 'AUTO',
-            prefix_length: 2
-          }
+      query: {
+        multi_match: {
+          query: queryText,
+          fields: [
+            'titulo^3',
+            'nombre^3',
+            'nombre_recurso^3',
+            'nombre_servicio^2',
+            'asunto^2',
+            'descripcion',
+            'categoria',
+            'ubicacion'
+          ],
+          fuzziness: 'AUTO',
+          prefix_length: 2
         }
       }
     });
