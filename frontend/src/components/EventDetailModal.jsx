@@ -8,20 +8,16 @@ const TIPO_COLORS = {
   default: 'from-[#0a47b8] to-[#0284c7]',
 };
 
-const TIPO_ICONS = {
-  CONFERENCIA: 'smart_toy',
-  TALLER: 'terminal',
-  SEMINARIO: 'trending_up',
-  ACTIVIDAD_INSTITUCIONAL: 'diversity_3',
-  default: 'event',
-};
-
 const formatFecha = (iso) => {
   if (!iso) return '—';
   const d = new Date(iso);
   return d.toLocaleDateString('es-CO', {
-    day: '2-digit', month: 'short', year: 'numeric',
-    hour: '2-digit', minute: '2-digit',
+    weekday: 'short',
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 };
 
@@ -35,8 +31,15 @@ const getAvatarLetters = (nombre) => {
     .toUpperCase();
 };
 
-const EventDetailModal = ({ evento, isInscrito, onClose, onInscribir, onCancelar, actionLoading }) => {
-  // Cerrar con Escape
+export const EventDetailModal = ({
+  evento,
+  isInscrito,
+  onClose,
+  onInscribir,
+  onCancelar,
+  onVerPase,
+  actionLoading
+}) => {
   useEffect(() => {
     const handler = (e) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', handler);
@@ -54,21 +57,23 @@ const EventDetailModal = ({ evento, isInscrito, onClose, onInscribir, onCancelar
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-3 sm:p-4 overflow-y-auto"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-200 shadow-2xl relative">
+      {/* Contenedor compacto: max-w-lg (512px) */}
+      <div className="bg-white rounded-2xl max-w-lg w-full border border-slate-200 shadow-2xl relative overflow-hidden animate-fade-in my-auto">
 
-        {/* Banner Header */}
-        <div className={`h-44 w-full bg-gradient-to-r ${gradientClass} relative p-6 flex flex-col justify-between text-white rounded-t-3xl overflow-hidden`}>
+        {/* Banner Header Compacto */}
+        <div className={`h-32 sm:h-36 w-full bg-gradient-to-r ${gradientClass} relative p-4 sm:p-5 flex flex-col justify-between text-white rounded-t-2xl overflow-hidden`}>
           <div className="absolute inset-0 bg-black/20" />
-          <div className="absolute -right-10 -bottom-10 w-48 h-48 rounded-full bg-white/10 blur-2xl pointer-events-none" />
+          <div className="absolute -right-10 -bottom-10 w-36 h-36 rounded-full bg-white/10 blur-xl pointer-events-none" />
+
           <div className="relative z-10 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-white/20 backdrop-blur-md border border-white/30 text-white">
+            <div className="flex items-center gap-1.5">
+              <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-white/20 backdrop-blur-md border border-white/30 text-white">
                 {evento.tipo?.replace(/_/g, ' ') || 'EVENTO'}
               </span>
-              <span className={`px-2.5 py-1 rounded-lg text-xs font-bold ${
+              <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
                 evento.estado === 'EN_CURSO'
                   ? 'bg-emerald-400 text-slate-900'
                   : evento.estado === 'FINALIZADO'
@@ -77,118 +82,142 @@ const EventDetailModal = ({ evento, isInscrito, onClose, onInscribir, onCancelar
               }`}>
                 {evento.estado}
               </span>
+              {isInscrito && (
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500 text-white flex items-center gap-1 shadow-xs">
+                  <span className="material-symbols-outlined text-[13px]">check_circle</span>
+                  Inscrito
+                </span>
+              )}
             </div>
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition-colors cursor-pointer"
+              className="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition-colors cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[18px]">close</span>
+              <span className="material-symbols-outlined text-[16px]">close</span>
             </button>
           </div>
+
           <div className="relative z-10">
-            <h2 className="text-xl sm:text-2xl font-bold font-space text-white leading-tight line-clamp-2">
+            <h2 className="text-base sm:text-lg font-bold font-space text-white leading-tight line-clamp-2">
               {evento.nombre}
             </h2>
           </div>
         </div>
 
-        {/* Body */}
-        <div className="p-6 sm:p-8 space-y-6">
+        {/* Body Compacto */}
+        <div className="p-4 sm:p-5 space-y-4 max-h-[48vh] overflow-y-auto">
 
           {/* Metadata: Fecha y Ubicación */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#0a47b8] flex items-center justify-center shrink-0 border border-blue-100">
-                <span className="material-symbols-outlined text-[22px]">calendar_today</span>
-              </div>
-              <div>
-                <p className="text-[11px] font-bold text-slate-400 uppercase">Fecha y Horario</p>
-                <p className="text-xs sm:text-sm font-bold text-slate-800">{formatFecha(evento.fecha_inicio)}</p>
+          <div className="grid grid-cols-2 gap-2.5 bg-slate-50 p-3 rounded-xl border border-slate-200/80 text-xs">
+            <div className="flex items-start gap-2">
+              <span className="material-symbols-outlined text-[18px] text-[#0a47b8] shrink-0 mt-0.5">calendar_today</span>
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold text-slate-400 uppercase">Fecha y Hora</p>
+                <p className="text-[11px] font-bold text-slate-800 leading-tight">{formatFecha(evento.fecha_inicio)}</p>
               </div>
             </div>
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-100">
-                <span className="material-symbols-outlined text-[22px]">pin_drop</span>
-              </div>
-              <div>
-                <p className="text-[11px] font-bold text-slate-400 uppercase">Ubicación Física</p>
-                <p className="text-xs sm:text-sm font-bold text-slate-800">{evento.lugar_ubicacion || '—'}</p>
+            <div className="flex items-start gap-2">
+              <span className="material-symbols-outlined text-[18px] text-emerald-700 shrink-0 mt-0.5">pin_drop</span>
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold text-slate-400 uppercase">Ubicación</p>
+                <p className="text-[11px] font-bold text-slate-800 leading-tight truncate">{evento.lugar_ubicacion || 'Campus UNiAJS'}</p>
               </div>
             </div>
           </div>
 
           {/* Barra de Aforo */}
-          <div className="bg-white p-4 rounded-2xl border border-slate-200">
-            <div className="flex items-center justify-between text-xs mb-2">
-              <span className="font-bold text-slate-700 flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-[#0a47b8] text-[18px]">group</span>
-                Control de Capacidad y Aforo
+          <div className="bg-white p-3 rounded-xl border border-slate-200">
+            <div className="flex items-center justify-between text-[11px] mb-1.5">
+              <span className="font-bold text-slate-700 flex items-center gap-1">
+                <span className="material-symbols-outlined text-[#0a47b8] text-[15px]">group</span>
+                Aforo y Capacidad
               </span>
               <span className="font-bold text-[#0a47b8]">
-                {evento.cupos_disponibles ?? '—'} de {evento.aforo_maximo || '—'} cupos disponibles
+                {evento.cupos_disponibles ?? '—'} / {evento.aforo_maximo || '—'} disponibles
               </span>
             </div>
-            <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+            <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
               <div
                 className={`h-full bg-gradient-to-r ${barColor} rounded-full transition-all duration-500`}
                 style={{ width: `${Math.min(pct, 100)}%` }}
               />
             </div>
-            <p className="text-[11px] text-slate-400 mt-2 flex items-center justify-between">
-              <span>Inscripción inmediata vinculada al carnet digital</span>
+            <div className="flex items-center justify-between text-[10px] text-slate-400 mt-1.5">
+              <span>Control en tiempo real</span>
               <span className="font-semibold text-slate-600">{pct}% ocupado</span>
-            </p>
+            </div>
           </div>
 
           {/* Descripción */}
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Descripción de la Actividad</h3>
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed bg-slate-50/50 p-4 rounded-2xl border border-slate-200/60">
+            <h3 className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Descripción</h3>
+            <p className="text-xs text-slate-600 leading-relaxed bg-slate-50/70 p-3 rounded-xl border border-slate-200/60">
               {evento.descripcion || 'Sin descripción disponible.'}
             </p>
           </div>
 
           {/* Organizador */}
-          <div className="border-t border-slate-200 pt-4 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#0a47b8] to-[#0284c7] text-white font-bold flex items-center justify-center text-sm shadow-md shrink-0">
+          <div className="border-t border-slate-100 pt-3 flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#0a47b8] to-[#0284c7] text-white font-bold flex items-center justify-center text-xs shadow-xs shrink-0">
               {getAvatarLetters(evento.organizador_nombre)}
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[11px] font-bold text-slate-400 uppercase">Organizador / Ponente</p>
-              <p className="text-sm font-bold text-slate-800 truncate">{evento.organizador_nombre || 'UAJS'}</p>
-              <p className="text-xs text-slate-500">Corporación Universitaria Antonio José de Sucre</p>
+            <div className="flex-1 min-w-0 text-xs">
+              <p className="text-[10px] font-bold text-slate-400 uppercase">Organizador</p>
+              <p className="font-bold text-slate-800 truncate">{evento.organizador_nombre || 'UNiAJS'}</p>
             </div>
           </div>
         </div>
 
         {/* Footer de Acciones */}
-        <div className="p-6 bg-slate-50 border-t border-slate-200/80 rounded-b-3xl flex items-center justify-between gap-3">
+        <div className="p-3.5 sm:p-4 bg-slate-50 border-t border-slate-200/80 rounded-b-2xl flex items-center justify-between gap-2">
           <button
+            type="button"
             onClick={onClose}
-            className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold text-xs transition-colors cursor-pointer"
+            className="px-3.5 py-2 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold text-xs transition-colors cursor-pointer"
           >
             Cerrar
           </button>
 
           {evento.estado === 'FINALIZADO' || evento.estado === 'CANCELADO' ? (
-            <span className="text-xs text-slate-400 font-medium">Este evento ya finalizó</span>
+            <span className="text-xs text-slate-400 font-medium">Evento finalizado</span>
           ) : isInscrito ? (
-            <button
-              onClick={() => onCancelar(evento.id)}
-              disabled={actionLoading}
-              className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 disabled:opacity-60 text-white font-bold text-xs shadow-md flex items-center gap-1.5 transition-colors cursor-pointer"
-            >
-              <span className="material-symbols-outlined text-[18px]">event_busy</span>
-              {actionLoading ? 'Cancelando...' : 'Cancelar Inscripción'}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  if (onVerPase) onVerPase(evento);
+                }}
+                className="px-3 py-2 rounded-xl bg-blue-50 border border-blue-200 text-[#0a47b8] hover:bg-blue-100 font-bold text-xs flex items-center gap-1 transition-colors cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[16px]">qr_code_2</span>
+                <span>Pase Digital</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onCancelar(evento);
+                }}
+                disabled={actionLoading}
+                className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 disabled:opacity-60 text-white font-bold text-xs shadow-xs flex items-center gap-1 transition-colors cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[16px]">event_busy</span>
+                <span>Cancelar</span>
+              </button>
+            </div>
           ) : (
             <button
-              onClick={() => onInscribir(evento.id)}
+              type="button"
+              onClick={() => {
+                onClose();
+                onInscribir(evento);
+              }}
               disabled={actionLoading || sinCupos}
-              className="px-5 py-2.5 rounded-xl bg-[#0a47b8] hover:bg-[#0b3ba4] disabled:opacity-60 text-white font-bold text-xs shadow-md shadow-blue-700/25 flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-[#0a47b8] hover:bg-[#0b3ba4] disabled:opacity-60 text-white font-bold text-xs shadow-md shadow-blue-700/20 flex items-center gap-1.5 transition-colors cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[18px]">how_to_reg</span>
-              {actionLoading ? 'Procesando...' : sinCupos ? 'Sin cupos disponibles' : 'Inscribirme ahora'}
+              <span className="material-symbols-outlined text-[16px]">how_to_reg</span>
+              {actionLoading ? 'Procesando...' : sinCupos ? 'Sin cupos' : 'Formulario de Inscripción'}
             </button>
           )}
         </div>

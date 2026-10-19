@@ -113,12 +113,13 @@ export const useEventos = () => {
   }, [fetchEventos]);
 
   // POST /api/eventos/:id/inscribirse
-  const inscribir = async (eventoId) => {
+  const inscribir = async (eventoId, metadata = {}) => {
     setActionLoading(true);
     try {
       const res = await fetch(`${API_GATEWAY_URL}/api/eventos/${eventoId}/inscribirse`, {
         method: 'POST',
         headers: getAuthHeaders(),
+        body: JSON.stringify(metadata),
       });
       if (!res.ok) {
         const err = await res.json();
@@ -128,7 +129,7 @@ export const useEventos = () => {
       setEventos((prev) =>
         prev.map((ev) =>
           ev.id === eventoId
-            ? { ...ev, cupos_disponibles: Math.max(0, ev.cupos_disponibles - 1) }
+            ? { ...ev, cupos_disponibles: Math.max(0, (ev.cupos_disponibles ?? 1) - 1) }
             : ev
         )
       );

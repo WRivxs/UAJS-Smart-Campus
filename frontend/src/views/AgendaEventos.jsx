@@ -3,6 +3,9 @@ import useEventos from '../hooks/useEventos';
 import { useAuth } from '../hooks/useAuth';
 import EventCard from '../components/EventCard';
 import EventDetailModal from '../components/EventDetailModal';
+import InscripcionEventoModal from '../components/InscripcionEventoModal';
+import CancelConfirmModal from '../components/CancelConfirmModal';
+import DataTable from '../components/DataTable';
 
 // Helper para formatear los nombres de categoría extraídos del backend
 const formatCategoryLabel = (tipo) => {
@@ -26,12 +29,24 @@ const formatCategoryLabel = (tipo) => {
     .join(' ');
 };
 
+const formatFechaCorta = (iso) => {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return d.toLocaleDateString('es-CO', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+};
+
 // Sistema Toast interno ------------------------------------------------
 const useToast = () => {
   const [toast, setToast] = useState(null);
   const showToast = useCallback((type, title, desc) => {
     setToast({ type, title, desc });
-    setTimeout(() => setToast(null), 3500);
+    setTimeout(() => setToast(null), 3800);
   }, []);
   return { toast, showToast };
 };
@@ -44,10 +59,16 @@ export const AgendaEventos = () => {
   const { toast, showToast } = useToast();
 
   const [tab, setTab] = useState('ALL');           // 'ALL' | 'REGISTERED'
+  const [vistaInscritos, setVistaInscritos] = useState('cards'); // 'cards' | 'table'
   const [categoria, setCategoria] = useState('ALL');
   const [busqueda, setBusqueda] = useState('');
   const [orden, setOrden] = useState('date-asc');
+
+  // Modales
   const [eventoSeleccionado, setEventoSeleccionado] = useState(null);
+  const [eventoParaInscribir, setEventoParaInscribir] = useState(null);
+  const [eventoPaseDigital, setEventoPaseDigital] = useState(null);
+  const [eventoParaCancelar, setEventoParaCancelar] = useState(null);
 
   // Rol para mostrar botón "Proponer actividad"
   const puedeCrear = ['Administrador', 'Docente', 'Administrativo'].includes(rol || user?.rol_nombre);
@@ -101,35 +122,130 @@ export const AgendaEventos = () => {
   const kpiInscritos = misInscripciones.length;
   const kpiEnCurso = eventos.filter((e) => e.estado === 'EN_CURSO').length;
 
-  // ─── Acciones ────────────────────────────────────────────────────────
-  const handleInscribir = async (id) => {
-    const result = await inscribir(id);
+  // ─── Acciones de Inscripción y Cancelación ───────────────────────────
+  const handleAbrirInscripcion = (evento) => {
+    setEventoParaInscribir(evento);
+  };
+
+  const handleConfirmarInscripcion = async (eventoId, metadata) => {
+    const result = await inscribir(eventoId, metadata);
     if (result.ok) {
-      showToast('success', '¡Inscripción confirmada!', 'Tu lugar ha sido reservado con éxito.');
-      if (eventoSeleccionado?.id === id) {
-        setEventoSeleccionado((prev) => ({ ...prev, cupos_disponibles: Math.max(0, prev.cupos_disponibles - 1) }));
+      showToast('success', '¡Inscripción confirmada!', 'Tu pase digital ha sido emitido y guardado.');
+      if (eventoSeleccionado?.id === eventoId) {
+        setEventoSeleccionado((prev) => ({
+          ...prev,
+          cupos_disponibles: Math.max(0, (prev.cupos_disponibles ?? 1) - 1),
+        }));
       }
+      return { ok: true };
     } else {
-      showToast('error', 'Error al inscribirse', result.message || 'Intenta de nuevo.');
+      showToast('error', 'Error al procesar inscripción', result.message || 'Intenta de nuevo.');
+      return { ok: false, message: result.message };
     }
   };
 
-  const handleCancelar = async (id) => {
-    const result = await cancelar(id);
+  const handleAbrirCancelar = (evento) => {
+    setEventoParaCancelar(evento);
+  };
+
+  const handleConfirmarCancelacion = async (eventoId) => {
+    const result = await cancelar(eventoId);
     if (result.ok) {
-      showToast('info', 'Inscripción cancelada', 'Tu cupo ha sido liberado correctamente.');
-      if (eventoSeleccionado?.id === id) {
-        setEventoSeleccionado((prev) => ({ ...prev, cupos_disponibles: prev.cupos_disponibles + 1 }));
+      showToast('info', 'Inscripción cancelada', 'Tu cupo ha sido liberado para la comunidad universitaria.');
+      if (eventoSeleccionado?.id === eventoId) {
+        setEventoSeleccionado((prev) => ({
+          ...prev,
+          cupos_disponibles: (prev.cupos_disponibles ?? 0) + 1,
+        }));
       }
+      setEventoParaCancelar(null);
     } else {
       showToast('error', 'Error al cancelar', result.message || 'Intenta de nuevo.');
     }
   };
 
+  const handleAbrirPaseDigital = (evento) => {
+    setEventoPaseDigital(evento);
+  };
+
+  // ─── Columnas para la Vista Tabla (DataTable) ────────────────────────
+  const columnasTablaInscripciones = [
+    {
+      key: 'nombre',
+      label: 'Evento & Categoría',
+      render: (row) => (
+        <div className="space-y-1 py-1">
+          <span className="font-bold text-slate-800 text-xs font-space line-clamp-1 block">
+            {row.nombre}
+          </span>
+          <span className="inline-block text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-50 text-[#0a47b8] border border-blue-100 uppercase">
+            {row.tipo?.replace(/_/g, ' ') || 'EVENTO'}
+          </span>
+        </div>
+      ),
+    },
+    {
+      key: 'fecha_inicio',
+      label: 'Fecha y Horario',
+      render: (row) => (
+        <div className="flex items-center gap-1.5 text-slate-600 text-xs">
+          <span className="material-symbols-outlined text-[16px] text-slate-400">event</span>
+          <span>{formatFechaCorta(row.fecha_inicio)}</span>
+        </div>
+      ),
+    },
+    {
+      key: 'lugar_ubicacion',
+      label: 'Ubicación',
+      render: (row) => (
+        <div className="flex items-center gap-1.5 text-slate-600 text-xs truncate max-w-xs">
+          <span className="material-symbols-outlined text-[16px] text-slate-400">pin_drop</span>
+          <span className="truncate">{row.lugar_ubicacion || 'Campus Central'}</span>
+        </div>
+      ),
+    },
+    {
+      key: 'estado',
+      label: 'Estado',
+      align: 'center',
+      render: (row) => (
+        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
+          Inscrito
+        </span>
+      ),
+    },
+    {
+      key: 'acciones',
+      label: 'Acciones',
+      align: 'right',
+      render: (row) => (
+        <div className="flex items-center justify-end gap-2">
+          <button
+            onClick={() => handleAbrirPaseDigital(row)}
+            className="px-2.5 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-[#0a47b8] font-bold text-xs border border-blue-200 transition-colors flex items-center gap-1 cursor-pointer shadow-xs"
+            title="Ver Pase Digital con QR"
+          >
+            <span className="material-symbols-outlined text-[15px]">qr_code_2</span>
+            <span className="hidden sm:inline">Pase Digital</span>
+          </button>
+          <button
+            onClick={() => handleAbrirCancelar(row)}
+            className="px-2.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 transition-colors flex items-center gap-1 cursor-pointer"
+            title="Cancelar Inscripción"
+          >
+            <span className="material-symbols-outlined text-[15px]">event_busy</span>
+            <span className="hidden sm:inline">Cancelar</span>
+          </button>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className="space-y-6">
 
-      {/* ── BANNER ────────────────────────────────────────────────────── */}
+      {/* ── BANNER INSTITUCIONAL ────────────────────────────────────── */}
       <div className="bg-gradient-to-r from-[#081f56] via-[#0a47b8] to-blue-600 rounded-2xl p-6 sm:p-8 text-white relative overflow-hidden shadow-xl">
         <div className="absolute -right-12 -bottom-12 w-64 h-64 rounded-full bg-white/10 blur-2xl pointer-events-none" />
         <div className="absolute right-24 top-0 w-32 h-32 rounded-full bg-cyan-400/20 blur-xl pointer-events-none" />
@@ -143,7 +259,7 @@ export const AgendaEventos = () => {
             Agenda de Eventos Campus
           </h1>
           <p className="mt-2 text-sm text-blue-100/90 leading-relaxed max-w-2xl">
-            Explora el catálogo de conferencias, talleres, foros y actividades universitarias. Inscríbete con validación inmediata de aforo en tiempo real y gestiona tus reservas académicas.
+            Explora el catálogo de conferencias, talleres, foros y actividades universitarias. Inscríbete mediante el formulario oficial con validación inmediata de aforo en tiempo real y descarga tu pase digital.
           </p>
 
           <div className="mt-5 flex flex-wrap items-center gap-3">
@@ -191,7 +307,7 @@ export const AgendaEventos = () => {
             </h3>
             <p className="text-[11px] text-[#0a47b8] font-medium flex items-center gap-1 mt-1">
               <span className="material-symbols-outlined text-[14px]">confirmation_number</span>
-              {kpiInscritos === 1 ? '1 evento reservado para ti' : `${kpiInscritos} eventos reservados`}
+              {kpiInscritos === 1 ? '1 pase digital reservado' : `${kpiInscritos} pases reservados`}
             </p>
           </div>
           <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 text-blue-600 flex items-center justify-center group-hover:scale-105 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm">
@@ -213,7 +329,7 @@ export const AgendaEventos = () => {
             </h3>
             <p className="text-[11px] text-slate-500 font-medium flex items-center gap-1 mt-1">
               <span className="material-symbols-outlined text-[14px]">bolt</span>
-              Actividades hoy en campus
+              Actividades en campus
             </p>
           </div>
           <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-600 flex items-center justify-center group-hover:scale-105 group-hover:bg-emerald-600 group-hover:text-white transition-all shadow-sm">
@@ -274,7 +390,7 @@ export const AgendaEventos = () => {
           </div>
         </div>
 
-        {/* Pills de Categoría + Orden */}
+        {/* Pills de Categoría + Orden + Selector de Vista */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-1.5">
             <span className="text-xs font-bold text-slate-400 mr-1 flex items-center gap-1">
@@ -296,23 +412,49 @@ export const AgendaEventos = () => {
             ))}
           </div>
 
-          <div className="flex items-center gap-2 text-xs text-slate-500">
-            <span>Ordenar por:</span>
-            <select
-              value={orden}
-              onChange={(e) => setOrden(e.target.value)}
-              className="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 text-xs font-medium text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#0a47b8]"
-            >
-              <option value="date-asc">Fecha más próxima</option>
-              <option value="spots-desc">Más cupos disponibles</option>
-              <option value="name-asc">Nombre (A-Z)</option>
-            </select>
+          <div className="flex items-center gap-3">
+            {/* Toggle de Vista Cards / Tabla (Solo en 'Mis Eventos Inscritos') */}
+            {tab === 'REGISTERED' && (
+              <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+                <button
+                  onClick={() => setVistaInscritos('cards')}
+                  title="Vista Tarjetas"
+                  className={`p-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
+                    vistaInscritos === 'cards' ? 'bg-white text-[#0a47b8] shadow-xs' : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-[16px]">grid_view</span>
+                </button>
+                <button
+                  onClick={() => setVistaInscritos('table')}
+                  title="Vista Tabla Detallada"
+                  className={`p-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
+                    vistaInscritos === 'table' ? 'bg-white text-[#0a47b8] shadow-xs' : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-[16px]">table_rows</span>
+                </button>
+              </div>
+            )}
+
+            <div className="flex items-center gap-2 text-xs text-slate-500">
+              <span>Ordenar:</span>
+              <select
+                value={orden}
+                onChange={(e) => setOrden(e.target.value)}
+                className="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 text-xs font-medium text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#0a47b8]"
+              >
+                <option value="date-asc">Fecha más próxima</option>
+                <option value="spots-desc">Más cupos disponibles</option>
+                <option value="name-asc">Nombre (A-Z)</option>
+              </select>
+            </div>
           </div>
         </div>
 
       </div>
 
-      {/* ── GRID DE EVENTOS ───────────────────────────────────────────── */}
+      {/* ── GRID / TABLA DE EVENTOS ───────────────────────────────────── */}
       <div id="eventos-grid-anchor">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-base font-bold text-slate-800 flex items-center gap-2">
@@ -323,7 +465,7 @@ export const AgendaEventos = () => {
             </span>
           </h2>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-400 hidden sm:inline">Actualización en tiempo real vía API ms-eventos</span>
+            <span className="text-xs text-slate-400 hidden sm:inline">Conectado a PostgreSQL db_eventos (Puerto 8080)</span>
             <button
               onClick={refetch}
               title="Actualizar eventos"
@@ -357,7 +499,7 @@ export const AgendaEventos = () => {
             </h3>
             <p className="text-xs text-slate-500 mt-1 mb-5">
               {tab === 'REGISTERED'
-                ? 'Explora el catálogo general e inscríbete en las actividades de tu interés.'
+                ? 'Explora el catálogo general e inscríbete mediante el formulario oficial.'
                 : 'No hay actividades disponibles con los filtros seleccionados.'}
             </p>
             <button
@@ -367,7 +509,16 @@ export const AgendaEventos = () => {
               Restablecer filtros
             </button>
           </div>
+        ) : tab === 'REGISTERED' && vistaInscritos === 'table' ? (
+          /* Vista Tabla con el nuevo componente DataTable */
+          <DataTable
+            columns={columnasTablaInscripciones}
+            data={eventosFiltrados}
+            emptyMessage="No tienes eventos registrados actualmente."
+            emptyIcon="how_to_reg"
+          />
         ) : (
+          /* Vista Tarjetas */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {eventosFiltrados.map((ev) => (
               <EventCard
@@ -375,8 +526,9 @@ export const AgendaEventos = () => {
                 evento={ev}
                 isInscrito={misInscripciones.includes(ev.id)}
                 onVerDetalle={setEventoSeleccionado}
-                onInscribir={handleInscribir}
-                onCancelar={handleCancelar}
+                onInscribir={handleAbrirInscripcion}
+                onCancelar={handleAbrirCancelar}
+                onVerPase={handleAbrirPaseDigital}
                 actionLoading={actionLoading}
               />
             ))}
@@ -384,19 +536,61 @@ export const AgendaEventos = () => {
         )}
       </div>
 
-      {/* ── MODAL DE DETALLE ──────────────────────────────────────────── */}
+      {/* ── MODAL DE DETALLE DEL EVENTO ───────────────────────────────── */}
       {eventoSeleccionado && (
         <EventDetailModal
           evento={eventoSeleccionado}
           isInscrito={misInscripciones.includes(eventoSeleccionado.id)}
           onClose={() => setEventoSeleccionado(null)}
-          onInscribir={handleInscribir}
-          onCancelar={handleCancelar}
+          onInscribir={(ev) => {
+            setEventoSeleccionado(null);
+            handleAbrirInscripcion(ev);
+          }}
+          onCancelar={(ev) => {
+            setEventoSeleccionado(null);
+            handleAbrirCancelar(ev);
+          }}
+          onVerPase={(ev) => {
+            setEventoSeleccionado(null);
+            handleAbrirPaseDigital(ev);
+          }}
           actionLoading={actionLoading}
         />
       )}
 
-      {/* ── TOAST ─────────────────────────────────────────────────────── */}
+      {/* ── MODAL DEL FORMULARIO DE INSCRIPCIÓN / PASE DIGITAL ───────── */}
+      {eventoParaInscribir && (
+        <InscripcionEventoModal
+          evento={eventoParaInscribir}
+          onClose={() => setEventoParaInscribir(null)}
+          onConfirmarInscripcion={handleConfirmarInscripcion}
+          actionLoading={actionLoading}
+          modoInicial="FORM"
+        />
+      )}
+
+      {/* ── MODAL DIRECTO PARA VER EL PASE DIGITAL ────────────────────── */}
+      {eventoPaseDigital && (
+        <InscripcionEventoModal
+          evento={eventoPaseDigital}
+          onClose={() => setEventoPaseDigital(null)}
+          onConfirmarInscripcion={handleConfirmarInscripcion}
+          actionLoading={actionLoading}
+          modoInicial="TICKET"
+        />
+      )}
+
+      {/* ── MODAL DE CONFIRMACIÓN DE CANCELACIÓN DE CUPO ─────────────── */}
+      {eventoParaCancelar && (
+        <CancelConfirmModal
+          evento={eventoParaCancelar}
+          onClose={() => setEventoParaCancelar(null)}
+          onConfirmarCancelacion={handleConfirmarCancelacion}
+          actionLoading={actionLoading}
+        />
+      )}
+
+      {/* ── TOAST DE NOTIFICACIÓN FLOTANTE ────────────────────────────── */}
       {toast && (
         <div className={`fixed bottom-6 right-6 z-50 max-w-sm bg-slate-900 text-white p-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-fade-in`}>
           <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
