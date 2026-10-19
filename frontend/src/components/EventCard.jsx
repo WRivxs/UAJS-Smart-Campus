@@ -26,7 +26,15 @@ const formatFechaCorta = (iso) => {
   return `${dia} · ${hora}`;
 };
 
-export const EventCard = ({ evento, isInscrito, onVerDetalle, onInscribir, onCancelar, actionLoading }) => {
+export const EventCard = ({
+  evento,
+  isInscrito,
+  onVerDetalle,
+  onInscribir,
+  onCancelar,
+  onVerPase,
+  actionLoading
+}) => {
   if (!evento) return null;
 
   const gradient = TIPO_GRADIENT[evento.tipo] || TIPO_GRADIENT.default;
@@ -75,17 +83,24 @@ export const EventCard = ({ evento, isInscrito, onVerDetalle, onInscribir, onCan
           )}
         </div>
 
-        {/* Ícono central */}
+        {/* Ícono central sutil */}
         <div className="absolute inset-0 flex items-center justify-center opacity-10 group-hover:opacity-20 transition-opacity">
           <span className="material-symbols-outlined text-[90px] text-white">{icon}</span>
         </div>
 
-        {/* Ícono inscrito */}
+        {/* Badge de inscripción interactivo */}
         {isInscrito && (
-          <div className="absolute bottom-3 right-3 z-10">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-400 text-slate-900">
-              <span className="material-symbols-outlined text-[12px]">check_circle</span>
-              Inscrito
+          <div
+            className="absolute bottom-3 right-3 z-10 cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onVerPase) onVerPase(evento);
+            }}
+            title="Ver Pase Digital Oficial"
+          >
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-400 text-slate-900 shadow-sm hover:bg-emerald-300 hover:scale-105 transition-all">
+              <span className="material-symbols-outlined text-[13px]">confirmation_number</span>
+              Pase Digital
             </span>
           </div>
         )}
@@ -113,7 +128,7 @@ export const EventCard = ({ evento, isInscrito, onVerDetalle, onInscribir, onCan
           </div>
           <div className="flex items-center gap-2 text-xs text-slate-500">
             <span className="material-symbols-outlined text-[15px] text-slate-400">person</span>
-            <span className="truncate">{evento.organizador_nombre || 'UAJS'}</span>
+            <span className="truncate">{evento.organizador_nombre || 'UNiAJS'}</span>
           </div>
         </div>
 
@@ -144,16 +159,28 @@ export const EventCard = ({ evento, isInscrito, onVerDetalle, onInscribir, onCan
 
           {evento.estado !== 'FINALIZADO' && evento.estado !== 'CANCELADO' && (
             isInscrito ? (
-              <button
-                onClick={() => onCancelar(evento.id)}
-                disabled={actionLoading}
-                className="flex-1 py-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 hover:bg-rose-100 font-bold text-xs transition-colors cursor-pointer disabled:opacity-60"
-              >
-                {actionLoading ? '...' : 'Cancelar'}
-              </button>
+              <div className="flex gap-1.5 flex-1">
+                <button
+                  type="button"
+                  onClick={() => onVerPase && onVerPase(evento)}
+                  title="Ver Pase Digital de Entrada"
+                  className="px-2.5 py-2 rounded-xl bg-blue-50 border border-blue-200 text-[#0a47b8] hover:bg-blue-100 font-bold text-xs transition-colors cursor-pointer flex items-center justify-center shrink-0"
+                >
+                  <span className="material-symbols-outlined text-[16px]">qr_code_2</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onCancelar(evento)}
+                  disabled={actionLoading}
+                  className="flex-1 py-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 hover:bg-rose-100 font-bold text-xs transition-colors cursor-pointer disabled:opacity-60 truncate"
+                >
+                  {actionLoading ? '...' : 'Cancelar'}
+                </button>
+              </div>
             ) : (
               <button
-                onClick={() => onInscribir(evento.id)}
+                type="button"
+                onClick={() => onInscribir(evento)}
                 disabled={actionLoading || sinCupos}
                 className="flex-1 py-2 rounded-xl bg-[#0a47b8] hover:bg-[#0b3ba4] text-white font-bold text-xs transition-colors cursor-pointer disabled:opacity-60 shadow-sm shadow-blue-700/20"
               >
