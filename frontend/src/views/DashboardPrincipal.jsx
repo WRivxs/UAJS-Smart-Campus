@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Navbar from '../components/Navbar/Navbar';
 import SidebarMenu from '../components/SidebarMenu/SidebarMenu';
 import AgendaEventos from './AgendaEventos';
+import ListadoSolicitudes from './ListadoSolicitudes';
 import useProfile from '../hooks/useProfile';
 import useSolicitudes from '../hooks/useSolicitudes';
 import useEventos from '../hooks/useEventos';
@@ -322,11 +323,14 @@ export const DashboardPrincipal = () => {
             </>
           )}
 
+          {/* ── Vista: Solicitudes y Trámites ────────────────────────────── */}
+          {activeTab === 'solicitudes' && <ListadoSolicitudes />}
+
           {/* ── Vista: Eventos Campus ───────────────────────────────────── */}
           {activeTab === 'eventos' && <AgendaEventos />}
 
           {/* ── Vistas en construcción ──────────────────────────────────── */}
-          {!['inicio', 'eventos'].includes(activeTab) && (
+          {!['inicio', 'eventos', 'solicitudes'].includes(activeTab) && (
             <div className="bg-white border border-slate-200/90 rounded-sm p-10 text-center shadow-xs">
               <span className="material-symbols-outlined text-[48px] text-slate-300">construction</span>
               <h2 className="text-lg font-bold font-space text-slate-700 mt-3 capitalize">{activeTab}</h2>

@@ -1,12 +1,8 @@
 import React from 'react';
+import FlujoSolicitudModal from '../components/FlujoSolicitudModal';
 
-export const FlujoSolicitud = () => {
-  return (
-    <div className="flujo-solicitud-container">
-      <h1>✍️ Radicar Solicitud / Máquina de Estados</h1>
-      <p>Formulario de creación y vista de seguimiento en tiempo real.</p>
-    </div>
-  );
+export const FlujoSolicitud = (props) => {
+  return <FlujoSolicitudModal {...props} />;
 };
 
 export default FlujoSolicitud;

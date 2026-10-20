@@ -65,3 +65,9 @@ h1, h2, h3, h4, h5, h6, .font-space {
 .glow-cyan-soft {
   box-shadow: 0 0 20px -2px rgba(0, 210, 255, 0.25);
 }
+
+.dotted-canvas {
+  background-color: #f8fafc;
+  background-image: radial-gradient(#cbd5e1 1.25px, transparent 1.25px);
+  background-size: 24px 24px;
+}
