@@ -136,21 +136,70 @@ const pqrsController = {
     try {
       const { id } = req.params;
       const { estado } = req.body;
+      const { id: user_id, rol_nombre } = req.user;
 
       const estadosValidos = ['RECIBIDA', 'EN_TRAMITE', 'RESPONDIDA', 'CERRADA'];
       if (!estado || !estadosValidos.includes(estado)) {
         return res.status(400).json({ error: `El estado '${estado}' no es válido.` });
       }
 
-      const actualizada = await PqrsModel.updateEstado(id, estado);
-      if (!actualizada) {
+      const ticket = await PqrsModel.findById(id);
+      if (!ticket) {
         return res.status(404).json({ error: 'Ticket de PQRS no encontrado.' });
       }
 
+      // Si no es admin ni administrativo, el estudiante solo puede cerrar su propia PQRS
+      const esAdminOStaff = ['Administrador', 'Administrativo'].includes(rol_nombre);
+      if (!esAdminOStaff) {
+        if (ticket.usuario_id !== user_id) {
+          return res.status(403).json({ error: 'No tienes permiso para modificar este ticket de PQRS.' });
+        }
+        if (estado !== 'CERRADA') {
+          return res.status(403).json({ error: 'Los estudiantes únicamente pueden cerrar radicados que ya cuenten con respuesta.' });
+        }
+      }
+
+      const actualizada = await PqrsModel.updateEstado(id, estado);
       return res.json({ message: `Estado del PQRS cambiado a '${estado}'.`, pqrs: actualizada });
     } catch (error) {
       console.error('Error en pqrsController.updateEstado:', error);
       return res.status(500).json({ error: 'Error al actualizar el estado del PQRS.' });
+    }
+  },
+
+  replicarPqrs: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { mensaje, adjunto_url } = req.body;
+      const { id: user_id, nombre: user_nombre, rol_nombre } = req.user;
+
+      if (!mensaje || mensaje.trim() === '') {
+        return res.status(400).json({ error: 'El mensaje de aclaración o réplica es obligatorio.' });
+      }
+
+      const ticket = await PqrsModel.findById(id);
+      if (!ticket) {
+        return res.status(404).json({ error: 'Ticket de PQRS no encontrado.' });
+      }
+
+      const esAdminOStaff = ['Administrador', 'Administrativo'].includes(rol_nombre);
+      if (!esAdminOStaff && ticket.usuario_id !== user_id) {
+        return res.status(403).json({ error: 'Solo el autor del radicado puede emitir una solicitud de aclaración.' });
+      }
+
+      if (ticket.estado === 'CERRADA') {
+        return res.status(400).json({ error: 'No es posible replicar a un ticket de PQRS que ya fue cerrado definitivamente.' });
+      }
+
+      const actualizada = await PqrsModel.replicarPqrs(id, user_id, user_nombre, mensaje, adjunto_url);
+
+      return res.json({
+        message: 'Aclaración o réplica registrada exitosamente. El ticket ha vuelto al estado EN_TRAMITE.',
+        pqrs: actualizada
+      });
+    } catch (error) {
+      console.error('Error en pqrsController.replicarPqrs:', error);
+      return res.status(500).json({ error: 'Error al registrar la aclaración o réplica del PQRS.' });
     }
   },
 
