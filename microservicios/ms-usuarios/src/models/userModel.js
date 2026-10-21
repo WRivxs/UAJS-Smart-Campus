@@ -15,7 +15,14 @@ const UserModel = {
   findById: async (id) => {
     const query = `
       SELECT u.id, u.nombre, u.email, u.rol_id, r.nombre AS rol_nombre, 
-             u.facultad_departamento, u.codigo_estudiantil, u.estado, u.creado_en
+             u.facultad_departamento, u.codigo_estudiantil, u.estado, u.creado_en,
+             u.primer_nombre, u.segundo_nombre, u.primer_apellido, u.segundo_apellido,
+             u.tipo_documento, u.numero_documento, 
+             TO_CHAR(u.fecha_expedicion_documento, 'YYYY-MM-DD') AS fecha_expedicion_documento,
+             TO_CHAR(u.fecha_nacimiento, 'YYYY-MM-DD') AS fecha_nacimiento,
+             EXTRACT(YEAR FROM age(CURRENT_DATE, u.fecha_nacimiento))::INT AS edad,
+             u.genero, u.estado_civil, u.celular, u.telefono, u.email_personal,
+             u.facultad, u.programa_academico, u.semestre_actual, u.cargo, u.tipo_vinculacion
       FROM usuarios u
       JOIN roles r ON u.rol_id = r.id
       WHERE u.id = $1;
@@ -49,7 +56,10 @@ const UserModel = {
   findAll: async () => {
     const query = `
       SELECT u.id, u.nombre, u.email, u.rol_id, r.nombre AS rol_nombre, 
-             u.facultad_departamento, u.codigo_estudiantil, u.estado, u.creado_en
+             u.facultad_departamento, u.codigo_estudiantil, u.estado, u.creado_en,
+             u.primer_nombre, u.primer_apellido, u.numero_documento, u.celular,
+             u.facultad, u.programa_academico, u.semestre_actual, u.cargo,
+             EXTRACT(YEAR FROM age(CURRENT_DATE, u.fecha_nacimiento))::INT AS edad
       FROM usuarios u
       JOIN roles r ON u.rol_id = r.id
       ORDER BY u.id ASC;
@@ -58,7 +68,13 @@ const UserModel = {
     return rows;
   },
 
-  update: async (id, { nombre, email, rol_id, facultad_departamento, estado }) => {
+  update: async (id, data = {}) => {
+    const {
+      nombre, email, rol_id, facultad_departamento, estado,
+      celular, telefono, email_personal, estado_civil,
+      facultad, programa_academico, semestre_actual, cargo
+    } = data;
+
     const query = `
       UPDATE usuarios
       SET nombre = COALESCE($1, nombre),
@@ -66,11 +82,25 @@ const UserModel = {
           rol_id = COALESCE($3, rol_id),
           facultad_departamento = COALESCE($4, facultad_departamento),
           estado = COALESCE($5, estado),
+          celular = COALESCE($6, celular),
+          telefono = COALESCE($7, telefono),
+          email_personal = COALESCE($8, email_personal),
+          estado_civil = COALESCE($9, estado_civil),
+          facultad = COALESCE($10, facultad),
+          programa_academico = COALESCE($11, programa_academico),
+          semestre_actual = COALESCE($12, semestre_actual),
+          cargo = COALESCE($13, cargo),
           actualizado_en = CURRENT_TIMESTAMP
-      WHERE id = $6
-      RETURNING id, nombre, email, rol_id, facultad_departamento, estado;
+      WHERE id = $14
+      RETURNING *;
     `;
-    const { rows } = await db.query(query, [nombre, email, rol_id, facultad_departamento, estado, id]);
+    const values = [
+      nombre || null, email || null, rol_id || null, facultad_departamento || null, estado || null,
+      celular || null, telefono || null, email_personal || null, estado_civil || null,
+      facultad || null, programa_academico || null, semestre_actual || null, cargo || null,
+      id
+    ];
+    const { rows } = await db.query(query, values);
     return rows[0];
   },
 

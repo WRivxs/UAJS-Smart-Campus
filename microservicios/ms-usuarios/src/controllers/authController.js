@@ -3,6 +3,18 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const UserModel = require('../models/userModel');
 
+const calcularEdad = (fechaNacimiento) => {
+  if (!fechaNacimiento) return null;
+  const hoy = new Date();
+  const nac = new Date(fechaNacimiento);
+  let edad = hoy.getFullYear() - nac.getFullYear();
+  const m = hoy.getMonth() - nac.getMonth();
+  if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) {
+    edad--;
+  }
+  return edad >= 0 ? edad : null;
+};
+
 const authController = {
   login: async (req, res) => {
     try {
@@ -30,13 +42,34 @@ const authController = {
       const permisos = await UserModel.getPermisosByRolId(usuario.rol_id);
 
       const secret = process.env.JWT_SECRET || 'uajs_smart_campus_jwt_secret_key_2026';
+      const edadCalculada = calcularEdad(usuario.fecha_nacimiento);
+
       const payload = {
         id: usuario.id,
         nombre: usuario.nombre,
+        primer_nombre: usuario.primer_nombre || '',
+        segundo_nombre: usuario.segundo_nombre || '',
+        primer_apellido: usuario.primer_apellido || '',
+        segundo_apellido: usuario.segundo_apellido || '',
         email: usuario.email,
+        email_personal: usuario.email_personal || '',
         rol_id: usuario.rol_id,
         rol_nombre: usuario.rol_nombre,
+        tipo_documento: usuario.tipo_documento || 'CC',
+        numero_documento: usuario.numero_documento || '',
+        fecha_expedicion_documento: usuario.fecha_expedicion_documento ? new Date(usuario.fecha_expedicion_documento).toISOString().split('T')[0] : null,
+        fecha_nacimiento: usuario.fecha_nacimiento ? new Date(usuario.fecha_nacimiento).toISOString().split('T')[0] : null,
+        edad: edadCalculada,
+        genero: usuario.genero || '',
+        estado_civil: usuario.estado_civil || '',
+        celular: usuario.celular || '',
+        telefono: usuario.telefono || '',
         facultad_departamento: usuario.facultad_departamento,
+        facultad: usuario.facultad || '',
+        programa_academico: usuario.programa_academico || usuario.facultad_departamento || '',
+        semestre_actual: usuario.semestre_actual || 1,
+        cargo: usuario.cargo || '',
+        tipo_vinculacion: usuario.tipo_vinculacion || '',
         codigo_estudiantil: usuario.codigo_estudiantil,
         permisos
       };
