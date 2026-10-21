@@ -39,8 +39,15 @@ const userController = {
         return res.status(401).json({ error: 'Usuario no autenticado.' });
       }
 
-      const { nombre, facultad_departamento } = req.body;
-      const updatedUser = await UserModel.update(id, { nombre, facultad_departamento });
+      const { nombre, facultad_departamento, celular, telefono, email_personal, estado_civil } = req.body;
+      const updatedUser = await UserModel.update(id, { 
+        nombre, 
+        facultad_departamento,
+        celular,
+        telefono,
+        email_personal,
+        estado_civil
+      });
 
       if (!updatedUser) {
         return res.status(404).json({ error: 'Usuario no encontrado.' });

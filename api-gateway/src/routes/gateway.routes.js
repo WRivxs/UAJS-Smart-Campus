@@ -47,8 +47,8 @@ router.get('/search', authVerify, async (req, res) => {
 // 🔒 RUTAS PROTEGIDAS — Requieren token JWT válido (authVerify) para los 8 Microservicios
 // ─────────────────────────────────────────────────────────────────────────────
 
-// 1. Usuarios y roles (CRUD usuarios, perfil, roles)
-router.use('/usuarios', authVerify, proxy(MS_USUARIOS_URL, {
+// 1. Usuarios y roles (CRUD usuarios, perfil, roles) - Acepta tanto /usuarios como /users
+const usuariosProxy = proxy(MS_USUARIOS_URL, {
   parseReqBody: false,
   proxyReqPathResolver: (req) => `/api/users${req.url}`,
   proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
@@ -56,7 +56,10 @@ router.use('/usuarios', authVerify, proxy(MS_USUARIOS_URL, {
     proxyReqOpts.headers['x-user-rol'] = srcReq.user && srcReq.user.rol_nombre;
     return proxyReqOpts;
   }
-}));
+});
+
+router.use('/usuarios', authVerify, usuariosProxy);
+router.use('/users', authVerify, usuariosProxy);
 
 // 2. Catálogo de servicios universitarios (Dashboard)
 router.use('/servicios', authVerify, proxy(MS_SERVICIOS_URL, {

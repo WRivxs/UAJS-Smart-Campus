@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import useProfile from '../../hooks/useProfile';
 
-export const Navbar = ({ title = "Smart Campus", onToggleSidebar }) => {
+export const Navbar = ({ title = "Smart Campus", onToggleSidebar, onNavigateTab = () => {} }) => {
   const { user, logout, rol } = useAuth();
   const { profile } = useProfile();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -158,7 +158,7 @@ export const Navbar = ({ title = "Smart Campus", onToggleSidebar }) => {
                 type="button"
                 onClick={() => {
                   setIsModalOpen(false);
-                  alert(`Mi Perfil de ${displayName}`);
+                  onNavigateTab('perfil');
                 }}
                 className="flex-1 py-2 px-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-space font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
               >

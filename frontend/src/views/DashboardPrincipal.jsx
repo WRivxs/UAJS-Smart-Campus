@@ -3,6 +3,8 @@ import Navbar from '../components/Navbar/Navbar';
 import SidebarMenu from '../components/SidebarMenu/SidebarMenu';
 import AgendaEventos from './AgendaEventos';
 import ListadoSolicitudes from './ListadoSolicitudes';
+import MiPerfil from './MiPerfil';
+import PerfilEstudiante from './PerfilEstudiante';
 import useProfile from '../hooks/useProfile';
 import useSolicitudes from '../hooks/useSolicitudes';
 import useEventos from '../hooks/useEventos';
@@ -90,6 +92,7 @@ export const DashboardPrincipal = () => {
       <Navbar
         title="Smart Campus"
         onToggleSidebar={() => setIsSidebarCollapsed((prev) => !prev)}
+        onNavigateTab={setActiveTab}
       />
 
       {/* Main Workspace Layout */}
@@ -329,8 +332,11 @@ export const DashboardPrincipal = () => {
           {/* ── Vista: Eventos Campus ───────────────────────────────────── */}
           {activeTab === 'eventos' && <AgendaEventos />}
 
+          {/* ── Vista: Mi Perfil (Estudiante) ─────────────────────────── */}
+          {activeTab === 'perfil' && <PerfilEstudiante onNavigateTab={setActiveTab} />}
+
           {/* ── Vistas en construcción ──────────────────────────────────── */}
-          {!['inicio', 'eventos', 'solicitudes'].includes(activeTab) && (
+          {!['inicio', 'eventos', 'solicitudes', 'perfil'].includes(activeTab) && (
             <div className="bg-white border border-slate-200/90 rounded-sm p-10 text-center shadow-xs">
               <span className="material-symbols-outlined text-[48px] text-slate-300">construction</span>
               <h2 className="text-lg font-bold font-space text-slate-700 mt-3 capitalize">{activeTab}</h2>
