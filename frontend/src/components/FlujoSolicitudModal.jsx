@@ -36,6 +36,17 @@ export const FlujoSolicitudModal = ({
     return () => window.removeEventListener('keydown', handler);
   }, [onClose]);
 
+  // Bloquear scroll del fondo cuando el modal esté abierto
+  useEffect(() => {
+    if (isOpen && solicitud) {
+      const prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prevOverflow;
+      };
+    }
+  }, [isOpen, solicitud]);
+
   if (!isOpen || !solicitud) return null;
 
   const currentIdx = ESTADOS_ORDEN.findIndex((e) => e.id === solicitud.estado);
