@@ -235,51 +235,12 @@ export const ListadoSolicitudes = () => {
         </div>
       )}
 
-      {/* ─── 1. BREADCRUMBS & TOP BAR ─────────────────────────────── */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <nav aria-label="Breadcrumb" className="flex items-center space-x-2 text-xs text-slate-500 font-medium">
-          <span className="flex items-center text-slate-400">
-            <span className="material-symbols-outlined text-[16px] mr-1">home</span>
-            <span>Inicio</span>
-          </span>
-          <span className="text-slate-300">›</span>
-          <span className="text-slate-600">Servicios Universitarios</span>
-          <span className="text-slate-300">›</span>
-          <span className="px-2.5 py-1 rounded-md bg-blue-50 border border-blue-200/60 font-semibold text-blue-700 font-space">
-            Gestión de Solicitudes y Trámites
-          </span>
-        </nav>
-
-        <div className="flex items-center space-x-2.5">
-          <div className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-white border border-slate-200/90 shadow-2xs text-xs text-slate-600 font-medium">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Sincronizado vía ms-solicitudes</span>
-          </div>
-          <button
-            onClick={refetch}
-            disabled={loading}
-            className="w-8 h-8 rounded-full bg-white border border-slate-200/90 shadow-2xs flex items-center justify-center text-slate-600 hover:text-[#0a47b8] hover:bg-slate-50 transition-colors cursor-pointer"
-            title="Sincronizar ahora"
-            type="button"
-          >
-            <span className={`material-symbols-outlined text-[18px] ${loading ? 'animate-spin' : ''}`}>
-              sync
-            </span>
-          </button>
-        </div>
-      </div>
-
-      {/* ─── 2. BANNER INSTITUCIONAL (IDÉNTICO AL DE EVENTOS) ─────── */}
+      {/* ─── 1. BANNER INSTITUCIONAL ──────────────────────────────── */}
       <div className="bg-gradient-to-r from-[#081f56] via-[#0a47b8] to-blue-600 rounded-2xl p-6 sm:p-8 text-white relative overflow-hidden shadow-xl">
         <div className="absolute -right-12 -bottom-12 w-64 h-64 rounded-full bg-white/10 blur-2xl pointer-events-none" />
         <div className="absolute right-24 top-0 w-32 h-32 rounded-full bg-cyan-400/20 blur-xl pointer-events-none" />
 
         <div className="relative z-10 max-w-3xl space-y-3">
-          <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-cyan-200 border border-white/20">
-            <span className="material-symbols-outlined text-[15px]">school</span>
-            <span className="font-space uppercase tracking-wider text-[11px]">CORPORACIÓN UNIVERSITARIA ANTONIO JOSÉ DE SUCRE</span>
-          </div>
-
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-space text-white">
             Gestión de Solicitudes y Trámites
           </h1>
