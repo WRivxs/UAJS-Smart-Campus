@@ -19,17 +19,22 @@ export const DataTable = ({
 }) => {
   return (
     <div className={`w-full overflow-hidden bg-white border border-slate-200/90 rounded-2xl shadow-sm ${className}`}>
-      <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
+      <div className="w-full overflow-hidden">
+        <table className="w-full text-left border-collapse table-auto">
           <thead>
             <tr className="bg-slate-50/90 border-b border-slate-200/90">
               {columns.map((col, idx) => {
                 const label = typeof col === 'string' ? col : col.label;
-                const align = typeof col === 'object' && col.align ? `text-${col.align}` : 'text-left';
+                const width = typeof col === 'object' && col.width ? col.width : '';
+                const alignClass = typeof col === 'object' && col.align === 'right'
+                  ? 'text-right'
+                  : typeof col === 'object' && col.align === 'center'
+                  ? 'text-center'
+                  : 'text-left';
                 return (
                   <th
                     key={idx}
-                    className={`py-3.5 px-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider font-space ${align}`}
+                    className={`py-2 px-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider font-space whitespace-nowrap ${width} ${alignClass}`}
                   >
                     {label}
                   </th>
@@ -37,7 +42,7 @@ export const DataTable = ({
               })}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 text-xs text-slate-700">
+          <tbody className="divide-y divide-slate-100 text-[11px] text-slate-700">
             {loading ? (
               <tr>
                 <td colSpan={columns.length || 1} className="py-12 text-center text-slate-400">
@@ -68,10 +73,15 @@ export const DataTable = ({
                   {columns.map((col, colIdx) => {
                     const key = typeof col === 'string' ? col : col.key;
                     const renderFn = typeof col === 'object' && col.render ? col.render : null;
-                    const align = typeof col === 'object' && col.align ? `text-${col.align}` : 'text-left';
+                    const width = typeof col === 'object' && col.width ? col.width : '';
+                    const alignClass = typeof col === 'object' && col.align === 'right'
+                      ? 'text-right'
+                      : typeof col === 'object' && col.align === 'center'
+                      ? 'text-center'
+                      : 'text-left';
 
                     return (
-                      <td key={colIdx} className={`py-3.5 px-4 align-middle ${align}`}>
+                      <td key={colIdx} className={`py-2 px-2 align-middle ${width} ${alignClass}`}>
                         {renderFn ? renderFn(row, rowIdx) : row[key] !== undefined ? String(row[key]) : '—'}
                       </td>
                     );

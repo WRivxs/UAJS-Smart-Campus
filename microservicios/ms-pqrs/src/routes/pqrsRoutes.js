@@ -21,8 +21,11 @@ router.get('/:id', pqrsController.getPqrsById);
 // Responder ticket PQRS (Protegido: Administrativo, Admin)
 router.put('/:id/responder', authMiddleware.checkRole(['Administrativo', 'Administrador']), pqrsController.responderPqrs);
 
-// Cambiar estado del ticket PQRS (Protegido: Administrativo, Admin)
-router.put('/:id/estado', authMiddleware.checkRole(['Administrativo', 'Administrador']), pqrsController.updateEstado);
+// Replicar o solicitar aclaración a ticket PQRS (Autor del ticket o Admin)
+router.post('/:id/replicar', pqrsController.replicarPqrs);
+
+// Cambiar estado del ticket PQRS (Admin/Staff o Estudiante cerrando su propio ticket)
+router.put('/:id/estado', pqrsController.updateEstado);
 
 // Eliminar ticket PQRS
 router.delete('/:id', pqrsController.deletePqrs);

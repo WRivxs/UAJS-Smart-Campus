@@ -3,11 +3,13 @@ import Navbar from '../components/Navbar/Navbar';
 import SidebarMenu from '../components/SidebarMenu/SidebarMenu';
 import AgendaEventos from './AgendaEventos';
 import ListadoSolicitudes from './ListadoSolicitudes';
+import ListadoPqrs from './ListadoPqrs';
 import MiPerfil from './MiPerfil';
 import PerfilEstudiante from './PerfilEstudiante';
 import useProfile from '../hooks/useProfile';
 import useSolicitudes from '../hooks/useSolicitudes';
 import useEventos from '../hooks/useEventos';
+import usePqrs from '../hooks/usePqrs';
 import { useAuth } from '../hooks/useAuth';
 
 export const DashboardPrincipal = () => {
@@ -16,6 +18,7 @@ export const DashboardPrincipal = () => {
   const { solicitudes, loading: solicitudesLoading } = useSolicitudes();
   // Para el dashboard de inicio usamos el mismo hook pero solo para la mini tarjeta
   const { eventos, misInscripciones, loading: eventosLoading } = useEventos();
+  const { pqrsList } = usePqrs();
 
   const [activeTab, setActiveTab] = useState('inicio');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -27,7 +30,7 @@ export const DashboardPrincipal = () => {
     eventos: eventos?.length || 4,
     solicitudes: solicitudes?.length || 4,
     reservas: 2,
-    pqrs: 1
+    pqrs: pqrsList?.length || 2
   };
 
   // Helper para badges de estado de solicitudes (Alineado con DB ms-solicitudes)
@@ -96,7 +99,7 @@ export const DashboardPrincipal = () => {
       />
 
       {/* Main Workspace Layout */}
-      <div className="flex flex-grow pt-16">
+      <div className="flex flex-grow pt-16 w-full max-w-full overflow-x-hidden">
         
         {/* Sidebar Navigation */}
         <SidebarMenu
@@ -108,9 +111,11 @@ export const DashboardPrincipal = () => {
 
         {/* Main Content Workspace */}
         <main
-          className={`flex-grow ${
-            isSidebarCollapsed ? 'md:ml-20' : 'md:ml-64'
-          } transition-all duration-300 ease-in-out p-4 md:p-6 max-w-[1400px] w-full mx-auto space-y-4`}
+          className={`flex-1 min-w-0 ${
+            isSidebarCollapsed
+              ? 'md:ml-20 md:w-[calc(100%-5rem)]'
+              : 'md:ml-64 md:w-[calc(100%-16rem)]'
+          } transition-all duration-300 ease-in-out p-4 md:p-6 max-w-[1400px] mx-auto space-y-4 w-full`}
         >
 
           {/* ── Vista: Inicio ───────────────────────────────────────────── */}
@@ -329,6 +334,9 @@ export const DashboardPrincipal = () => {
           {/* ── Vista: Solicitudes y Trámites ────────────────────────────── */}
           {activeTab === 'solicitudes' && <ListadoSolicitudes />}
 
+          {/* ── Vista: PQRS (Peticiones, Quejas, Reclamos y Sugerencias) ─── */}
+          {activeTab === 'pqrs' && <ListadoPqrs />}
+
           {/* ── Vista: Eventos Campus ───────────────────────────────────── */}
           {activeTab === 'eventos' && <AgendaEventos />}
 
@@ -336,7 +344,7 @@ export const DashboardPrincipal = () => {
           {activeTab === 'perfil' && <PerfilEstudiante onNavigateTab={setActiveTab} />}
 
           {/* ── Vistas en construcción ──────────────────────────────────── */}
-          {!['inicio', 'eventos', 'solicitudes', 'perfil'].includes(activeTab) && (
+          {!['inicio', 'eventos', 'solicitudes', 'pqrs', 'perfil'].includes(activeTab) && (
             <div className="bg-white border border-slate-200/90 rounded-xl p-10 text-center shadow-xs">
               <span className="material-symbols-outlined text-[48px] text-slate-300">construction</span>
               <h2 className="text-lg font-bold font-space text-slate-700 mt-3 capitalize">{activeTab}</h2>
@@ -349,8 +357,10 @@ export const DashboardPrincipal = () => {
 
       {/* ── Footer Institucional ─────────────────────────────────────── */}
       <footer className={`bg-white border-t border-slate-200/90 py-4 px-6 sm:px-8 z-20 ${
-        isSidebarCollapsed ? 'md:ml-20' : 'md:ml-64'
-      } transition-all duration-300 ease-in-out`}>
+        isSidebarCollapsed
+          ? 'md:ml-20 md:w-[calc(100%-5rem)]'
+          : 'md:ml-64 md:w-[calc(100%-16rem)]'
+      } w-full transition-all duration-300 ease-in-out`}>
         <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-slate-500">
           <div className="flex items-center gap-2">
             <span className="font-bold text-[#0a47b8]">UNiAJS Smart Campus</span>

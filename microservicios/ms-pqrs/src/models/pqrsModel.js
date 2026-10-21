@@ -117,6 +117,25 @@ const PqrsModel = {
     return pqrsActualizada;
   },
 
+  replicarPqrs: async (id, respondido_por_id, respondido_por_nombre, mensaje, adjunto_url) => {
+    // 1. Registrar en la tabla respuestas_pqrs
+    await db.query(`
+      INSERT INTO respuestas_pqrs (pqrs_id, respondido_por_id, respondido_por_nombre, mensaje, adjunto_url)
+      VALUES ($1, $2, $3, $4, $5);
+    `, [id, respondido_por_id, respondido_por_nombre, mensaje, adjunto_url || null]);
+
+    // 2. Devolver el ticket al estado EN_TRAMITE para revisión
+    const updateQuery = `
+      UPDATE pqrs
+      SET estado = 'EN_TRAMITE',
+          actualizado_en = CURRENT_TIMESTAMP
+      WHERE id = $1
+      RETURNING *;
+    `;
+    const { rows } = await db.query(updateQuery, [id]);
+    return rows[0];
+  },
+
   updateEstado: async (id, estado) => {
     const query = `
       UPDATE pqrs
