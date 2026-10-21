@@ -117,10 +117,10 @@ export const DashboardPrincipal = () => {
           {activeTab === 'inicio' && (
             <>
               {/* Welcome Student Banner */}
-              <div className="bg-white border border-slate-200/90 rounded-sm p-4 md:p-5 relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-xs">
+              <div className="bg-white border border-slate-200/90 rounded-xl p-4 md:p-5 relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-xs">
                 <div className="absolute -top-10 -right-10 w-36 h-36 bg-cyan-400/10 rounded-full blur-2xl pointer-events-none" />
                 <div className="space-y-1.5 z-10">
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-sm bg-cyan-50 border border-cyan-200/80 text-[11px] font-space text-[#0284c7]">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-xl bg-cyan-50 border border-cyan-200/80 text-[11px] font-space text-[#0284c7]">
                     <span className="material-symbols-outlined text-[14px]">school</span>
                     <span>Portal Estudiantil Institucional</span>
                   </div>
@@ -131,7 +131,7 @@ export const DashboardPrincipal = () => {
                     Has ingresado con el rol de <strong className="text-slate-900">{currentRole}</strong>. Consulta tus notas, radica solicitudes <br className="hidden sm:inline" /> y gestiona tus recursos universitarios desde este panel.
                   </p>
                 </div>
-                <div className="bg-emerald-50 border border-emerald-200/80 px-3 py-1 rounded-sm flex items-center gap-2 shrink-0 z-10 self-end mt-auto">
+                <div className="bg-emerald-50 border border-emerald-200/80 px-3 py-1 rounded-xl flex items-center gap-2 shrink-0 z-10 self-end mt-auto">
                   <span className="material-symbols-outlined text-[16px] text-emerald-600">verified_user</span>
                   <div className="flex items-center gap-1.5 font-space">
                     <span className="text-[11px] font-bold text-slate-900">Pase Digital Inteligente:</span>
@@ -193,7 +193,7 @@ export const DashboardPrincipal = () => {
                     <div
                       key={card.id}
                       onClick={() => setActiveTab(card.id)}
-                      className="bg-white border border-slate-200/90 rounded-none overflow-hidden shadow-xs hover:shadow-md hover:border-[#0284c7]/50 transition-all duration-200 group cursor-pointer flex flex-col justify-between"
+                      className="bg-white border border-slate-200/90 rounded-xl overflow-hidden shadow-xs hover:shadow-md hover:border-[#0284c7]/50 transition-all duration-200 group cursor-pointer flex flex-col justify-between"
                     >
                       {/* Banner estilizado con gradiente y badges (Estilo Prototipo) */}
                       <div className={`relative h-32 w-full p-3.5 bg-gradient-to-r ${card.gradient} flex flex-col justify-between overflow-hidden`}>
@@ -235,7 +235,7 @@ export const DashboardPrincipal = () => {
               <section className="grid grid-cols-1 lg:grid-cols-2 gap-5 pt-2">
 
                 {/* Tarjeta: Solicitudes Recientes */}
-                <div className="bg-white border border-slate-200/90 rounded-sm p-5 shadow-xs space-y-4">
+                <div className="bg-white border border-slate-200/90 rounded-xl p-5 shadow-xs space-y-4">
                   <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                     <div className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-[#0284c7]">description</span>
@@ -254,9 +254,9 @@ export const DashboardPrincipal = () => {
                   ) : (
                     <div className="space-y-2.5">
                       {solicitudes.slice(0, 2).map((sol, i) => (
-                        <div key={sol.id || i} className="p-3 bg-slate-50/70 border border-slate-200/70 rounded-sm flex items-center justify-between gap-3 hover:bg-slate-100/60 transition-colors">
+                        <div key={sol.id || i} className="p-3 bg-slate-50/70 border border-slate-200/70 rounded-xl flex items-center justify-between gap-3 hover:bg-slate-100/60 transition-colors">
                           <div className="flex items-center gap-3 min-w-0">
-                            <span className="h-8 w-8 rounded-sm bg-cyan-100 text-[#0284c7] font-mono text-xs font-bold flex items-center justify-center shrink-0">
+                            <span className="h-8 w-8 rounded-xl bg-cyan-100 text-[#0284c7] font-mono text-xs font-bold flex items-center justify-center shrink-0">
                               {String(i + 1).padStart(2, '0')}
                             </span>
                             <div className="min-w-0">
@@ -274,7 +274,7 @@ export const DashboardPrincipal = () => {
                 </div>
 
                 {/* Tarjeta: Próximos Eventos */}
-                <div className="bg-white border border-slate-200/90 rounded-sm p-5 shadow-xs space-y-4">
+                <div className="bg-white border border-slate-200/90 rounded-xl p-5 shadow-xs space-y-4">
                   <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                     <div className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-[#0284c7]">event</span>
@@ -297,9 +297,9 @@ export const DashboardPrincipal = () => {
                         const dia = fecha ? fecha.toLocaleDateString('es-CO', { day: '2-digit' }) : '—';
                         const mes = fecha ? fecha.toLocaleDateString('es-CO', { month: 'short' }).toUpperCase() : '—';
                         return (
-                          <div key={ev.id || i} className="p-3 bg-slate-50/70 border border-slate-200/70 rounded-sm flex items-center justify-between gap-3 hover:bg-slate-100/60 transition-colors">
+                          <div key={ev.id || i} className="p-3 bg-slate-50/70 border border-slate-200/70 rounded-xl flex items-center justify-between gap-3 hover:bg-slate-100/60 transition-colors">
                             <div className="flex items-center gap-3 min-w-0">
-                              <div className="h-10 w-10 rounded-sm bg-cyan-50 border border-cyan-200/80 flex flex-col items-center justify-center text-[#0284c7] shrink-0 font-space leading-none">
+                              <div className="h-10 w-10 rounded-xl bg-cyan-50 border border-cyan-200/80 flex flex-col items-center justify-center text-[#0284c7] shrink-0 font-space leading-none">
                                 <span className="text-xs font-bold">{dia}</span>
                                 <span className="text-[9px] uppercase font-semibold text-slate-500 mt-0.5">{mes}</span>
                               </div>
@@ -337,7 +337,7 @@ export const DashboardPrincipal = () => {
 
           {/* ── Vistas en construcción ──────────────────────────────────── */}
           {!['inicio', 'eventos', 'solicitudes', 'perfil'].includes(activeTab) && (
-            <div className="bg-white border border-slate-200/90 rounded-sm p-10 text-center shadow-xs">
+            <div className="bg-white border border-slate-200/90 rounded-xl p-10 text-center shadow-xs">
               <span className="material-symbols-outlined text-[48px] text-slate-300">construction</span>
               <h2 className="text-lg font-bold font-space text-slate-700 mt-3 capitalize">{activeTab}</h2>
               <p className="text-sm text-slate-400 mt-1">Esta sección está en desarrollo. Próximamente disponible.</p>
