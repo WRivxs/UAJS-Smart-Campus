@@ -71,7 +71,7 @@ const EventoModel = {
     return rows;
   },
 
-  inscribirUsuario: async (evento_id, { usuario_id, usuario_nombre, usuario_email }) => {
+  inscribirUsuario: async (evento_id, { usuario_id, usuario_nombre, usuario_email, facultad, programa, semestre }) => {
     // 1. Verificar existencia del evento y disponibilidad de cupos
     const evento = await EventoModel.findById(evento_id);
     if (!evento) {
@@ -95,11 +95,19 @@ const EventoModel = {
 
     // 3. Registrar inscripción y descontar cupo
     const insertQuery = `
-      INSERT INTO inscripciones_evento (evento_id, usuario_id, usuario_nombre, usuario_email)
-      VALUES ($1, $2, $3, $4)
+      INSERT INTO inscripciones_evento (evento_id, usuario_id, usuario_nombre, usuario_email, facultad, programa, semestre)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING *;
     `;
-    const { rows: inscripcionRows } = await db.query(insertQuery, [evento_id, usuario_id, usuario_nombre, usuario_email]);
+    const { rows: inscripcionRows } = await db.query(insertQuery, [
+      evento_id,
+      usuario_id,
+      usuario_nombre,
+      usuario_email,
+      facultad || null,
+      programa || null,
+      semestre ? parseInt(semestre, 10) : null
+    ]);
 
     if (evento.aforo_maximo !== null) {
       await db.query(`

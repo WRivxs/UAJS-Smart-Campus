@@ -76,8 +76,18 @@ const eventoController = {
     try {
       const { id: evento_id } = req.params;
       const { id: usuario_id, nombre: usuario_nombre, email: usuario_email } = req.user;
+      const facultad = req.body.facultad || req.user.facultad || null;
+      const programa = req.body.programa || req.user.programa_academico || req.user.facultad_departamento || null;
+      const semestre = req.body.semestre || req.user.semestre_actual || null;
 
-      const resultado = await EventoModel.inscribirUsuario(evento_id, { usuario_id, usuario_nombre, usuario_email });
+      const resultado = await EventoModel.inscribirUsuario(evento_id, {
+        usuario_id,
+        usuario_nombre,
+        usuario_email,
+        facultad,
+        programa,
+        semestre
+      });
 
       if (resultado.error) {
         return res.status(400).json({ error: resultado.error });

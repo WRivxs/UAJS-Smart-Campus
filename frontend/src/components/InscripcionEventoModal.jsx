@@ -1,18 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 
-const PROGRAMAS_ACADEMICOS = [
-  'Ingeniería de Sistemas',
-  'Ingeniería Industrial',
-  'Administración de Empresas',
-  'Contaduría Pública',
-  'Derecho y Ciencias Políticas',
-  'Psicología',
-  'Comunicación Social y Periodismo',
-  'Diseño Gráfico y Multimedia',
-  'Medicina Veterinaria y Zootecnia'
-];
-
 const TIPO_COLORS = {
   CONFERENCIA: 'from-indigo-600 via-blue-700 to-[#081f56]',
   TALLER: 'from-cyan-600 via-blue-700 to-[#081f56]',
@@ -45,8 +33,11 @@ export const InscripcionEventoModal = ({
   const { user } = useAuth();
 
   const [step, setStep] = useState(modoInicial); // 'FORM' | 'TICKET'
-  const [programa, setPrograma] = useState(user?.facultad_departamento || PROGRAMAS_ACADEMICOS[0]);
-  const [semestre, setSemestre] = useState('6° Semestre');
+  const programaOficial = user?.programa_academico || user?.facultad_departamento || 'Ingeniería de Sistemas';
+  const facultadOficial = user?.facultad || 'Facultad de Ingenierías';
+  const semestreNumero = user?.semestre_actual || 6;
+  const semestreOficial = `${semestreNumero}° Semestre`;
+
   const [solicitaCertificado, setSolicitaCertificado] = useState(true);
   const [observaciones, setObservaciones] = useState('');
   const [aceptoCompromiso, setAceptoCompromiso] = useState(false);
@@ -61,6 +52,15 @@ export const InscripcionEventoModal = ({
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [onClose, actionLoading]);
+
+  // Bloquear scroll de la pantalla de fondo mientras el modal esté abierto
+  useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, []);
 
   // Si abrimos en modo TICKET, recuperar datos guardados en localStorage o generarlos
   useEffect(() => {
@@ -99,9 +99,12 @@ export const InscripcionEventoModal = ({
       estudianteNombre: user?.nombre || 'Estudiante UAJS',
       estudianteEmail: user?.email || 'estudiante@uajs.edu.co',
       estudianteCodigo: user?.codigo_estudiantil || `EST-${user?.id || '2026'}`,
-      programa,
-      semestre,
+      facultad: facultadOficial,
+      programa: programaOficial,
+      semestre: semestreOficial,
+      semestreNumero: semestreNumero,
       solicitaCertificado,
+      observaciones,
       fechaEmision: new Date().toISOString()
     };
   };
@@ -121,7 +124,12 @@ export const InscripcionEventoModal = ({
     }
 
     const payload = buildTicketPayload();
-    const result = await onConfirmarInscripcion(evento.id, payload);
+    const result = await onConfirmarInscripcion(evento.id, {
+      ...payload,
+      facultad: facultadOficial,
+      programa: programaOficial,
+      semestre: semestreNumero
+    });
 
     if (result && result.ok) {
       const storageKey = `uajs_ticket_${evento.id}_${user?.id || 'est'}`;
@@ -252,39 +260,54 @@ export const InscripcionEventoModal = ({
                 </div>
               </div>
 
-              {/* 2. Formulario de Datos Académicos */}
+              {/* 2. Información Académica Oficial (Lectura desde la Sesión del Estudiante) */}
               <div className="space-y-3">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  {/* Programa */}
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-700 mb-0.5">
-                      Programa Académico *
-                    </label>
-                    <select
-                      value={programa}
-                      onChange={(e) => setPrograma(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 font-medium focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#0a47b8] transition-all"
-                    >
-                      {PROGRAMAS_ACADEMICOS.map((p) => (
-                        <option key={p} value={p}>{p}</option>
-                      ))}
-                    </select>
+                <div className="bg-slate-50/80 border border-slate-200 rounded-xl p-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1 font-space">
+                      <span className="material-symbols-outlined text-[14px] text-emerald-600">verified</span>
+                      Información Académica Oficial
+                    </span>
                   </div>
 
-                  {/* Semestre */}
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-700 mb-0.5">
-                      Semestre *
-                    </label>
-                    <select
-                      value={semestre}
-                      onChange={(e) => setSemestre(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 font-medium focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#0a47b8] transition-all"
-                    >
-                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((sem) => (
-                        <option key={sem} value={`${sem}° Semestre`}>{sem}° Semestre</option>
-                      ))}
-                    </select>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                    {/* Facultad */}
+                    <div>
+                      <label className="text-[10px] font-medium text-slate-500 block">Facultad</label>
+                      <input
+                        type="text"
+                        disabled
+                        value={facultadOficial}
+                        className="mt-0.5 w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 font-semibold cursor-not-allowed text-[11px] truncate"
+                      />
+                    </div>
+
+                    {/* Programa Académico */}
+                    <div>
+                      <label className="text-[10px] font-medium text-slate-500 block">Programa Académico</label>
+                      <input
+                        type="text"
+                        disabled
+                        value={programaOficial}
+                        className="mt-0.5 w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 font-semibold cursor-not-allowed text-[11px] truncate"
+                      />
+                    </div>
+
+                    {/* Semestre */}
+                    <div className="sm:col-span-2">
+                      <label className="text-[10px] font-medium text-slate-500 block">Semestre Actual Matriculado</label>
+                      <div className="mt-0.5 flex items-center gap-2">
+                        <input
+                          type="text"
+                          disabled
+                          value={semestreOficial}
+                          className="flex-1 bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 font-semibold cursor-not-allowed text-[11px]"
+                        />
+                        <span className="text-[10px] text-slate-500 bg-slate-200/80 px-2.5 py-1 rounded-lg font-medium whitespace-nowrap">
+                          Periodo 2026-1
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 

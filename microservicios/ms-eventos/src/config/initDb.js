@@ -41,10 +41,17 @@ const initDb = async () => {
         usuario_id INT NOT NULL,
         usuario_nombre VARCHAR(150) NOT NULL,
         usuario_email VARCHAR(150) NOT NULL,
+        facultad VARCHAR(100) DEFAULT NULL,
+        programa VARCHAR(100) DEFAULT NULL,
+        semestre INT DEFAULT NULL,
         fecha_inscripcion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         asistio BOOLEAN DEFAULT false,
         UNIQUE(evento_id, usuario_id)
       );
+
+      ALTER TABLE inscripciones_evento ADD COLUMN IF NOT EXISTS facultad VARCHAR(100) DEFAULT NULL;
+      ALTER TABLE inscripciones_evento ADD COLUMN IF NOT EXISTS programa VARCHAR(100) DEFAULT NULL;
+      ALTER TABLE inscripciones_evento ADD COLUMN IF NOT EXISTS semestre INT DEFAULT NULL;
     `);
 
     // 3. Poblar eventos semilla si la tabla está vacía
