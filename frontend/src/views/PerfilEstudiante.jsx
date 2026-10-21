@@ -205,36 +205,6 @@ export const PerfilEstudiante = ({ onNavigateTab = () => {} }) => {
         </div>
       )}
 
-      {/* ── Breadcrumb & Barra Superior ────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <nav aria-label="Breadcrumb" className="flex items-center space-x-2 text-xs font-medium text-slate-500 font-space">
-          <button
-            onClick={() => onNavigateTab('inicio')}
-            className="hover:text-blue-600 flex items-center gap-1 cursor-pointer transition-colors"
-          >
-            <span className="material-symbols-outlined text-[16px]">home</span>
-            <span>Inicio</span>
-          </button>
-          <span className="text-slate-300">/</span>
-          <span className="text-slate-500">Comunidad</span>
-          <span className="text-slate-300">/</span>
-          <span className="px-2 py-0.5 rounded-sm bg-blue-50 text-blue-700 font-semibold border border-blue-200">
-            Ficha Institucional
-          </span>
-        </nav>
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => refetch && refetch()}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors shadow-xs cursor-pointer font-space"
-            title="Sincronizar perfil con PostgreSQL"
-          >
-            <span className="material-symbols-outlined text-[16px] text-blue-600">sync</span>
-            <span>Actualizar Ficha</span>
-          </button>
-        </div>
-      </div>
-
       {/* ── A. Encabezado / Carnet Digital Institucional ────────────────── */}
       <section className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#081f56] via-[#0b2f7d] to-[#0a47b8] text-white p-6 sm:p-8 shadow-md border border-blue-900/40">
         {/* Decoraciones de fondo */}
