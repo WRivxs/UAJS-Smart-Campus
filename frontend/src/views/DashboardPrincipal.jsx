@@ -4,12 +4,13 @@ import SidebarMenu from '../components/SidebarMenu/SidebarMenu';
 import AgendaEventos from './AgendaEventos';
 import ListadoSolicitudes from './ListadoSolicitudes';
 import ListadoPqrs from './ListadoPqrs';
-import MiPerfil from './MiPerfil';
+import PanelReservas from './PanelReservas';
 import PerfilEstudiante from './PerfilEstudiante';
 import useProfile from '../hooks/useProfile';
 import useSolicitudes from '../hooks/useSolicitudes';
 import useEventos from '../hooks/useEventos';
 import usePqrs from '../hooks/usePqrs';
+import useReservas from '../hooks/useReservas';
 import { useAuth } from '../hooks/useAuth';
 
 export const DashboardPrincipal = () => {
@@ -17,8 +18,9 @@ export const DashboardPrincipal = () => {
   const { profile } = useProfile();
   const { solicitudes, loading: solicitudesLoading } = useSolicitudes();
   // Para el dashboard de inicio usamos el mismo hook pero solo para la mini tarjeta
-  const { eventos, misInscripciones, loading: eventosLoading } = useEventos();
+  const { eventos, loading: eventosLoading } = useEventos();
   const { pqrsList } = usePqrs();
+  const { reservas } = useReservas();
 
   const [activeTab, setActiveTab] = useState('inicio');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -27,10 +29,10 @@ export const DashboardPrincipal = () => {
 
   // Badges dinámicos para los ítems del menú lateral (Microservicios)
   const counts = {
-    eventos: eventos?.length || 4,
-    solicitudes: solicitudes?.length || 4,
-    reservas: 2,
-    pqrs: pqrsList?.length || 2
+    eventos: eventos?.length || 0,
+    solicitudes: solicitudes?.length || 0,
+    reservas: reservas?.length || 0,
+    pqrs: pqrsList?.length || 0
   };
 
   // Helper para badges de estado de solicitudes (Alineado con DB ms-solicitudes)
@@ -337,6 +339,9 @@ export const DashboardPrincipal = () => {
           {/* ── Vista: PQRS (Peticiones, Quejas, Reclamos y Sugerencias) ─── */}
           {activeTab === 'pqrs' && <ListadoPqrs />}
 
+          {/* ── Vista: Mis Reservas (Aulas, Labs y Recursos) ───────────── */}
+          {activeTab === 'reservas' && <PanelReservas />}
+
           {/* ── Vista: Eventos Campus ───────────────────────────────────── */}
           {activeTab === 'eventos' && <AgendaEventos />}
 
@@ -344,7 +349,7 @@ export const DashboardPrincipal = () => {
           {activeTab === 'perfil' && <PerfilEstudiante onNavigateTab={setActiveTab} />}
 
           {/* ── Vistas en construcción ──────────────────────────────────── */}
-          {!['inicio', 'eventos', 'solicitudes', 'pqrs', 'perfil'].includes(activeTab) && (
+          {!['inicio', 'eventos', 'solicitudes', 'pqrs', 'reservas', 'perfil'].includes(activeTab) && (
             <div className="bg-white border border-slate-200/90 rounded-xl p-10 text-center shadow-xs">
               <span className="material-symbols-outlined text-[48px] text-slate-300">construction</span>
               <h2 className="text-lg font-bold font-space text-slate-700 mt-3 capitalize">{activeTab}</h2>
