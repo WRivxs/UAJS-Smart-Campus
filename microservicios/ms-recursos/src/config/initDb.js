@@ -84,7 +84,7 @@ const initDb = async () => {
           estado: 'EN_MANTENIMIENTO',
           disponibilidad: false,
           descripcion: 'Impresora 3D de alta velocidad para filamento PLA, ABS y Fibra de Carbono.',
-          imagen_url: 'https://images.unsplash.com/photo-1631556097152-c39479bbf936?auto=format&fit=crop&w=600&q=80',
+          imagen_url: 'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?auto=format&fit=crop&w=600&q=80',
           aforo_maximo: null
         },
         {
