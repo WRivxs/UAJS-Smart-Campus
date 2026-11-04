@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "uajs-smart-campus-collection-v2",
     "name": "UAJS Smart Campus — Suite de Pruebas de API y Evidencia",
-    "description": "Colección completa de pruebas para el ecosistema distribuido UAJS Smart Campus.\nIncluye pruebas automatizadas para los 8 microservicios y el motor de búsqueda Elasticsearch a través del API Gateway (puerto 8080).\n\nCada petición incluye pruebas automatizadas (Tests) para verificar códigos de estado HTTP, tiempos de respuesta y esquemas de datos.",
+    "description": "Colección oficial UAJS Smart Campus — Entregable 2 (Sistemas Distribuidos 2026).\nCorporación Universitaria Antonio José de Sucre | Docente: Mag. Laura Patricia Paternina Álvarez\nEquipo: Wadith Rivas · Edimer Paternina · Job David Pérez Guzmán · Flor Florez\n\nContiene 10 carpetas:\n  · 9 carpetas de pruebas por microservicio (Endpoints CRUD completos)\n  · 1 carpeta especial: \"Matriz de Pruebas T01-T15\" requerida por el Entregable 2\n\nINSTRUCCIONES DE USO:\n  1. Importar esta colección en Postman.\n  2. Configurar la variable baseUrl = http://localhost:8080\n  3. Ejecutar primero \"1.1 Login - Estudiante\" para auto-capturar {{jwtToken}}.\n  4. Ejecutar las carpetas en orden para las pruebas de regresión.\n  5. Para T12 (persistencia): ejecutar docker compose restart y luego correr T01.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -19,6 +19,36 @@
     {
       "key": "radicadoPqrs",
       "value": "PQRS-2026-0001",
+      "type": "string"
+    },
+    {
+      "key": "recursoTestId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "recursoTestCodigo",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "solicitudTestId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "reservaTestId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "reservaFecha",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
       "type": "string"
     }
   ],
@@ -74,8 +104,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "login"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
             }
           }
         },
@@ -113,8 +149,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "login"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
             }
           }
         },
@@ -150,8 +192,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/auth/profile",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "profile"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "profile"
+              ]
             }
           }
         },
@@ -185,8 +233,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/usuarios/profile",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "usuarios", "profile"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "usuarios",
+                "profile"
+              ]
             }
           }
         },
@@ -221,8 +275,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/usuarios/roles",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "usuarios", "roles"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "usuarios",
+                "roles"
+              ]
             }
           }
         }
@@ -264,8 +324,13 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/search?q=carné",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "search"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "search"
+              ],
               "query": [
                 {
                   "key": "q",
@@ -305,8 +370,13 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/search?q=carne",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "search"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "search"
+              ],
               "query": [
                 {
                   "key": "q",
@@ -341,8 +411,13 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/search",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "search"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "search"
+              ]
             }
           }
         }
@@ -382,8 +457,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/servicios/categorias",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "servicios", "categorias"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "servicios",
+                "categorias"
+              ]
             }
           }
         },
@@ -418,8 +499,13 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/servicios",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "servicios"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "servicios"
+              ]
             }
           }
         },
@@ -454,8 +540,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/servicios/1",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "servicios", "1"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "servicios",
+                "1"
+              ]
             }
           }
         }
@@ -496,8 +588,13 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/solicitudes",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "solicitudes"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ]
             }
           }
         },
@@ -540,8 +637,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/solicitudes",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "solicitudes"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ]
             }
           }
         },
@@ -575,8 +677,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/solicitudes/1",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "solicitudes", "1"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "1"
+              ]
             }
           }
         }
@@ -616,8 +724,13 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/pqrs",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "pqrs"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqrs"
+              ]
             }
           }
         },
@@ -666,8 +779,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/pqrs",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "pqrs"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqrs"
+              ]
             }
           }
         },
@@ -701,8 +819,15 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/pqrs/ticket/{{radicadoPqrs}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "pqrs", "ticket", "{{radicadoPqrs}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqrs",
+                "ticket",
+                "{{radicadoPqrs}}"
+              ]
             }
           }
         }
@@ -743,8 +868,13 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/recursos",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "recursos"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "recursos"
+              ]
             }
           }
         },
@@ -779,8 +909,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/recursos/1",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "recursos", "1"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "recursos",
+                "1"
+              ]
             }
           }
         }
@@ -820,8 +956,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/reservas/disponibilidad?recurso_id=1&fecha_reserva=2026-10-15",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "reservas", "disponibilidad"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reservas",
+                "disponibilidad"
+              ],
               "query": [
                 {
                   "key": "recurso_id",
@@ -865,8 +1007,13 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/reservas",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "reservas"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reservas"
+              ]
             }
           }
         },
@@ -903,8 +1050,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/reservas",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "reservas"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reservas"
+              ]
             }
           }
         }
@@ -944,8 +1096,13 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/notificaciones",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "notificaciones"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notificaciones"
+              ]
             }
           }
         },
@@ -974,8 +1131,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/notificaciones/marcar-todas-leidas",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "notificaciones", "marcar-todas-leidas"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notificaciones",
+                "marcar-todas-leidas"
+              ]
             }
           }
         }
@@ -1016,8 +1179,13 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/eventos",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "eventos"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "eventos"
+              ]
             }
           }
         },
@@ -1051,8 +1219,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/eventos/mis-inscripciones",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "eventos", "mis-inscripciones"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "eventos",
+                "mis-inscripciones"
+              ]
             }
           }
         },
@@ -1087,10 +1261,1161 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/eventos/1",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "eventos", "1"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "eventos",
+                "1"
+              ]
             }
           }
+        }
+      ]
+    },
+    {
+      "name": "10. Matriz de Pruebas Entregable 2 (T01-T15)",
+      "description": "Colección oficial de los 15 casos de prueba requeridos por el Entregable 2 — UAJS Smart Campus.\nCubre: CRUD de recursos, ciclo de vida de solicitudes, reservas con anti-solapamiento,\npersistencia tras reinicio de contenedores, integración UI→Gateway→BD, manejo de errores\ny health-checks de los 8 microservicios.",
+      "item": [
+        {
+          "name": "T01 — Listar recursos del campus (200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"[T01] Status 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"[T01] Responde en < 1000 ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "pm.test(\"[T01] Body contiene lista de recursos\", function () {",
+                  "    var d = pm.response.json();",
+                  "    pm.expect(d).to.have.property(\"recursos\");",
+                  "    pm.expect(d.recursos).to.be.an(\"array\");",
+                  "    pm.expect(d.recursos.length).to.be.at.least(1);",
+                  "});",
+                  "pm.test(\"[T01] Cada recurso tiene id, nombre, tipo y ubicacion\", function () {",
+                  "    var d = pm.response.json();",
+                  "    d.recursos.slice(0, 3).forEach(function(r) {",
+                  "        pm.expect(r).to.have.property(\"id\");",
+                  "        pm.expect(r).to.have.property(\"nombre\");",
+                  "        pm.expect(r).to.have.property(\"tipo\");",
+                  "        pm.expect(r).to.have.property(\"ubicacion\");",
+                  "    });",
+                  "    // Capturar el primer ID para las pruebas siguientes",
+                  "    if (pm.response.json().recursos.length > 0) {",
+                  "        pm.collectionVariables.set(\"recursoId\", pm.response.json().recursos[0].id);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/recursos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "recursos"
+              ]
+            }
+          }
+        },
+        {
+          "name": "T02 — Crear recurso válido (201 Created)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"[T02] Status 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"[T02] Responde en < 1000 ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "pm.test(\"[T02] Body contiene recurso creado\", function () {",
+                  "    var d = pm.response.json();",
+                  "    pm.expect(d).to.have.property(\"recurso\");",
+                  "    pm.expect(d.recurso).to.have.property(\"id\");",
+                  "    pm.expect(d.recurso.codigo).to.eql(\"LAB-TEST-99\");",
+                  "    pm.expect(d.recurso.nombre).to.include(\"Entregable 2\");",
+                  "    // Guardar ID para T04, T06, T07",
+                  "    pm.collectionVariables.set(\"recursoTestId\", d.recurso.id);",
+                  "    pm.collectionVariables.set(\"recursoTestCodigo\", d.recurso.codigo);",
+                  "});",
+                  "pm.test(\"[T02] Regla de negocio: estado inicial es BUENO\", function () {",
+                  "    var d = pm.response.json();",
+                  "    pm.expect(d.recurso.estado).to.eql(\"BUENO\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/recursos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "recursos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigo\": \"LAB-TEST-99\",\n  \"nombre\": \"Laboratorio de Pruebas Entregable 2\",\n  \"tipo\": \"Laboratorio\",\n  \"ubicacion\": \"Bloque C — Piso 2\",\n  \"estado\": \"BUENO\",\n  \"disponibilidad\": true,\n  \"descripcion\": \"Recurso creado por la suite de pruebas T02 del Entregable 2.\",\n  \"aforo_maximo\": 25\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "T03 — Crear recurso con datos incompletos (400 Bad Request)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"[T03] Status 400 Bad Request\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test(\"[T03] Responde en < 1000 ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "pm.test(\"[T03] Body contiene mensaje de error descriptivo\", function () {",
+                  "    var d = pm.response.json();",
+                  "    pm.expect(d).to.have.property(\"error\");",
+                  "    pm.expect(d.error).to.be.a(\"string\");",
+                  "    pm.expect(d.error.length).to.be.above(10);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/recursos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "recursos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Recurso Sin Codigo Ni Ubicacion\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "T04 — Consultar recurso existente por ID (200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"[T04] Status 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"[T04] Responde en < 1000 ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "pm.test(\"[T04] Body contiene detalle del recurso\", function () {",
+                  "    var d = pm.response.json();",
+                  "    pm.expect(d).to.have.property(\"recurso\");",
+                  "    pm.expect(d.recurso.id).to.eql(pm.collectionVariables.get(\"recursoTestId\"));",
+                  "    pm.expect(d.recurso).to.have.property(\"nombre\");",
+                  "    pm.expect(d.recurso).to.have.property(\"ubicacion\");",
+                  "    pm.expect(d).to.have.property(\"mantenimientos\");",
+                  "    pm.expect(d.mantenimientos).to.be.an(\"array\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/recursos/{{recursoTestId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "recursos",
+                "{{recursoTestId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "T05 — Consultar recurso con ID inexistente (404 Not Found)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"[T05] Status 404 Not Found\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "pm.test(\"[T05] Responde en < 1000 ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "pm.test(\"[T05] Body contiene mensaje de error claro\", function () {",
+                  "    var d = pm.response.json();",
+                  "    pm.expect(d).to.have.property(\"error\");",
+                  "    pm.expect(d.error.toLowerCase()).to.include(\"no encontrado\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/recursos/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "recursos",
+                "999999"
+              ]
+            }
+          }
+        },
+        {
+          "name": "T06 — Actualizar datos del recurso (200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"[T06] Status 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"[T06] Responde en < 1000 ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "pm.test(\"[T06] Los campos actualizados reflejan los nuevos valores\", function () {",
+                  "    var d = pm.response.json();",
+                  "    pm.expect(d).to.have.property(\"recurso\");",
+                  "    pm.expect(d.recurso.nombre).to.include(\"Actualizado T06\");",
+                  "    pm.expect(d.recurso.aforo_maximo).to.eql(30);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/recursos/{{recursoTestId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "recursos",
+                "{{recursoTestId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Laboratorio de Pruebas — Actualizado T06\",\n  \"ubicacion\": \"Bloque C — Piso 3 (Actualizado)\",\n  \"aforo_maximo\": 30,\n  \"descripcion\": \"Descripción actualizada por la prueba T06 del Entregable 2.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "T07 — Eliminar recurso del catálogo (200 / 204)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"[T07] Status 200 o 204 (Eliminación exitosa)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+                  "});",
+                  "pm.test(\"[T07] Responde en < 1000 ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "pm.test(\"[T07] Verificar que el recurso ya no existe (404)\", function () {",
+                  "    // Este test documental indica que la siguiente consulta al mismo ID",
+                  "    // debe retornar 404 — verificable ejecutando T04 de nuevo tras T07.",
+                  "    if (pm.response.code === 200) {",
+                  "        var d = pm.response.json();",
+                  "        pm.expect(d).to.have.property(\"message\");",
+                  "        pm.expect(d.message.toLowerCase()).to.include(\"eliminado\");",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/recursos/{{recursoTestId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "recursos",
+                "{{recursoTestId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "T08 — Crear solicitud (201 Created, estado=REGISTRADA)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"[T08] Status 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"[T08] Responde en < 1000 ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "pm.test(\"[T08] Estado inicial es REGISTRADA (regla de negocio)\", function () {",
+                  "    var d = pm.response.json();",
+                  "    pm.expect(d).to.have.property(\"solicitud\");",
+                  "    pm.expect(d.solicitud.estado).to.eql(\"REGISTRADA\");",
+                  "    // Capturar ID para T09",
+                  "    pm.collectionVariables.set(\"solicitudTestId\", d.solicitud.id);",
+                  "});",
+                  "pm.test(\"[T08] Solicitud tiene radicado y timestamp\", function () {",
+                  "    var d = pm.response.json();",
+                  "    pm.expect(d.solicitud).to.have.property(\"id\");",
+                  "    pm.expect(d.solicitud).to.have.property(\"created_at\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/solicitudes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dependencia\": \"Registro Académico\",\n  \"asunto\": \"Solicitud de certificado de notas — Prueba T08\",\n  \"descripcion\": \"Solicitud generada automáticamente por la suite de pruebas del Entregable 2.\",\n  \"tipo\": \"ACADEMICA\",\n  \"prioridad\": \"MEDIA\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "T09 — Transición de estado inválida (400 Bad Request)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"[T09] Status 400 (Transición de estado no permitida)\", function () {",
+                  "    // REGISTRADA no puede pasar directamente a RESUELTA",
+                  "    // El backend debe rechazar con 400 Bad Request",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 409]);",
+                  "});",
+                  "pm.test(\"[T09] Responde en < 1000 ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "pm.test(\"[T09] Body describe la transición inválida\", function () {",
+                  "    var d = pm.response.json();",
+                  "    pm.expect(d).to.have.property(\"error\");",
+                  "    pm.expect(d.error.length).to.be.above(5);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/solicitudes/{{solicitudTestId}}/estado",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "{{solicitudTestId}}",
+                "estado"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado_nuevo\": \"CERRADA\",\n  \"observacion\": \"Intento de transición inválida: REGISTRADA → RESUELTA — Prueba T09\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "T10 — Crear reserva válida (201 Created)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"[T10] Status 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"[T10] Responde en < 1000 ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "pm.test(\"[T10] Body contiene reserva con estado PENDIENTE\", function () {",
+                  "    var d = pm.response.json();",
+                  "    pm.expect(d).to.have.property(\"reserva\");",
+                  "    pm.expect(d.reserva.estado_reserva).to.eql(\"PENDIENTE\");",
+                  "    pm.expect(d.reserva).to.have.property(\"id\");",
+                  "    // Guardar para T11",
+                  "    pm.collectionVariables.set(\"reservaTestId\", d.reserva.id);",
+                  "    pm.collectionVariables.set(\"reservaFecha\", d.reserva.fecha_reserva);",
+                  "});",
+                  "pm.test(\"[T10] Reserva tiene franja horaria correcta\", function () {",
+                  "    var d = pm.response.json();",
+                  "    pm.expect(d.reserva.hora_inicio).to.eql(\"08:00:00\");",
+                  "    pm.expect(d.reserva.hora_fin).to.eql(\"10:00:00\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reservas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reservas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recurso_id\": 1,\n  \"recurso_nombre\": \"Sala de Reuniones Consejo Académico\",\n  \"fecha_reserva\": \"2027-06-15\",\n  \"hora_inicio\": \"08:00\",\n  \"hora_fin\": \"10:00\",\n  \"motivo\": \"Sesión de trabajo Entregable 2 — Prueba T10\",\n  \"observaciones\": \"Reserva generada por la suite de pruebas automatizadas.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "T11 — Reserva solapada en mismo recurso/horario (409 Conflict)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"[T11] Status 409 Conflict (Anti-solapamiento activo)\", function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});",
+                  "pm.test(\"[T11] Responde en < 1000 ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "pm.test(\"[T11] Body describe el conflicto de horario\", function () {",
+                  "    var d = pm.response.json();",
+                  "    pm.expect(d).to.have.property(\"error\");",
+                  "    pm.expect(d.error.toLowerCase()).to.satisfy(function(e) {",
+                  "        return e.includes(\"reserva\") || e.includes(\"solapamiento\") ||",
+                  "               e.includes(\"activa\") || e.includes(\"aprobada\") || e.includes(\"conflicto\");",
+                  "    }, \"El mensaje debe indicar conflicto de reserva\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reservas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reservas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recurso_id\": 1,\n  \"recurso_nombre\": \"Sala de Reuniones Consejo Académico\",\n  \"fecha_reserva\": \"2027-06-15\",\n  \"hora_inicio\": \"09:00\",\n  \"hora_fin\": \"11:00\",\n  \"motivo\": \"Intento de solapamiento — Prueba T11 (debe fallar con 409)\",\n  \"observaciones\": \"Esta reserva se solapa con la creada en T10 (08:00-10:00).\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "T12 — Persistencia tras reinicio de contenedores (200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"[T12] Status 200 OK — Datos persisten tras docker compose restart\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"[T12] Responde en < 2000 ms (arrancando contenedores)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});",
+                  "pm.test(\"[T12] BD persistente: hay al menos 5 recursos en PostgreSQL\", function () {",
+                  "    var d = pm.response.json();",
+                  "    pm.expect(d.recursos).to.be.an(\"array\");",
+                  "    pm.expect(d.recursos.length).to.be.at.least(5);",
+                  "    // Si hay datos, significa que el volumen postgres_data sobrevivió el reinicio.",
+                  "    console.log(\"[T12] Recursos encontrados tras reinicio:\", d.recursos.length);",
+                  "});",
+                  "",
+                  "// Instrucción para evidencia manual:",
+                  "// 1. Ejecutar: docker compose restart",
+                  "// 2. Esperar ~30 segundos a que los servicios levanten",
+                  "// 3. Ejecutar esta petición — debe retornar los mismos datos que antes del reinicio"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/recursos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "recursos"
+              ]
+            }
+          }
+        },
+        {
+          "name": "T13 — Integración UI → Gateway → BD (Flujo completo)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"[T13] Status 201 — Flujo completo Frontend→Gateway→BD funcional\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"[T13] Responde en < 1500 ms (incluye latencia de red interna Docker)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(1500);",
+                  "});",
+                  "pm.test(\"[T13] Dato persiste en BD: solicitud tiene ID asignado por PostgreSQL\", function () {",
+                  "    var d = pm.response.json();",
+                  "    pm.expect(d.solicitud).to.have.property(\"id\");",
+                  "    pm.expect(d.solicitud.id).to.be.a(\"number\");",
+                  "    pm.expect(d.solicitud.id).to.be.above(0);",
+                  "    console.log(\"[T13] ID asignado por PostgreSQL:\", d.solicitud.id);",
+                  "});",
+                  "pm.test(\"[T13] Dato correcto: dependencia y asunto coinciden con lo enviado\", function () {",
+                  "    var d = pm.response.json();",
+                  "    pm.expect(d.solicitud.dependencia).to.eql(\"Bienestar Universitario\");",
+                  "    pm.expect(d.solicitud.asunto).to.include(\"T13\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/solicitudes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dependencia\": \"Bienestar Universitario\",\n  \"asunto\": \"Solicitud integración frontend→gateway→BD — T13\",\n  \"descripcion\": \"Esta petición simula el flujo completo que ejecuta el formulario React de solicitudes: Frontend (React 19/Vite) → API Gateway (:8080) → ms-solicitudes (:3003) → PostgreSQL (db_solicitudes).\",\n  \"tipo\": \"BIENESTAR\",\n  \"prioridad\": \"BAJA\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "T14 — Manejo de error controlado (Ruta inválida → 404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"[T14] Status 404 — Ruta desconocida manejada correctamente\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "pm.test(\"[T14] Responde en < 1000 ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "pm.test(\"[T14] No expone stack trace ni datos internos\", function () {",
+                  "    var body = pm.response.text();",
+                  "    pm.expect(body.toLowerCase()).to.not.include(\"stack\");",
+                  "    pm.expect(body.toLowerCase()).to.not.include(\"traceback\");",
+                  "    pm.expect(body.toLowerCase()).to.not.include(\"pg_query\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/ruta-inexistente-t14",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ruta-inexistente-t14"
+              ]
+            }
+          }
+        },
+        {
+          "name": "T15 — Health Checks de los 8 Microservicios",
+          "description": "Verifica el endpoint /health de los 8 microservicios a través del API Gateway. Cada sub-petición confirma que el servicio responde 200 OK.",
+          "item": [
+            {
+              "name": "T15.1 — Health Check ms-usuarios (:3001)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"[T15.1] ms-usuarios responde 200 OK\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "pm.test(\"[T15.1] Responde en < 1000 ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                      "});",
+                      "pm.test(\"[T15.1] Body indica status OK\", function () {",
+                      "    var d = pm.response.json();",
+                      "    pm.expect(d.status).to.eql(\"OK\");",
+                      "    pm.expect(d.service).to.eql(\"ms-usuarios\");",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{jwtToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/health",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "health"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "T15.2 — Health Check ms-servicios (:3002)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"[T15.2] ms-servicios responde 200 OK\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "pm.test(\"[T15.2] Responde en < 1000 ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                      "});",
+                      "pm.test(\"[T15.2] Body indica status OK\", function () {",
+                      "    var d = pm.response.json();",
+                      "    pm.expect(d.status).to.eql(\"OK\");",
+                      "    pm.expect(d.service).to.eql(\"ms-servicios\");",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{jwtToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/servicios/health",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "servicios",
+                    "health"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "T15.3 — Health Check ms-solicitudes (:3003)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"[T15.3] ms-solicitudes responde 200 OK\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "pm.test(\"[T15.3] Responde en < 1000 ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                      "});",
+                      "pm.test(\"[T15.3] Body indica status OK\", function () {",
+                      "    var d = pm.response.json();",
+                      "    pm.expect(d.status).to.eql(\"OK\");",
+                      "    pm.expect(d.service).to.eql(\"ms-solicitudes\");",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{jwtToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/solicitudes/health",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "solicitudes",
+                    "health"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "T15.4 — Health Check ms-pqrs (:3004)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"[T15.4] ms-pqrs responde 200 OK\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "pm.test(\"[T15.4] Responde en < 1000 ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                      "});",
+                      "pm.test(\"[T15.4] Body indica status OK\", function () {",
+                      "    var d = pm.response.json();",
+                      "    pm.expect(d.status).to.eql(\"OK\");",
+                      "    pm.expect(d.service).to.eql(\"ms-pqrs\");",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{jwtToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/pqrs/health",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "pqrs",
+                    "health"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "T15.5 — Health Check ms-recursos (:3005)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"[T15.5] ms-recursos responde 200 OK\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "pm.test(\"[T15.5] Responde en < 1000 ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                      "});",
+                      "pm.test(\"[T15.5] Body indica status OK\", function () {",
+                      "    var d = pm.response.json();",
+                      "    pm.expect(d.status).to.eql(\"OK\");",
+                      "    pm.expect(d.service).to.eql(\"ms-recursos\");",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{jwtToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/recursos/health",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "recursos",
+                    "health"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "T15.6 — Health Check ms-reservas (:3006)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"[T15.6] ms-reservas responde 200 OK\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "pm.test(\"[T15.6] Responde en < 1000 ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                      "});",
+                      "pm.test(\"[T15.6] Body indica status OK\", function () {",
+                      "    var d = pm.response.json();",
+                      "    pm.expect(d.status).to.eql(\"OK\");",
+                      "    pm.expect(d.service).to.eql(\"ms-reservas\");",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{jwtToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/reservas/health",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reservas",
+                    "health"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "T15.7 — Health Check ms-notificaciones (:3007)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"[T15.7] ms-notificaciones responde 200 OK\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "pm.test(\"[T15.7] Responde en < 1000 ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                      "});",
+                      "pm.test(\"[T15.7] Body indica status OK\", function () {",
+                      "    var d = pm.response.json();",
+                      "    pm.expect(d.status).to.eql(\"OK\");",
+                      "    pm.expect(d.service).to.eql(\"ms-notificaciones\");",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{jwtToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/notificaciones/health",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "notificaciones",
+                    "health"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "T15.8 — Health Check ms-eventos (:3008)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"[T15.8] ms-eventos responde 200 OK\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "pm.test(\"[T15.8] Responde en < 1000 ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                      "});",
+                      "pm.test(\"[T15.8] Body indica status OK\", function () {",
+                      "    var d = pm.response.json();",
+                      "    pm.expect(d.status).to.eql(\"OK\");",
+                      "    pm.expect(d.service).to.eql(\"ms-eventos\");",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{jwtToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/eventos/health",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "eventos",
+                    "health"
+                  ]
+                }
+              }
+            }
+          ]
         }
       ]
     }
