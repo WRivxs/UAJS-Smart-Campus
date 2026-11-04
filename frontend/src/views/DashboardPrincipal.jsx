@@ -6,6 +6,7 @@ import ListadoSolicitudes from './ListadoSolicitudes';
 import ListadoPqrs from './ListadoPqrs';
 import PanelReservas from './PanelReservas';
 import PerfilEstudiante from './PerfilEstudiante';
+import CentroNotificaciones from './CentroNotificaciones';
 import useProfile from '../hooks/useProfile';
 import useSolicitudes from '../hooks/useSolicitudes';
 import useEventos from '../hooks/useEventos';
@@ -348,8 +349,11 @@ export const DashboardPrincipal = () => {
           {/* ── Vista: Mi Perfil (Estudiante) ─────────────────────────── */}
           {activeTab === 'perfil' && <PerfilEstudiante onNavigateTab={setActiveTab} />}
 
+          {/* ── Vista: Centro de Notificaciones ────────────────────────── */}
+          {activeTab === 'notificaciones' && <CentroNotificaciones onNavigateTab={setActiveTab} />}
+
           {/* ── Vistas en construcción ──────────────────────────────────── */}
-          {!['inicio', 'eventos', 'solicitudes', 'pqrs', 'reservas', 'perfil'].includes(activeTab) && (
+          {!['inicio', 'eventos', 'solicitudes', 'pqrs', 'reservas', 'perfil', 'notificaciones'].includes(activeTab) && (
             <div className="bg-white border border-slate-200/90 rounded-xl p-10 text-center shadow-xs">
               <span className="material-symbols-outlined text-[48px] text-slate-300">construction</span>
               <h2 className="text-lg font-bold font-space text-slate-700 mt-3 capitalize">{activeTab}</h2>
