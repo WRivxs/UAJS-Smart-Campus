@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "docx": "^9.15.2",
     "pdf-parse": "^2.4.5",
     "pdf2json": "^4.0.3"
   }
