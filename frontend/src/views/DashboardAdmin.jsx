@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useAuth } from '../hooks/useAuth';
 import Navbar from '../components/Navbar/Navbar';
 import SidebarAdmin from '../components/SidebarAdmin/SidebarAdmin';
 import AdminResumen from './admin/AdminResumen';
@@ -17,14 +18,51 @@ export const DashboardAdmin = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [vistaEstudiante, setVistaEstudiante] = useState(false);
 
-  const counts = {
+  const { token } = useAuth();
+  const [counts, setCounts] = useState({
     usuarios: 0,
     solicitudes: 0,
     pqrs: 0,
     recursos: 0,
     reservas: 0,
     eventos: 0,
-  };
+  });
+
+  // Consultar en vivo los totales desde los microservicios a través del API Gateway
+  const fetchLiveCounts = useCallback(async () => {
+    if (!token) return;
+    const API_URL = import.meta.env.VITE_API_GATEWAY_URL || "http://localhost:8080";
+    const headers = {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    };
+
+    try {
+      const [uRes, sRes, pRes, rRes, resvRes, eRes] = await Promise.allSettled([
+        fetch(`${API_URL}/api/users`, { headers }).then(r => r.ok ? r.json() : null),
+        fetch(`${API_URL}/api/solicitudes`, { headers }).then(r => r.ok ? r.json() : null),
+        fetch(`${API_URL}/api/pqrs`, { headers }).then(r => r.ok ? r.json() : null),
+        fetch(`${API_URL}/api/recursos`, { headers }).then(r => r.ok ? r.json() : null),
+        fetch(`${API_URL}/api/reservas`, { headers }).then(r => r.ok ? r.json() : null),
+        fetch(`${API_URL}/api/eventos`, { headers }).then(r => r.ok ? r.json() : null),
+      ]);
+
+      setCounts({
+        usuarios: (uRes.value?.usuarios || uRes.value?.users || []).length,
+        solicitudes: (sRes.value?.solicitudes || []).length,
+        pqrs: (pRes.value?.pqrs || []).length,
+        recursos: (rRes.value?.recursos || []).length,
+        reservas: (resvRes.value?.reservas || []).length,
+        eventos: (eRes.value?.eventos || []).length,
+      });
+    } catch (err) {
+      console.warn("Error consultando contadores de administración:", err.message);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    fetchLiveCounts();
+  }, [fetchLiveCounts, activeTab]);
 
   // Si el administrador eligió previsualizar el portal de estudiante
   if (vistaEstudiante) {

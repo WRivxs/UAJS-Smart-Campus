@@ -29,11 +29,13 @@ const MainApp = () => {
     return <LandingAuth />;
   }
 
-  // Enrutamiento definitivo por identidad de cuenta
-  const userEmail = (user?.email || '').trim().toLowerCase();
-  const isAdmin = userEmail.includes('admin') || user?.rol_nombre === 'Administrador' || Number(user?.rol_id) === 1;
+  // Enrutamiento institucional estricto por rol oficial asignado en PostgreSQL
+  // Roles: 1: Administrador, 2: Docente, 3: Administrativo, 4: Estudiante
+  const currentRole = (user?.rol_nombre || user?.rol || '').trim();
+  const roleId = Number(user?.rol_id);
+  const isAdmin = currentRole === 'Administrador' || roleId === 1;
 
-  if (isAdmin && !userEmail.includes('estudiante')) {
+  if (isAdmin) {
     return <DashboardAdmin />;
   }
 

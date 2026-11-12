@@ -55,30 +55,17 @@ export const Navbar = ({ title = "Smart Campus", onToggleSidebar, onNavigateTab 
   const modalRef = useRef(null);
   const notifRef = useRef(null);
 
-  const userEmail = (user?.email || profile?.email || '').trim().toLowerCase();
-  const isAdmin = userEmail.includes('admin') && !userEmail.includes('estudiante');
+  // Detección del rol oficial desde PostgreSQL (1: Administrador, 2: Docente, 3: Administrativo, 4: Estudiante)
+  const currentRole = profile?.rol_nombre || user?.rol_nombre || rol || "Estudiante";
+  const roleId = Number(profile?.rol_id || user?.rol_id);
+  const isAdmin = currentRole === "Administrador" || roleId === 1;
 
-  const currentRole = isAdmin ? 'Administrador' : 'Estudiante';
+  const displayName = profile?.nombre || user?.nombre || "Usuario Institucional";
+  const displayEmail = profile?.email || user?.email || "";
+  const displayCodigo = profile?.codigo_estudiantil || user?.codigo_estudiantil || (isAdmin ? "ADM-001" : "N/A");
+  const displayFacultad = profile?.facultad || profile?.facultad_departamento || user?.facultad || user?.facultad_departamento || (isAdmin ? "Dirección de Tecnologías de la Información" : "Facultad de Ingenierías");
 
-  const displayName = isAdmin
-    ? (user?.nombre || profile?.nombre || 'Administrador General del Sistema')
-    : (user?.nombre || profile?.nombre || 'Juan David Rivas Payares');
-
-  const displayEmail = isAdmin
-    ? (user?.email || profile?.email || 'admin@uajs.edu.co')
-    : (user?.email || profile?.email || 'estudiante@uajs.edu.co');
-
-  const displayCodigo = isAdmin
-    ? (user?.codigo_estudiantil || profile?.codigo_estudiantil || 'ADM-001')
-    : (user?.codigo_estudiantil || profile?.codigo_estudiantil || 'EST-202401');
-
-  const displayFacultad = isAdmin
-    ? (user?.facultad_departamento || profile?.facultad_departamento || 'Dirección de Tecnologías de la Información')
-    : (user?.facultad || profile?.facultad || 'Facultad de Ingenierías');
-
-  const displaySubtitle = isAdmin
-    ? (user?.cargo || profile?.cargo || 'Director de Tecnologías e Infraestructura')
-    : (user?.programa_academico || profile?.programa_academico || 'Estudiante de Ingeniería de Sistemas');
+  const displaySubtitle = profile?.cargo || profile?.programa_academico || user?.cargo || user?.programa_academico || `${currentRole} Institucional`;
 
   // Helper para obtener iniciales
   const getInitials = (name) => {

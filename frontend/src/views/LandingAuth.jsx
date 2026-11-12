@@ -68,59 +68,17 @@ export const LandingAuth = () => {
 
       setSuccessMessage('¡Autenticación exitosa! Iniciando sesión en el Campus...');
       
-      // Save session token in AuthContext
+      // Guardar token y datos reales del usuario retornados por ms-usuarios (PostgreSQL)
       if (data.token) {
-        const isAdm = apiEmail.includes('admin');
-        const resolvedUserData = {
-          ...(data.usuario || data.user || {}),
-          id: isAdm ? 1 : 4,
-          email: apiEmail,
-          rol_nombre: isAdm ? 'Administrador' : 'Estudiante',
-          rol_id: isAdm ? 1 : 4,
-          nombre: isAdm ? 'Administrador General del Sistema' : 'Juan David Rivas Payares',
-          cargo: isAdm ? 'Director de Tecnologías e Infraestructura' : 'Estudiante de Pregrado',
-          codigo_estudiantil: isAdm ? 'ADM-001' : 'EST-202401',
-          facultad_departamento: isAdm ? 'Dirección de Tecnologías de la Información' : 'Facultad de Ingenierías'
-        };
-        login(data.token, resolvedUserData);
+        login(data.token, data.usuario || data.user);
       }
 
     } catch (err) {
-      console.error('Error de autenticación:', err);
-      
-      // Handle fallback for offline backend during frontend development
-      if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
-        setErrorMessage('Servidor Gateway inactivo. Iniciando sesión en modo desarrollo local...');
-        setTimeout(() => {
-          const isAdm = normalizedEmail.includes('admin');
-          const mockUser = isAdm
-            ? {
-                id: 1,
-                nombre: 'Administrador General del Sistema',
-                email: normalizedEmail,
-                rol_nombre: 'Administrador',
-                rol_id: 1,
-                cargo: 'Director de Tecnologías e Infraestructura',
-                codigo_estudiantil: 'ADM-001',
-                facultad_departamento: 'Dirección de Tecnologías de la Información'
-              }
-            : {
-                id: 4,
-                nombre: 'Juan David Rivas Payares',
-                email: normalizedEmail,
-                rol_nombre: 'Estudiante',
-                rol_id: 4,
-                cargo: 'Estudiante de Pregrado',
-                codigo_estudiantil: 'EST-202401',
-                facultad: 'Facultad de Ingenierías',
-                programa_academico: 'Ingeniería de Sistemas',
-                semestre_actual: 6
-              };
-          
-          login('mock_token_' + (isAdm ? 'admin' : 'estudiante'), mockUser);
-        }, 600);
+      console.error("Error de autenticación:", err);
+      if (err.message.includes("Failed to fetch") || err.message.includes("NetworkError")) {
+        setErrorMessage("No es posible conectar con el API Gateway (:8080). Verifica que los contenedores de Docker estén activos.");
       } else {
-        setErrorMessage(err.message || 'Error al conectar con el servidor de autenticación.');
+        setErrorMessage(err.message || "Error al conectar con el servidor de autenticación.");
       }
     } finally {
       setLoading(false);

@@ -9,21 +9,13 @@ export const useProfile = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Sincronizar de inmediato el perfil cuando el usuario autenticado cambie
+  // Sincronizar el perfil con los datos autenticados reales de la sesión
   useEffect(() => {
     if (authUser) {
-      const userEmail = (authUser.email || '').trim().toLowerCase();
-      const isAdmin = userEmail.includes('admin') && !userEmail.includes('estudiante');
-      setProfile({
+      setProfile(prev => ({
         ...authUser,
-        rol_nombre: isAdmin ? 'Administrador' : 'Estudiante',
-        rol_id: isAdmin ? 1 : 4,
-        nombre: authUser.nombre || (isAdmin ? 'Administrador General del Sistema' : 'Juan David Rivas Payares'),
-        cargo: isAdmin ? 'Director de Tecnologías e Infraestructura' : 'Estudiante de Pregrado',
-        facultad_departamento: isAdmin ? 'Dirección de Tecnologías de la Información' : 'Facultad de Ingenierías',
-        programa_academico: 'Ingeniería de Sistemas',
-        codigo_estudiantil: authUser.codigo_estudiantil || (isAdmin ? 'ADM-001' : 'EST-202401')
-      });
+        ...(prev || {})
+      }));
     }
   }, [authUser]);
 
@@ -33,7 +25,8 @@ export const useProfile = () => {
     setError(null);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
+      // Consultar el perfil real desde PostgreSQL a través del API Gateway
+      const response = await fetch(`${API_BASE_URL}/api/usuarios/profile`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -47,71 +40,15 @@ export const useProfile = () => {
         throw new Error(data.message || data.error || 'No se pudo obtener el perfil del usuario');
       }
 
-      const rawProfile = data.usuario || data.user || data;
-      const userEmail = (rawProfile.email || authUser?.email || '').trim().toLowerCase();
-      const isAdmin = userEmail.includes('admin') && !userEmail.includes('estudiante');
-
-      setProfile({
-        ...rawProfile,
-        rol_nombre: isAdmin ? 'Administrador' : 'Estudiante',
-        rol_id: isAdmin ? 1 : 4,
-        nombre: rawProfile.nombre || (isAdmin ? 'Administrador General del Sistema' : 'Juan David Rivas Payares'),
-        cargo: isAdmin ? 'Director de Tecnologías e Infraestructura' : 'Estudiante de Pregrado',
-        facultad_departamento: isAdmin ? 'Dirección de Tecnologías de la Información' : 'Facultad de Ingenierías',
-        codigo_estudiantil: rawProfile.codigo_estudiantil || (isAdmin ? 'ADM-001' : 'EST-202401')
-      });
+      const realProfile = data.usuario || data.user || data;
+      setProfile(realProfile);
     } catch (err) {
-      console.warn('Error al cargar perfil desde Gateway, usando fallback de sesión:', err.message);
-      const userEmail = (authUser?.email || '').trim().toLowerCase();
-      const isAdmin = userEmail.includes('admin') && !userEmail.includes('estudiante');
-
-      if (isAdmin) {
-        setProfile({
-          id: authUser?.id || 1,
-          nombre: authUser?.nombre || 'Administrador General del Sistema',
-          email: authUser?.email || 'admin@uajs.edu.co',
-          rol_nombre: 'Administrador',
-          rol_id: 1,
-          codigo_estudiantil: authUser?.codigo_estudiantil || 'ADM-001',
-          facultad: 'Dirección de Tecnologías de la Información',
-          facultad_departamento: 'Dirección de Tecnologías de la Información',
-          cargo: 'Director de Tecnologías e Infraestructura',
-          tipo_vinculacion: 'Tiempo Completo',
-          celular: '3100000000',
-          telefono: '6052814502',
-          email_personal: 'admin.smartcampus@uajs.edu.co'
-        });
-      } else {
-        setProfile({
-          id: authUser?.id || 4,
-          nombre: authUser?.nombre || 'Juan David Rivas Payares',
-          primer_nombre: 'Juan',
-          segundo_nombre: 'David',
-          primer_apellido: 'Rivas',
-          segundo_apellido: 'Payares',
-          email: authUser?.email || 'estudiante@uajs.edu.co',
-          rol_nombre: 'Estudiante',
-          rol_id: 4,
-          codigo_estudiantil: authUser?.codigo_estudiantil || 'EST-202401',
-          facultad: 'Facultad de Ingenierías',
-          facultad_departamento: 'Facultad de Ingenierías',
-          programa_academico: 'Ingeniería de Sistemas',
-          cargo: 'Estudiante de Pregrado',
-          semestre_actual: 6,
-          tipo_documento: 'Tarjeta de Identidad',
-          numero_documento: '1052952641',
-          fecha_expedicion_documento: '2019-09-10',
-          fecha_nacimiento: '2005-05-27',
-          edad: 21,
-          genero: 'Masculino',
-          estado_civil: 'Soltero(a)',
-          celular: '3114270335',
-          telefono: '3114270335',
-          email_personal: 'juandavid.rivas@gmail.com',
-          tipo_vinculacion: 'Estudiante Regular'
-        });
-      }
+      console.warn('Advertencia al consultar perfil desde Gateway:', err.message);
       setError(err.message);
+      // Mantener los datos reales decodificados del JWT de sesión sin inventar datos mock
+      if (authUser) {
+        setProfile(authUser);
+      }
     } finally {
       setLoading(false);
     }
