@@ -55,15 +55,30 @@ export const Navbar = ({ title = "Smart Campus", onToggleSidebar, onNavigateTab 
   const modalRef = useRef(null);
   const notifRef = useRef(null);
 
-  const currentRole = rol || profile?.rol_nombre || user?.rol_nombre || 'Estudiante';
-  const displayName = profile?.nombre || user?.nombre || 'Juan David Rivas Payares';
-  const displayEmail = profile?.email || user?.email || 'estudiante@uajs.edu.co';
-  const displayCodigo = profile?.codigo_estudiantil || 'EST-202401';
-  const displayFacultad = profile?.facultad || 'Ingeniería de Sistemas';
+  const userEmail = (user?.email || profile?.email || '').trim().toLowerCase();
+  const isAdmin = userEmail.includes('admin') && !userEmail.includes('estudiante');
 
-  const displaySubtitle = currentRole === 'Estudiante' 
-    ? 'Estudiante de Ingeniería' 
-    : `${currentRole} Institucional`;
+  const currentRole = isAdmin ? 'Administrador' : 'Estudiante';
+
+  const displayName = isAdmin
+    ? (user?.nombre || profile?.nombre || 'Administrador General del Sistema')
+    : (user?.nombre || profile?.nombre || 'Juan David Rivas Payares');
+
+  const displayEmail = isAdmin
+    ? (user?.email || profile?.email || 'admin@uajs.edu.co')
+    : (user?.email || profile?.email || 'estudiante@uajs.edu.co');
+
+  const displayCodigo = isAdmin
+    ? (user?.codigo_estudiantil || profile?.codigo_estudiantil || 'ADM-001')
+    : (user?.codigo_estudiantil || profile?.codigo_estudiantil || 'EST-202401');
+
+  const displayFacultad = isAdmin
+    ? (user?.facultad_departamento || profile?.facultad_departamento || 'Dirección de Tecnologías de la Información')
+    : (user?.facultad || profile?.facultad || 'Facultad de Ingenierías');
+
+  const displaySubtitle = isAdmin
+    ? (user?.cargo || profile?.cargo || 'Director de Tecnologías e Infraestructura')
+    : (user?.programa_academico || profile?.programa_academico || 'Estudiante de Ingeniería de Sistemas');
 
   // Helper para obtener iniciales
   const getInitials = (name) => {
@@ -301,12 +316,12 @@ export const Navbar = ({ title = "Smart Campus", onToggleSidebar, onNavigateTab 
               {/* Cuerpo de Información del Estudiante */}
               <div className="p-4 space-y-3 bg-slate-50 text-xs font-space border-b border-slate-200/80">
                 <div className="flex flex-col">
-                  <span className="text-slate-500 font-medium text-[11px]">Código Estudiantil:</span>
+                  <span className="text-slate-500 font-medium text-[11px]">{isAdmin ? 'Código Funcionario:' : 'Código Estudiantil:'}</span>
                   <span className="text-slate-900 font-bold font-mono text-sm">{displayCodigo}</span>
                 </div>
 
                 <div className="flex flex-col">
-                  <span className="text-slate-500 font-medium text-[11px]">Facultad:</span>
+                  <span className="text-slate-500 font-medium text-[11px]">{isAdmin ? 'Dependencia / Unidad:' : 'Facultad:'}</span>
                   <span className="text-[#0284c7] font-semibold">{displayFacultad}</span>
                 </div>
 

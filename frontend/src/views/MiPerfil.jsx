@@ -131,7 +131,7 @@ export const MiPerfil = ({ onNavigateTab = () => {} }) => {
         throw new Error(data.error || data.message || 'Error al actualizar la contraseña');
       }
 
-      showToast('¡Contraseña actualizada exitosamente en ms-usuarios (PostgreSQL)!', 'success');
+      showToast('¡Contraseña actualizada exitosamente!', 'success');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
@@ -148,7 +148,7 @@ export const MiPerfil = ({ onNavigateTab = () => {} }) => {
   // Sincronización de datos con el Gateway
   const handleRefresh = async () => {
     if (refetchProfile) await refetchProfile();
-    showToast('Perfil sincronizado con ms-usuarios y Auth Service', 'success');
+    showToast('Perfil institucional sincronizado', 'success');
   };
 
   // Simulación de renovación de Token QR dinámico
@@ -198,12 +198,12 @@ export const MiPerfil = ({ onNavigateTab = () => {} }) => {
         <div className="flex items-center space-x-2">
           <div className="inline-flex items-center space-x-2 bg-white px-3 py-1 rounded-full border border-slate-200 text-xs shadow-xs font-space">
             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span className="text-slate-700 font-medium">Token JWT Válido • Sesión RBAC Activa</span>
+            <span className="text-slate-700 font-medium">Sesión Institucional Activa</span>
           </div>
           <button
             onClick={handleRefresh}
             className="p-1.5 bg-white border border-slate-200 rounded-full text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition shadow-xs cursor-pointer"
-            title="Sincronizar Datos con ms-usuarios"
+            title="Sincronizar Datos"
           >
             <svg className={`w-4 h-4 ${profileLoading ? 'animate-spin text-blue-600' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
@@ -525,8 +525,8 @@ export const MiPerfil = ({ onNavigateTab = () => {} }) => {
                   <h3 className="text-base font-bold text-slate-900 font-space">Seguridad de la Cuenta Institucional</h3>
                   <p className="text-xs text-slate-500">Actualiza tus credenciales para el Directorio Activo y SSO de UNIAJS</p>
                 </div>
-                <span className="px-2 py-0.5 font-mono text-[11px] bg-slate-100 text-slate-600 rounded border border-slate-200">
-                  ms-auth: bcrypt-v2
+                <span className="px-2 py-0.5 font-space text-[11px] bg-slate-100 text-slate-600 rounded border border-slate-200">
+                  Seguridad Oficial
                 </span>
               </div>
 
@@ -653,7 +653,7 @@ export const MiPerfil = ({ onNavigateTab = () => {} }) => {
                     <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
                   </svg>
                   <span>
-                    Las credenciales se encriptan con hash <strong>bcrypt (salt rounds 10)</strong> en PostgreSQL central y se sincronizan instantáneamente con el API Gateway institucional.
+                    Las credenciales se almacenan encriptadas con protocolos de alta seguridad institucional.
                   </span>
                 </div>
 
@@ -666,7 +666,7 @@ export const MiPerfil = ({ onNavigateTab = () => {} }) => {
                     {passwordLoading ? (
                       <>
                         <span className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-white border-t-transparent" />
-                        <span>Actualizando en PostgreSQL...</span>
+                        <span>Actualizando contraseña...</span>
                       </>
                     ) : (
                       <>

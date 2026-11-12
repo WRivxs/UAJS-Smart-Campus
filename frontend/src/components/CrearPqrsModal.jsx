@@ -227,14 +227,14 @@ export const CrearPqrsModal = ({ isOpen, onClose, onSubmit, isSubmitting }) => {
                 Dependencia / Área Responsable <span className="text-rose-500">*</span>
               </label>
               {loadingDeps ? (
-                <span className="text-[11px] text-[#0a47b8] flex items-center gap-1 font-mono">
+                <span className="text-[11px] text-[#0a47b8] flex items-center gap-1 font-space">
                   <span className="w-2 h-2 rounded-full bg-blue-600 animate-ping" />
-                  Consultando ms-servicios...
+                  Cargando dependencias...
                 </span>
               ) : (
-                <span className="text-[10px] text-emerald-600 font-mono font-medium flex items-center gap-1">
+                <span className="text-[10px] text-emerald-600 font-space font-medium flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                  {dependencias.length} áreas disponibles en BD
+                  {dependencias.length} áreas institucionales
                 </span>
               )}
             </div>

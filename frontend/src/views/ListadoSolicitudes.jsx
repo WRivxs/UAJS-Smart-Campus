@@ -615,8 +615,8 @@ export const ListadoSolicitudes = () => {
             Mostrando <span className="font-bold text-slate-800">{solicitudesFiltradas.length}</span> de{' '}
             <span className="font-bold text-slate-800">{solicitudes.length}</span> trámites registrados
           </div>
-          <div className="flex items-center space-x-1 font-mono text-[11px] text-slate-400">
-            <span>Sistemas Distribuidos UNIAJS • PostgreSQL 15</span>
+          <div className="flex items-center space-x-1 font-space text-[11px] text-slate-400">
+            <span>UAJS Smart Campus • Trámites Académicos</span>
           </div>
         </div>
       </div>

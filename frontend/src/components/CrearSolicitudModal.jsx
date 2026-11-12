@@ -68,7 +68,7 @@ export const CrearSolicitudModal = ({ isOpen, onClose, onSubmit, actionLoading }
           }
         }
       } catch (err) {
-        console.warn('Usando catálogo base de servicios verificados en PostgreSQL:', err.message);
+        console.warn('Usando catálogo base de servicios institucionales:', err.message);
       } finally {
         setLoadingServicios(false);
       }
@@ -172,14 +172,14 @@ export const CrearSolicitudModal = ({ isOpen, onClose, onSubmit, actionLoading }
                 Catálogo de Servicios Académicos *
               </label>
               {loadingServicios ? (
-                <span className="text-[11px] text-[#0a47b8] flex items-center gap-1 font-mono">
+                <span className="text-[11px] text-[#0a47b8] flex items-center gap-1 font-space">
                   <span className="w-2 h-2 rounded-full bg-blue-600 animate-ping" />
-                  Consultando ms-servicios...
+                  Cargando catálogo...
                 </span>
               ) : (
-                <span className="text-[10px] text-emerald-600 font-mono font-medium flex items-center gap-1">
+                <span className="text-[10px] text-emerald-600 font-space font-medium flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                  {servicios.length} servicios disponibles en BD
+                  {servicios.length} trámites disponibles
                 </span>
               )}
             </div>

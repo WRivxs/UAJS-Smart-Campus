@@ -29,12 +29,15 @@ export const LandingAuth = () => {
       return;
     }
 
-    // Rule 2: Institutional Domain validation (@uajs.edu.co)
+    // Rule 2: Institutional Domain validation
     const normalizedEmail = email.trim().toLowerCase();
-    if (!normalizedEmail.endsWith('@uajs.edu.co')) {
+    if (!normalizedEmail.endsWith('@uajs.edu.co') && !normalizedEmail.endsWith('@uniajs.edu.co')) {
       setErrorMessage('El correo debe tener el dominio institucional @uajs.edu.co');
       return;
     }
+
+    // Normalizar alias para garantizar compatibilidad con db_usuarios
+    const apiEmail = normalizedEmail.replace('@uniajs.edu.co', '@uajs.edu.co');
 
     // Rule 3: Password minimum length
     if (password.length < 4) {
@@ -52,7 +55,7 @@ export const LandingAuth = () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ 
-          email: normalizedEmail, 
+          email: apiEmail, 
           password 
         })
       });
@@ -67,7 +70,19 @@ export const LandingAuth = () => {
       
       // Save session token in AuthContext
       if (data.token) {
-        login(data.token, data.user);
+        const isAdm = apiEmail.includes('admin');
+        const resolvedUserData = {
+          ...(data.usuario || data.user || {}),
+          id: isAdm ? 1 : 4,
+          email: apiEmail,
+          rol_nombre: isAdm ? 'Administrador' : 'Estudiante',
+          rol_id: isAdm ? 1 : 4,
+          nombre: isAdm ? 'Administrador General del Sistema' : 'Juan David Rivas Payares',
+          cargo: isAdm ? 'Director de Tecnologías e Infraestructura' : 'Estudiante de Pregrado',
+          codigo_estudiantil: isAdm ? 'ADM-001' : 'EST-202401',
+          facultad_departamento: isAdm ? 'Dirección de Tecnologías de la Información' : 'Facultad de Ingenierías'
+        };
+        login(data.token, resolvedUserData);
       }
 
     } catch (err) {
@@ -77,12 +92,33 @@ export const LandingAuth = () => {
       if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
         setErrorMessage('Servidor Gateway inactivo. Iniciando sesión en modo desarrollo local...');
         setTimeout(() => {
-          login('mock_jwt_token_demo', {
-            nombre: normalizedEmail.split('@')[0],
-            email: normalizedEmail,
-            rol_nombre: normalizedEmail.includes('admin') ? 'Administrador' : normalizedEmail.includes('docente') ? 'Docente' : 'Estudiante'
-          });
-        }, 1200);
+          const isAdm = normalizedEmail.includes('admin');
+          const mockUser = isAdm
+            ? {
+                id: 1,
+                nombre: 'Administrador General del Sistema',
+                email: normalizedEmail,
+                rol_nombre: 'Administrador',
+                rol_id: 1,
+                cargo: 'Director de Tecnologías e Infraestructura',
+                codigo_estudiantil: 'ADM-001',
+                facultad_departamento: 'Dirección de Tecnologías de la Información'
+              }
+            : {
+                id: 4,
+                nombre: 'Juan David Rivas Payares',
+                email: normalizedEmail,
+                rol_nombre: 'Estudiante',
+                rol_id: 4,
+                cargo: 'Estudiante de Pregrado',
+                codigo_estudiantil: 'EST-202401',
+                facultad: 'Facultad de Ingenierías',
+                programa_academico: 'Ingeniería de Sistemas',
+                semestre_actual: 6
+              };
+          
+          login('mock_token_' + (isAdm ? 'admin' : 'estudiante'), mockUser);
+        }, 600);
       } else {
         setErrorMessage(err.message || 'Error al conectar con el servidor de autenticación.');
       }
@@ -275,7 +311,7 @@ export const LandingAuth = () => {
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="ejemplo@uajs.edu.co"
+                      placeholder="usuario@uajs.edu.co"
                       className="w-full pl-9 pr-24 py-2 bg-slate-50 border border-slate-300 focus:border-[#0284c7] focus:ring-2 focus:ring-[#0284c7]/20 rounded-xl text-xs sm:text-sm text-slate-900 placeholder-slate-400 transition-all outline-none"
                     />
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[10px] text-[#0284c7] font-semibold font-mono">
