@@ -38,15 +38,18 @@ export const AdminSolicitudes = () => {
     setTimeout(() => setToast(null), 3500);
   };
 
+  const safeSolicitudes = useMemo(() => (Array.isArray(solicitudes) ? solicitudes : []), [solicitudes]);
+
   // Dependencias únicas
   const dependenciasList = useMemo(() => {
-    const setDeps = new Set(solicitudes.map((s) => s.dependencia).filter(Boolean));
+    const setDeps = new Set(safeSolicitudes.map((s) => s?.dependencia).filter(Boolean));
     return Array.from(setDeps);
-  }, [solicitudes]);
+  }, [safeSolicitudes]);
 
   // Filtrado de solicitudes
   const solicitudesFiltradas = useMemo(() => {
-    return solicitudes.filter((s) => {
+    return safeSolicitudes.filter((s) => {
+      if (!s || typeof s !== 'object') return false;
       const matchEstado = tabEstado === 'TODAS' || s.estado === tabEstado;
       const matchDep = dependenciaFiltro === 'TODAS' || s.dependencia === dependenciaFiltro;
       const q = busqueda.toLowerCase().trim();
@@ -59,7 +62,7 @@ export const AdminSolicitudes = () => {
 
       return matchEstado && matchDep && matchBusqueda;
     });
-  }, [solicitudes, tabEstado, dependenciaFiltro, busqueda]);
+  }, [safeSolicitudes, tabEstado, dependenciaFiltro, busqueda]);
 
   // Abrir detalle con historial
   const handleAbrirDetalle = async (s) => {
@@ -166,13 +169,13 @@ export const AdminSolicitudes = () => {
         <div className="space-y-1 relative z-10">
           <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/15 text-[10px] font-space font-semibold uppercase tracking-wider text-blue-100">
             <span className="material-symbols-outlined text-[14px]">fact_check</span>
-            <span>Microservicio ms-solicitudes (:3003) • Máquina de Estados Finita</span>
+            <span>Trámites y Solicitudes Académicas</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-bold font-space text-white">
             Auditoría y Gestión de Trámites Académicos
           </h1>
           <p className="text-xs text-blue-100/90 max-w-2xl">
-            Control del ciclo de vida estricto: REGISTRADA ➔ EN_REVISION ➔ ASIGNADA ➔ EN_PROCESO ➔ RESUELTA ➔ CERRADA con historial de trazabilidad en PostgreSQL.
+            Gestión, seguimiento y control de trámites, certificaciones y solicitudes académicas radicadas por la comunidad universitaria.
           </p>
         </div>
       </div>
@@ -254,7 +257,7 @@ export const AdminSolicitudes = () => {
         {loading ? (
           <div className="p-12 text-center flex flex-col items-center justify-center gap-3">
             <div className="animate-spin rounded-full h-8 w-8 border-3 border-[#0a47b8] border-t-transparent" />
-            <p className="text-xs text-slate-500 font-space font-medium">Consultando solicitudes en db_solicitudes...</p>
+            <p className="text-xs text-slate-500 font-space font-medium">Consultando radicados y trámites académicos...</p>
           </div>
         ) : solicitudesFiltradas.length === 0 ? (
           <div className="p-10 text-center space-y-2">
@@ -323,7 +326,7 @@ export const AdminSolicitudes = () => {
                       </button>
                       <button
                         onClick={() => handleAbrirModalCambioEstado(s)}
-                        title="Cambiar Estado (Máquina de Estados)"
+                        title="Cambiar Estado del Trámite"
                         type="button"
                         className="p-1.5 rounded-lg text-slate-600 hover:bg-amber-50 hover:text-amber-700"
                       >
@@ -359,7 +362,7 @@ export const AdminSolicitudes = () => {
             <div className="bg-gradient-to-r from-[#081f56] to-blue-700 p-5 text-white flex items-center justify-between shrink-0">
               <div>
                 <span className="text-[10px] font-bold font-space uppercase tracking-widest text-blue-200">
-                  Trámite #{String(solicitudDetalle.id).padStart(4, '0')} • db_solicitudes
+                  Trámite Institucional #{String(solicitudDetalle.id).padStart(4, '0')}
                 </span>
                 <h3 className="text-base font-bold font-space text-white">{solicitudDetalle.asunto}</h3>
               </div>
@@ -402,7 +405,7 @@ export const AdminSolicitudes = () => {
               <div className="space-y-2">
                 <h4 className="text-xs font-bold font-space text-slate-900 flex items-center gap-1.5">
                   <span className="material-symbols-outlined text-[#0a47b8] text-[16px]">history</span>
-                  <span>Historial de Transiciones (historial_estados_solicitud)</span>
+                  <span>Historial y Trazabilidad del Trámite</span>
                 </h4>
 
                 {loadingDetalle ? (
@@ -443,7 +446,7 @@ export const AdminSolicitudes = () => {
         </div>
       )}
 
-      {/* ── Modal Cambio de Estado (Máquina de Estados) ───────────────── */}
+      {/* ── Modal Cambio de Estado del Trámite ───────────────── */}
       {solicitudCambioEstado && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in"
@@ -456,7 +459,7 @@ export const AdminSolicitudes = () => {
             <div className="bg-gradient-to-r from-[#081f56] to-blue-700 p-5 text-white flex items-center justify-between">
               <div>
                 <span className="text-[10px] font-bold font-space uppercase tracking-widest text-blue-200">
-                  Control de Ciclo de Vida • ms-solicitudes
+                  Gestión de Estado del Trámite
                 </span>
                 <h3 className="text-base font-bold font-space text-white">Transición de Estado</h3>
               </div>
@@ -467,13 +470,13 @@ export const AdminSolicitudes = () => {
 
             <form onSubmit={handleConfirmarCambioEstado} className="p-5 space-y-4 text-xs">
               
-              {/* Alerta de Error 400 Bad Request si se intentó salto no permitido */}
+              {/* Alerta si se intentó salto no permitido */}
               {badRequestError && (
                 <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-300 text-rose-900 text-xs flex items-start gap-2.5 animate-in slide-in-from-top-2">
                   <span className="material-symbols-outlined text-rose-600 text-[20px] shrink-0 mt-0.5">warning</span>
                   <div>
                     <strong className="font-space font-bold block text-rose-950">
-                      ⚠️ Error HTTP 400: Violación de Máquina de Estados
+                      Transición de Estado No Permitida
                     </strong>
                     <p className="mt-0.5 leading-relaxed">{badRequestError}</p>
                   </div>
@@ -516,7 +519,7 @@ export const AdminSolicitudes = () => {
                   <option value="CERRADA">CERRADA</option>
                 </select>
                 <span className="text-[10px] text-slate-500 mt-1 block">
-                  El backend validará estrictamente la regla de negocio. Los saltos ilegales devuelven 400 Bad Request.
+                  El sistema valida que la transición corresponda al orden oficial del proceso institucional.
                 </span>
               </div>
 
@@ -562,7 +565,7 @@ export const AdminSolicitudes = () => {
                   disabled={actionLoading || !nuevoEstadoSeleccionado}
                   className="px-5 py-2 rounded-xl bg-[#0a47b8] hover:bg-[#081f56] text-white text-xs font-bold font-space transition-all cursor-pointer disabled:opacity-50"
                 >
-                  {actionLoading ? 'Verificando con backend...' : 'Aplicar Transición de Estado'}
+                  {actionLoading ? 'Actualizando...' : 'Aplicar Cambio de Estado'}
                 </button>
               </div>
             </form>
@@ -605,8 +608,8 @@ export const AdminSolicitudes = () => {
                   }}
                   className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer"
                 >
-                  <option value="Carlos Pérez">Carlos Pérez (Coordinador Registro - ID #3)</option>
-                  <option value="Administrador General">Administrador General (ID #1)</option>
+                  <option value="Carlos Pérez">Carlos Pérez (Coordinador de Registro y Control)</option>
+                  <option value="Administrador General">Administrador General de Plataforma</option>
                 </select>
               </div>
 
@@ -637,3 +640,4 @@ export const AdminSolicitudes = () => {
 };
 
 export default AdminSolicitudes;
+

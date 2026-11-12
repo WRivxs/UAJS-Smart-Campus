@@ -37,8 +37,14 @@ export const useAdminSolicitudes = () => {
         throw new Error('Error al cargar trámites y solicitudes de db_solicitudes.');
       }
 
-      const data = await res.json();
-      const list = data.solicitudes || (Array.isArray(data) ? data : []);
+      const data = await res.json().catch(() => ({}));
+      const list = Array.isArray(data?.solicitudes)
+        ? data.solicitudes
+        : Array.isArray(data?.data)
+        ? data.data
+        : Array.isArray(data)
+        ? data
+        : [];
       setSolicitudes(list);
       setError(null);
       return list;
@@ -156,3 +162,4 @@ export const useAdminSolicitudes = () => {
 };
 
 export default useAdminSolicitudes;
+

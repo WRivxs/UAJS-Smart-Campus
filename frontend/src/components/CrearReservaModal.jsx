@@ -289,7 +289,7 @@ export const CrearReservaModal = ({
             </div>
           )}
 
-          {/* 1. Selector de Recurso (db_recursos) */}
+          {/* 1. Selector de Recurso */}
           <div className="space-y-2">
             <label htmlFor={resourceSelectId} className="block text-xs font-bold text-slate-800 font-space uppercase tracking-wider">
               1. Selecciona el Espacio o Equipo <span className="text-rose-500">*</span>
@@ -389,7 +389,7 @@ export const CrearReservaModal = ({
               </div>
 
               {loadingDisponibilidad ? (
-                <p className="text-[11px] text-slate-500 italic">Verificando agenda en base de datos db_reservas...</p>
+                <p className="text-[11px] text-slate-500 italic">Verificando disponibilidad de horarios...</p>
               ) : horariosOcupados.length === 0 ? (
                 <div className="flex items-center gap-1.5 text-emerald-800 text-[11px] font-semibold bg-emerald-50/80 px-2.5 py-1 rounded-lg border border-emerald-200">
                   <span className="material-symbols-outlined text-[15px] text-emerald-600">check_circle</span>
@@ -493,7 +493,7 @@ export const CrearReservaModal = ({
               <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-[11px] flex items-center gap-2">
                 <span className="material-symbols-outlined text-rose-600 text-[16px] shrink-0">error</span>
                 <span>
-                  El rango {formatTime12h(horaInicio)} a {formatTime12h(horaFin)} colisiona con una reserva existente. La API responderá 409 Conflict. Por favor ajusta la hora.
+                  El rango {formatTime12h(horaInicio)} a {formatTime12h(horaFin)} se cruza con una reserva confirmada. Por favor selecciona otra hora.
                 </span>
               </div>
             )}
@@ -554,7 +554,7 @@ export const CrearReservaModal = ({
               {actionLoading ? (
                 <>
                   <span className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-white border-t-transparent" />
-                  <span>Registrando reserva en PostgreSQL...</span>
+                  <span>Registrando solicitud de reserva...</span>
                 </>
               ) : (
                 <>

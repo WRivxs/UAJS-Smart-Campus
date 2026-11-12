@@ -465,7 +465,7 @@ export const AgendaEventos = () => {
             </span>
           </h2>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-400 hidden sm:inline">Conectado a PostgreSQL db_eventos (Puerto 8080)</span>
+            <span className="text-xs text-slate-400 hidden sm:inline">Agenda Institucional en Tiempo Real</span>
             <button
               onClick={refetch}
               title="Actualizar eventos"

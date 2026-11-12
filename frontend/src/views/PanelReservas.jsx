@@ -300,7 +300,7 @@ export const PanelReservas = () => {
             </h3>
             <p className="text-[11px] text-blue-600 font-medium flex items-center gap-1">
               <span className="material-symbols-outlined text-[14px]">calendar_month</span>
-              <span>Historial registrado en PostgreSQL</span>
+              <span>Historial de solicitudes registradas</span>
             </p>
           </div>
           <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 text-[#0a47b8] flex items-center justify-center group-hover:scale-105 group-hover:bg-[#0a47b8] group-hover:text-white transition-all shadow-xs shrink-0">
@@ -389,7 +389,7 @@ export const PanelReservas = () => {
           <button
             onClick={() => refetch()}
             disabled={loading}
-            title="Recargar reservas desde ms-reservas"
+            title="Actualizar listado de reservas"
             type="button"
             className="text-xs text-slate-500 hover:text-[#0a47b8] flex items-center gap-1 px-2.5 py-1.5 rounded-xl hover:bg-slate-100 border border-slate-200/80 transition-colors cursor-pointer font-space"
           >
@@ -450,7 +450,7 @@ export const PanelReservas = () => {
         <div className="bg-white rounded-xl p-12 border border-slate-200/90 text-center shadow-xs flex flex-col items-center justify-center gap-3">
           <div className="animate-spin rounded-full h-8 w-8 border-3 border-[#0a47b8] border-t-transparent" />
           <p className="text-xs text-slate-500 font-space font-medium">
-            Consultando reservas en PostgreSQL (db_reservas)...
+            Consultando estado de reservas...
           </p>
         </div>
       ) : reservasFiltradas.length === 0 ? (
@@ -682,7 +682,7 @@ export const PanelReservas = () => {
         </div>
       )}
 
-      {/* ─── MODAL EXPLORADOR DE ESPACIOS DEL CAMPUS (Catálogo ms-recursos) ─ */}
+      {/* ─── MODAL EXPLORADOR DE ESPACIOS DEL CAMPUS ──────────────── */}
       {isCatalogoOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-900/60 backdrop-blur-xs overflow-y-auto animate-in fade-in"
@@ -698,7 +698,7 @@ export const PanelReservas = () => {
             <div className="bg-gradient-to-r from-[#081f56] via-[#0a47b8] to-blue-600 p-5 text-white flex items-center justify-between shrink-0">
               <div>
                 <span className="text-[10px] font-bold font-space uppercase tracking-widest text-blue-200">
-                  Inventario Físico Institucional • ms-recursos
+                  Inventario Físico Institucional
                 </span>
                 <h3 className="text-lg font-bold font-space text-white">
                   Catálogo de Espacios, Laboratorios y Equipos

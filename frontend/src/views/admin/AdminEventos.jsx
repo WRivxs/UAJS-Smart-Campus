@@ -58,9 +58,12 @@ export const AdminEventos = () => {
     setTimeout(() => setFeedback(null), 4500);
   };
 
-  // Filtrado
+  // Filtrado Seguro
+  const safeEventos = useMemo(() => (Array.isArray(eventos) ? eventos : []), [eventos]);
+
   const filteredEventos = useMemo(() => {
-    return eventos.filter((ev) => {
+    return safeEventos.filter((ev) => {
+      if (!ev || typeof ev !== 'object') return false;
       const matchSearch =
         (ev.titulo || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
         (ev.descripcion || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -75,16 +78,16 @@ export const AdminEventos = () => {
 
       return matchSearch && matchEstado && matchTipo;
     });
-  }, [eventos, searchTerm, estadoFiltro, tipoFiltro]);
+  }, [safeEventos, searchTerm, estadoFiltro, tipoFiltro]);
 
   // KPIs
   const stats = useMemo(() => {
-    const total = eventos.length;
-    const programados = eventos.filter((e) => (e.estado || '').toUpperCase() === 'PROGRAMADO').length;
-    const enCurso = eventos.filter((e) => (e.estado || '').toUpperCase() === 'EN_CURSO').length;
-    const finalizados = eventos.filter((e) => (e.estado || '').toUpperCase() === 'FINALIZADO').length;
+    const total = safeEventos.length;
+    const programados = safeEventos.filter((e) => (e?.estado || '').toUpperCase() === 'PROGRAMADO').length;
+    const enCurso = safeEventos.filter((e) => (e?.estado || '').toUpperCase() === 'EN_CURSO').length;
+    const finalizados = safeEventos.filter((e) => (e?.estado || '').toUpperCase() === 'FINALIZADO').length;
     return { total, programados, enCurso, finalizados };
-  }, [eventos]);
+  }, [safeEventos]);
 
   // Abrir modal Crear
   const handleOpenCreate = () => {
@@ -242,9 +245,9 @@ export const AdminEventos = () => {
         <div>
           <div className="flex items-center gap-2">
             <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-[#0a47b8]">
-              ms-eventos :3008 & ms-notificaciones :3007
+              Agenda y Comunicaciones
             </span>
-            <span className="text-xs text-slate-400">PostgreSQL db_eventos</span>
+            <span className="text-xs text-slate-400">Plataforma Institucional</span>
           </div>
           <h2 className="text-2xl font-bold text-[#081f56] tracking-tight mt-1">
             Agenda Institucional y Sistema de Alertas
@@ -379,7 +382,7 @@ export const AdminEventos = () => {
           <span className="material-symbols-outlined text-4xl text-[#0a47b8] animate-spin">
             progress_activity
           </span>
-          <p className="text-sm text-slate-500 mt-3">Consultando eventos en ms-eventos (:3008)...</p>
+          <p className="text-sm text-slate-500 mt-3">Consultando agenda de eventos...</p>
         </div>
       ) : error ? (
         <div className="bg-rose-50 border border-rose-200 rounded-2xl p-6 text-center">
@@ -531,7 +534,7 @@ export const AdminEventos = () => {
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-[#081f56]">Publicar Nuevo Evento</h3>
-                  <p className="text-xs text-slate-400">ms-eventos (:3008) - Agenda Institucional</p>
+                  <p className="text-xs text-slate-400">Agenda Universitaria y Actividades del Campus</p>
                 </div>
               </div>
               <button
@@ -815,7 +818,7 @@ export const AdminEventos = () => {
         </div>
       )}
 
-      {/* MODAL DIFUSIÓN MASIVA (ms-notificaciones :3007) */}
+      {/* MODAL DIFUSIÓN MASIVA INSTITUCIONAL */}
       {showDifusionModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
           <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl border border-slate-100 overflow-hidden">
@@ -829,7 +832,7 @@ export const AdminEventos = () => {
                     Emitir Alerta Institucional Masiva
                   </h3>
                   <p className="text-xs text-amber-800">
-                    POST /api/notificaciones/difusion (ms-notificaciones :3007)
+                    Emisión de Alerta Masiva para la Comunidad Universitaria
                   </p>
                 </div>
               </div>
@@ -906,7 +909,7 @@ export const AdminEventos = () => {
               <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-900 flex items-start gap-2">
                 <span className="material-symbols-outlined text-base shrink-0">info</span>
                 <span>
-                  Esta alerta se guardará en <strong>db_notificaciones</strong> y se notificará en tiempo real en la campana de notificaciones de todos los usuarios registrados.
+                  Esta alerta se emitirá en tiempo real a la campana de notificaciones de todos los estudiantes y docentes registrados.
                 </span>
               </div>
 
@@ -951,7 +954,7 @@ export const AdminEventos = () => {
                 ¿Eliminar evento de la agenda?
               </h3>
               <p className="text-xs text-slate-500 mt-1">
-                Se eliminará el evento <strong>{selectedEvento.titulo}</strong> de la base de datos de eventos institucionales.
+                Se eliminará el evento <strong>{selectedEvento.titulo}</strong> de la agenda institucional.
               </p>
             </div>
 

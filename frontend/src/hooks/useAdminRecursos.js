@@ -27,8 +27,14 @@ export const useAdminRecursos = () => {
         throw new Error('Error al consultar el catálogo de recursos.');
       }
 
-      const data = await res.json();
-      const list = data.recursos || data.data || (Array.isArray(data) ? data : []);
+      const data = await res.json().catch(() => ({}));
+      const list = Array.isArray(data?.recursos)
+        ? data.recursos
+        : Array.isArray(data?.data)
+        ? data.data
+        : Array.isArray(data)
+        ? data
+        : [];
       setRecursos(list);
       setError(null);
       return list;
@@ -50,13 +56,18 @@ export const useAdminRecursos = () => {
   const crearRecurso = async (payload) => {
     setActionLoading(true);
     try {
+      const isDisp = payload.disponibilidad === 'DISPONIBLE' || payload.disponibilidad === true;
       const res = await fetch(`${API_GATEWAY_URL}/api/recursos`, {
         method: 'POST',
         headers: getAuthHeaders(),
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          ...payload,
+          disponibilidad: isDisp,
+          estado: payload.estado || 'BUENO',
+        }),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         return { ok: false, message: data.error || data.message || 'Error al crear el recurso.' };
       }
@@ -75,13 +86,18 @@ export const useAdminRecursos = () => {
   const editarRecurso = async (id, payload) => {
     setActionLoading(true);
     try {
+      const isDisp = payload.disponibilidad === 'DISPONIBLE' || payload.disponibilidad === true;
       const res = await fetch(`${API_GATEWAY_URL}/api/recursos/${id}`, {
         method: 'PUT',
         headers: getAuthHeaders(),
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          ...payload,
+          disponibilidad: isDisp,
+          estado: payload.estado || 'BUENO',
+        }),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         return { ok: false, message: data.error || data.message || 'Error al actualizar el recurso.' };
       }
@@ -100,13 +116,17 @@ export const useAdminRecursos = () => {
   const cambiarEstadoRecurso = async (id, estado, disponibilidad) => {
     setActionLoading(true);
     try {
+      const isDisp = disponibilidad === 'DISPONIBLE' || disponibilidad === true;
       const res = await fetch(`${API_GATEWAY_URL}/api/recursos/${id}/estado`, {
         method: 'PUT',
         headers: getAuthHeaders(),
-        body: JSON.stringify({ estado, disponibilidad }),
+        body: JSON.stringify({
+          estado: estado || 'BUENO',
+          disponibilidad: isDisp,
+        }),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         return { ok: false, message: data.error || 'Error al cambiar estado.' };
       }
@@ -129,7 +149,7 @@ export const useAdminRecursos = () => {
         headers: getAuthHeaders(),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         return { ok: false, message: data.error || data.message || 'No se pudo eliminar el recurso.' };
       }
@@ -151,10 +171,14 @@ export const useAdminRecursos = () => {
       const res = await fetch(`${API_GATEWAY_URL}/api/recursos/${id}/mantenimiento`, {
         method: 'POST',
         headers: getAuthHeaders(),
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          tipo_mantenimiento: payload.tipo || payload.tipo_mantenimiento || 'PREVENTIVO',
+          descripcion: payload.descripcion,
+          tecnico_responsable: payload.tecnico_responsable || 'Servicios Generales',
+        }),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         return { ok: false, message: data.error || 'Error al registrar mantenimiento.' };
       }

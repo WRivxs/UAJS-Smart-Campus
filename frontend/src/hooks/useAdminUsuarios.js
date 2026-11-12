@@ -30,8 +30,14 @@ export const useAdminUsuarios = () => {
         throw new Error(errData.error || errData.message || 'Error al obtener usuarios de db_usuarios.');
       }
 
-      const data = await res.json();
-      const list = data.usuarios || data.data || (Array.isArray(data) ? data : []);
+      const data = await res.json().catch(() => ({}));
+      const list = Array.isArray(data?.usuarios)
+        ? data.usuarios
+        : Array.isArray(data?.data)
+        ? data.data
+        : Array.isArray(data)
+        ? data
+        : [];
       setUsuarios(list);
       setError(null);
       return list;
@@ -134,3 +140,4 @@ export const useAdminUsuarios = () => {
 };
 
 export default useAdminUsuarios;
+

@@ -48,7 +48,7 @@ export const AdminResumen = ({ onNavigateTab = () => {}, counts = {} }) => {
           </h1>
 
           <p className="text-sm text-blue-100/90 leading-relaxed font-normal">
-            Bienvenido, <strong className="text-white font-semibold">{user?.nombre || 'Administrador General'}</strong>. Control centralizado de los 8 microservicios, bases de datos PostgreSQL, auditoría de reservas con algoritmo anti-solapamiento y ciclo de vida de trámites.
+            Bienvenido, <strong className="text-white font-semibold">{user?.nombre || 'Administrador General del Sistema'}</strong>. Gestión institucional centralizada, supervisión operativa de servicios, control de reservas de espacios y seguimiento del ciclo de vida de trámites universitarios.
           </p>
 
           <div className="pt-2 flex flex-wrap items-center gap-3">
@@ -100,7 +100,7 @@ export const AdminResumen = ({ onNavigateTab = () => {}, counts = {} }) => {
             <h3 className="text-3xl font-extrabold text-slate-900 font-space group-hover:text-[#0a47b8] transition-colors">
               {counts.usuarios ?? '—'}
             </h3>
-            <p className="text-[11px] text-slate-500 mt-1">Estudiantes, docentes y personal en db_usuarios</p>
+            <p className="text-[11px] text-slate-500 mt-1">Estudiantes, docentes y personal institucional</p>
           </div>
         </div>
 
@@ -121,7 +121,7 @@ export const AdminResumen = ({ onNavigateTab = () => {}, counts = {} }) => {
             <h3 className="text-3xl font-extrabold text-slate-900 font-space group-hover:text-[#0a47b8] transition-colors">
               {counts.solicitudes ?? '—'}
             </h3>
-            <p className="text-[11px] text-slate-500 mt-1">Ciclo de vida gobernado en db_solicitudes</p>
+            <p className="text-[11px] text-slate-500 mt-1">Trámites y certificaciones en curso</p>
           </div>
         </div>
 
@@ -142,7 +142,7 @@ export const AdminResumen = ({ onNavigateTab = () => {}, counts = {} }) => {
             <h3 className="text-3xl font-extrabold text-emerald-600 font-space">
               {counts.reservas ?? '—'}
             </h3>
-            <p className="text-[11px] text-emerald-700 font-medium mt-1">Con validación de solapamiento (409)</p>
+            <p className="text-[11px] text-emerald-700 font-medium mt-1">Control de horarios y disponibilidad</p>
           </div>
         </div>
 
@@ -163,22 +163,22 @@ export const AdminResumen = ({ onNavigateTab = () => {}, counts = {} }) => {
             <h3 className="text-3xl font-extrabold text-slate-900 font-space group-hover:text-[#0a47b8] transition-colors">
               {counts.recursos ?? '—'}
             </h3>
-            <p className="text-[11px] text-slate-500 mt-1">Aulas, labs y equipos en db_recursos</p>
+            <p className="text-[11px] text-slate-500 mt-1">Aulas, laboratorios y equipos disponibles</p>
           </div>
         </div>
 
       </div>
 
-      {/* ── Monitoreo de Salud de la Arquitectura Distribuida ───────────── */}
+      {/* ── Monitoreo de Estado de Servicios del Sistema ───────────── */}
       <div className="bg-white rounded-xl p-5 sm:p-6 border border-slate-200/90 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
           <div className="space-y-0.5">
             <h2 className="text-base font-bold font-space text-slate-900 flex items-center gap-2">
               <span className="material-symbols-outlined text-[#0a47b8] text-[20px]">monitor_heart</span>
-              <span>Telemetría y Estado de Microservicios (API Gateway :8080)</span>
+              <span>Telemetría y Estado Operativo de Servicios</span>
             </h2>
             <p className="text-xs text-slate-500 font-normal">
-              Estado operativo en tiempo real de los servicios independientes y sus conexiones con PostgreSQL.
+              Monitoreo en tiempo real de los servicios independientes y conectividad con bases de datos del campus.
             </p>
           </div>
 
@@ -198,14 +198,14 @@ export const AdminResumen = ({ onNavigateTab = () => {}, counts = {} }) => {
         {/* Grid de servicios */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
           {[
-            { name: 'API Gateway', port: '8080', desc: 'Proxy & JWT Auth' },
-            { name: 'ms-usuarios', port: '3001', desc: 'RBAC & Perfiles' },
-            { name: 'ms-solicitudes', port: '3003', desc: 'Máquina Estados' },
-            { name: 'ms-pqrs', port: '3004', desc: 'Tickets & SLA' },
-            { name: 'ms-recursos', port: '3005', desc: 'Inventario Físico' },
-            { name: 'ms-reservas', port: '3006', desc: 'Anti-solapamiento' },
-            { name: 'ms-notificaciones', port: '3007', desc: 'Difusión & Alertas' },
-            { name: 'ms-eventos', port: '3008', desc: 'Agenda Campus' },
+            { name: 'Seguridad & Acceso', desc: 'Autenticación Centralizada' },
+            { name: 'Directorio de Usuarios', desc: 'Gestión Institucional' },
+            { name: 'Trámites y Certificaciones', desc: 'Atención de Solicitudes' },
+            { name: 'Atención al Ciudadano', desc: 'PQRS y Peticiones' },
+            { name: 'Inventario de Espacios', desc: 'Aulas y Laboratorios' },
+            { name: 'Control de Reservas', desc: 'Disponibilidad de Horarios' },
+            { name: 'Centro de Alertas', desc: 'Notificaciones Oficiales' },
+            { name: 'Agenda Universitaria', desc: 'Eventos del Campus' },
           ].map((srv) => (
             <div
               key={srv.name}
@@ -215,8 +215,8 @@ export const AdminResumen = ({ onNavigateTab = () => {}, counts = {} }) => {
                 <span className="text-xs font-bold font-space text-slate-800 block truncate">
                   {srv.name}
                 </span>
-                <span className="text-[10px] text-slate-500 font-mono">
-                  :{srv.port} • {srv.desc}
+                <span className="text-[10px] text-slate-500 font-space block truncate">
+                  {srv.desc}
                 </span>
               </div>
               <span className="flex h-2.5 w-2.5 relative shrink-0 ml-2" title="Operativo">
@@ -233,3 +233,4 @@ export const AdminResumen = ({ onNavigateTab = () => {}, counts = {} }) => {
 };
 
 export default AdminResumen;
+

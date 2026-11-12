@@ -27,8 +27,14 @@ export const useAdminEventos = () => {
         throw new Error('Error al cargar la agenda institucional en db_eventos.');
       }
 
-      const data = await res.json();
-      const list = data.eventos || (Array.isArray(data) ? data : []);
+      const data = await res.json().catch(() => ({}));
+      const list = Array.isArray(data?.eventos)
+        ? data.eventos
+        : Array.isArray(data?.data)
+        ? data.data
+        : Array.isArray(data)
+        ? data
+        : [];
       setEventos(list);
       setError(null);
       return list;
@@ -180,3 +186,4 @@ export const useAdminEventos = () => {
 };
 
 export default useAdminEventos;
+

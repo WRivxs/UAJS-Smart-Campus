@@ -32,8 +32,11 @@ export const AdminPqrs = () => {
     setTimeout(() => setToast(null), 3500);
   };
 
+  const safePqrsList = useMemo(() => (Array.isArray(pqrsList) ? pqrsList : []), [pqrsList]);
+
   const pqrsFiltradas = useMemo(() => {
-    return pqrsList.filter((p) => {
+    return safePqrsList.filter((p) => {
+      if (!p || typeof p !== 'object') return false;
       const matchEstado = tabEstado === 'TODAS' || p.estado === tabEstado;
       const matchTipo = tipoFiltro === 'TODOS' || p.tipo === tipoFiltro;
       const q = busqueda.toLowerCase().trim();
@@ -46,7 +49,7 @@ export const AdminPqrs = () => {
 
       return matchEstado && matchTipo && matchBusqueda;
     });
-  }, [pqrsList, tabEstado, tipoFiltro, busqueda]);
+  }, [safePqrsList, tabEstado, tipoFiltro, busqueda]);
 
   const handleAbrirDetalle = async (p) => {
     setPqrsDetalle(p);
@@ -124,13 +127,13 @@ export const AdminPqrs = () => {
         <div className="space-y-1 relative z-10">
           <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/15 text-[10px] font-space font-semibold uppercase tracking-wider text-blue-100">
             <span className="material-symbols-outlined text-[14px]">support_agent</span>
-            <span>Microservicio ms-pqrs (:3004) • SLA y Atención al Ciudadano</span>
+            <span>Atención al Ciudadano y PQRS</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-bold font-space text-white">
             Atención Institucional de PQRS
           </h1>
           <p className="text-xs text-blue-100/90 max-w-2xl">
-            Gestión de Peticiones, Quejas, Reclamos y Sugerencias con emisión de respuestas oficiales y bitácora en PostgreSQL.
+            Gestión, atención y emisión de respuestas oficiales a peticiones, quejas, reclamos y sugerencias de la comunidad universitaria.
           </p>
         </div>
       </div>
@@ -211,7 +214,7 @@ export const AdminPqrs = () => {
         {loading ? (
           <div className="p-12 text-center flex flex-col items-center justify-center gap-3">
             <div className="animate-spin rounded-full h-8 w-8 border-3 border-[#0a47b8] border-t-transparent" />
-            <p className="text-xs text-slate-500 font-space font-medium">Consultando radicados en db_pqrs...</p>
+            <p className="text-xs text-slate-500 font-space font-medium">Consultando radicados de atención ciudadana...</p>
           </div>
         ) : pqrsFiltradas.length === 0 ? (
           <div className="p-10 text-center space-y-2">
@@ -343,7 +346,7 @@ export const AdminPqrs = () => {
                   required
                   value={mensajeRespuesta}
                   onChange={(e) => setMensajeRespuesta(e.target.value)}
-                  placeholder="Redacta la respuesta oficial de la Universidad. Se registrará en db_pqrs y se actualizará el estado a RESPONDIDA..."
+                  placeholder="Redacta la respuesta oficial de la Universidad. Se notificará al solicitante y se actualizará el estado a RESPONDIDA..."
                   className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white resize-none leading-relaxed"
                 />
               </div>
@@ -362,7 +365,7 @@ export const AdminPqrs = () => {
                   disabled={actionLoading || !mensajeRespuesta.trim()}
                   className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold font-space transition-all cursor-pointer disabled:opacity-50"
                 >
-                  {actionLoading ? 'Registrando en PostgreSQL...' : 'Emitir Respuesta Oficial'}
+                  {actionLoading ? 'Enviando...' : 'Emitir Respuesta Oficial'}
                 </button>
               </div>
             </form>
@@ -471,7 +474,7 @@ export const AdminPqrs = () => {
             <div className="text-center space-y-1.5">
               <h3 className="text-base font-bold font-space text-slate-900">¿Eliminar radicado PQRS?</h3>
               <p className="text-xs text-slate-600">
-                Se eliminará el ticket <strong className="text-slate-900">{pqrsAEliminar.numero_ticket}</strong> de la base de datos PostgreSQL.
+                Se eliminará el ticket <strong className="text-slate-900">{pqrsAEliminar.numero_ticket}</strong> del sistema.
               </p>
             </div>
             <div className="flex justify-end gap-3 pt-2">

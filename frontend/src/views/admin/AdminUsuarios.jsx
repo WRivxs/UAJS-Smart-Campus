@@ -28,9 +28,12 @@ export const AdminUsuarios = () => {
     setTimeout(() => setToast(null), 3500);
   };
 
-  // Filtrado de usuarios
+  // Filtrado Seguro de usuarios
+  const safeUsuarios = useMemo(() => (Array.isArray(usuarios) ? usuarios : []), [usuarios]);
+
   const usuariosFiltrados = useMemo(() => {
-    return usuarios.filter((u) => {
+    return safeUsuarios.filter((u) => {
+      if (!u || typeof u !== 'object') return false;
       const matchRol = rolFiltro === 'TODOS' || u.rol_nombre === rolFiltro;
       const matchEstado = estadoFiltro === 'TODOS' || u.estado === estadoFiltro;
       const q = busqueda.toLowerCase().trim();
@@ -43,7 +46,7 @@ export const AdminUsuarios = () => {
 
       return matchRol && matchEstado && matchBusqueda;
     });
-  }, [usuarios, rolFiltro, estadoFiltro, busqueda]);
+  }, [safeUsuarios, rolFiltro, estadoFiltro, busqueda]);
 
   // Manejo de edición
   const handleGuardarEdicion = async (e) => {
@@ -117,13 +120,13 @@ export const AdminUsuarios = () => {
         <div className="space-y-1 relative z-10">
           <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/15 text-[10px] font-space font-semibold uppercase tracking-wider text-blue-100">
             <span className="material-symbols-outlined text-[14px]">manage_accounts</span>
-            <span>Microservicio ms-usuarios (:3001) • PostgreSQL db_usuarios</span>
+            <span>Directorio Institucional y Cuentas</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-bold font-space text-white">
             Administración y Gobernanza de Usuarios
           </h1>
           <p className="text-xs text-blue-100/90 max-w-2xl">
-            Control de cuentas, roles institucionales (RBAC), perfiles estudiantiles y docentes con auditoría de estados.
+            Control de cuentas, roles institucionales, perfiles estudiantiles y docentes con auditoría de estados.
           </p>
         </div>
       </div>
@@ -197,7 +200,7 @@ export const AdminUsuarios = () => {
         {loading ? (
           <div className="p-12 text-center flex flex-col items-center justify-center gap-3">
             <div className="animate-spin rounded-full h-8 w-8 border-3 border-[#0a47b8] border-t-transparent" />
-            <p className="text-xs text-slate-500 font-space font-medium">Consultando usuarios en db_usuarios...</p>
+            <p className="text-xs text-slate-500 font-space font-medium">Consultando directorio de usuarios...</p>
           </div>
         ) : usuariosFiltrados.length === 0 ? (
           <div className="p-10 text-center space-y-2">
@@ -308,7 +311,7 @@ export const AdminUsuarios = () => {
             <div className="bg-gradient-to-r from-[#081f56] to-blue-700 p-5 text-white flex items-center justify-between">
               <div>
                 <span className="text-[10px] font-bold font-space uppercase tracking-widest text-blue-200">
-                  Ficha Institucional • ms-usuarios
+                  Ficha Institucional de Usuario
                 </span>
                 <h3 className="text-base font-bold font-space text-white">{usuarioDetalle.nombre}</h3>
               </div>
@@ -476,7 +479,7 @@ export const AdminUsuarios = () => {
                   disabled={actionLoading}
                   className="px-5 py-2 rounded-xl bg-[#0a47b8] text-white text-xs font-bold font-space hover:bg-[#081f56] transition-all cursor-pointer disabled:opacity-50"
                 >
-                  {actionLoading ? 'Guardando en BD...' : 'Guardar Cambios'}
+                  {actionLoading ? 'Guardando...' : 'Guardar Cambios'}
                 </button>
               </div>
             </form>
@@ -497,7 +500,7 @@ export const AdminUsuarios = () => {
             <div className="text-center space-y-1.5">
               <h3 className="text-base font-bold font-space text-slate-900">¿Eliminar usuario?</h3>
               <p className="text-xs text-slate-600">
-                Se eliminará la cuenta de <strong className="text-slate-900">{usuarioAEliminar.nombre}</strong> ({usuarioAEliminar.email}) de PostgreSQL db_usuarios.
+                Se eliminará la cuenta de <strong className="text-slate-900">{usuarioAEliminar.nombre}</strong> ({usuarioAEliminar.email}) del sistema.
               </p>
             </div>
             <div className="flex justify-end gap-3 pt-2">
@@ -527,3 +530,4 @@ export const AdminUsuarios = () => {
 };
 
 export default AdminUsuarios;
+

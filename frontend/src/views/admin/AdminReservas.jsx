@@ -48,9 +48,12 @@ export const AdminReservas = () => {
     setTimeout(() => setFeedback(null), 4500);
   };
 
-  // Filtrado
+  // Filtrado Seguro
+  const safeReservas = useMemo(() => (Array.isArray(reservas) ? reservas : []), [reservas]);
+
   const filteredReservas = useMemo(() => {
-    return reservas.filter((reserva) => {
+    return safeReservas.filter((reserva) => {
+      if (!reserva || typeof reserva !== 'object') return false;
       const estado = (reserva.estado || '').toUpperCase();
       const matchEstado = activeTab === 'TODAS' || estado === activeTab;
 
@@ -73,16 +76,16 @@ export const AdminReservas = () => {
 
       return matchEstado && matchSearch && matchRecurso;
     });
-  }, [reservas, activeTab, searchTerm, selectedRecursoFilter]);
+  }, [safeReservas, activeTab, searchTerm, selectedRecursoFilter]);
 
   // KPIs
   const stats = useMemo(() => {
-    const total = reservas.length;
-    const pendientes = reservas.filter((r) => (r.estado || '').toUpperCase() === 'PENDIENTE').length;
-    const aprobadas = reservas.filter((r) => (r.estado || '').toUpperCase() === 'APROBADA').length;
-    const rechazadas = reservas.filter((r) => (r.estado || '').toUpperCase() === 'RECHAZADA').length;
+    const total = safeReservas.length;
+    const pendientes = safeReservas.filter((r) => (r?.estado || '').toUpperCase() === 'PENDIENTE').length;
+    const aprobadas = safeReservas.filter((r) => (r?.estado || '').toUpperCase() === 'APROBADA').length;
+    const rechazadas = safeReservas.filter((r) => (r?.estado || '').toUpperCase() === 'RECHAZADA').length;
     return { total, pendientes, aprobadas, rechazadas };
-  }, [reservas]);
+  }, [safeReservas]);
 
   // Manejo de Aprobación con detección estricta de HTTP 409
   const handleAprobar = async (reserva) => {
@@ -98,7 +101,7 @@ export const AdminReservas = () => {
         horario: `${reserva.hora_inicio} - ${reserva.hora_fin}`,
         message: res.message,
       });
-      showFeedbackMsg('error', '¡Conflicto 409! Ya existe un compromiso confirmado en esa franja.');
+      showFeedbackMsg('error', 'Conflicto de horario: Ya existe una reserva confirmada en esa franja.');
     } else if (res.ok) {
       showFeedbackMsg('success', res.message);
     } else {
@@ -239,7 +242,7 @@ export const AdminReservas = () => {
         </div>
       )}
 
-      {/* ALERTA DE CONFLICTO 409 (Prevención de Solapamiento de Horarios) */}
+      {/* ALERTA DE CONFLICTO DE HORARIO (Prevención de Solapamiento) */}
       {conflictAlert && (
         <div className="bg-amber-50 border-2 border-amber-400 rounded-2xl p-5 shadow-sm animate-fade-in">
           <div className="flex items-start gap-3.5">
@@ -249,10 +252,10 @@ export const AdminReservas = () => {
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <span className="px-2 py-0.5 rounded-md text-xs font-bold bg-amber-200 text-amber-900">
-                  HTTP 409 CONFLICT
+                  Conflicto de Horario
                 </span>
                 <h4 className="text-base font-bold text-amber-950">
-                  Algoritmo Anticolisión Activado: Horario Solapado
+                  Horario Solapado: Ya existe una reserva confirmada en esta franja
                 </h4>
               </div>
               <p className="text-sm text-amber-900 mt-1 font-medium">
@@ -288,15 +291,15 @@ export const AdminReservas = () => {
         <div>
           <div className="flex items-center gap-2">
             <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-[#0a47b8]">
-              ms-reservas :3006
+              Auditoría y Control
             </span>
-            <span className="text-xs text-slate-400">PostgreSQL db_reservas</span>
+            <span className="text-xs text-slate-400">Gestión de Espacios</span>
           </div>
           <h2 className="text-2xl font-bold text-[#081f56] tracking-tight mt-1">
             Auditoría y Control de Reservas
           </h2>
           <p className="text-sm text-slate-500 mt-0.5">
-            Supervisión institucional, aprobación con prevención de colisiones 409 y control de franjas horarias.
+            Supervisión institucional, aprobación oportuna y gestión de franjas horarias para espacios y equipos del campus.
           </p>
         </div>
 
@@ -332,11 +335,11 @@ export const AdminReservas = () => {
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-xl text-[#0a47b8]">query_builder</span>
               <h4 className="text-sm font-bold text-[#081f56]">
-                Consultar Franjas Horarias Ocupadas en db_reservas
+                Consultar Disponibilidad de Horarios del Recurso
               </h4>
             </div>
             <span className="text-xs text-slate-400">
-              GET /api/reservas/disponibilidad
+              Consulta en Tiempo Real
             </span>
           </div>
 
@@ -522,7 +525,7 @@ export const AdminReservas = () => {
             <span className="material-symbols-outlined text-4xl text-[#0a47b8] animate-spin">
               progress_activity
             </span>
-            <p className="text-sm text-slate-500 mt-3">Consultando reservas en ms-reservas (:3006)...</p>
+            <p className="text-sm text-slate-500 mt-3">Consultando registros de reservas...</p>
           </div>
         ) : error ? (
           <div className="p-6 text-center bg-rose-50 border-rose-200">
@@ -620,7 +623,7 @@ export const AdminReservas = () => {
                               onClick={() => handleAprobar(res)}
                               disabled={actionLoading}
                               className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition shadow-xs"
-                              title="Aprobar reserva (Valida 409 anticolisión)"
+                              title="Aprobar reserva"
                             >
                               <span className="material-symbols-outlined text-sm">check</span>
                               <span>Aprobar</span>
@@ -846,7 +849,7 @@ export const AdminReservas = () => {
                 ¿Eliminar registro de reserva #{selectedReserva.id}?
               </h3>
               <p className="text-xs text-slate-500 mt-1">
-                Esta acción eliminará definitivamente el registro de la base de datos de reservas.
+                Esta acción eliminará definitivamente el registro de reserva del sistema.
               </p>
             </div>
 

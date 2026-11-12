@@ -157,7 +157,7 @@ export const DashboardPrincipal = () => {
                     <span className="material-symbols-outlined text-[#0284c7]">widgets</span>
                     <span>Servicios Universitarios Habilitados para {currentRole}</span>
                   </h2>
-                  <span className="text-xs text-slate-400 font-mono">Rol RBAC: {currentRole}</span>
+                  <span className="text-xs text-slate-400">Servicios disponibles para tu perfil</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                   {[
@@ -374,9 +374,7 @@ export const DashboardPrincipal = () => {
           <div className="flex items-center gap-2">
             <span className="font-bold text-[#0a47b8]">UNiAJS Smart Campus</span>
             <span>•</span>
-            <span>© Corporación Universitaria Antonio José de Sucre •
-              <code className="text-slate-700 font-mono bg-slate-100 px-1 py-0.5 rounded ml-1">ms-eventos:8080</code>
-            </span>
+            <span>© Corporación Universitaria Antonio José de Sucre • Plataforma Digital</span>
           </div>
           <div className="flex flex-wrap items-center gap-4 text-[11px]">
             <a href="#" className="hover:text-[#0a47b8] transition-colors">Términos de servicio</a>

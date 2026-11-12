@@ -28,8 +28,14 @@ export const useAdminPqrs = () => {
         throw new Error('Error al consultar PQRS en db_pqrs.');
       }
 
-      const data = await res.json();
-      const list = data.pqrs || (Array.isArray(data) ? data : []);
+      const data = await res.json().catch(() => ({}));
+      const list = Array.isArray(data?.pqrs)
+        ? data.pqrs
+        : Array.isArray(data?.data)
+        ? data.data
+        : Array.isArray(data)
+        ? data
+        : [];
       setPqrsList(list);
       setError(null);
       return list;
@@ -149,3 +155,4 @@ export const useAdminPqrs = () => {
 };
 
 export default useAdminPqrs;
+

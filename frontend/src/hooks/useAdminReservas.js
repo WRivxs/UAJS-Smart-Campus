@@ -29,8 +29,14 @@ export const useAdminReservas = () => {
         throw new Error('Error al consultar reservas en db_reservas.');
       }
 
-      const data = await res.json();
-      const list = data.reservas || (Array.isArray(data) ? data : []);
+      const data = await res.json().catch(() => ({}));
+      const list = Array.isArray(data?.reservas)
+        ? data.reservas
+        : Array.isArray(data?.data)
+        ? data.data
+        : Array.isArray(data)
+        ? data
+        : [];
       setReservas(list);
       setError(null);
       return list;
@@ -207,3 +213,4 @@ export const useAdminReservas = () => {
 };
 
 export default useAdminReservas;
+

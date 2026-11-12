@@ -397,7 +397,7 @@ export const PerfilEstudiante = ({ onNavigateTab = () => {} }) => {
 
             <div className="p-3 bg-slate-50/80 rounded-xl border border-slate-200/80">
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
-                Edad Calculada (PostgreSQL)
+                Edad Registrada
               </span>
               <div className="flex items-center gap-2 mt-0.5">
                 <span className="px-2.5 py-0.5 bg-blue-100/80 text-blue-800 rounded-md font-bold font-mono text-xs">
