@@ -29,10 +29,10 @@ export const LandingAuth = () => {
       return;
     }
 
-    // Rule 2: Institutional Domain validation (@uajs.edu.co)
+    // Rule 2: Institutional Domain validation (@uajs.edu.co or @uniajs.edu.co)
     const normalizedEmail = email.trim().toLowerCase();
-    if (!normalizedEmail.endsWith('@uajs.edu.co')) {
-      setErrorMessage('El correo debe tener el dominio institucional @uajs.edu.co');
+    if (!normalizedEmail.endsWith('@uajs.edu.co') && !normalizedEmail.endsWith('@uniajs.edu.co')) {
+      setErrorMessage('El correo debe tener el dominio institucional @uajs.edu.co o @uniajs.edu.co');
       return;
     }
 
@@ -257,6 +257,41 @@ export const LandingAuth = () => {
                 </div>
               )}
 
+              {/* Acceso Rápido por Rol de Prueba */}
+              <div className="mb-3.5 p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider font-space block mb-1.5">
+                  Acceso Rápido (Credenciales Oficiales del Entregable):
+                </span>
+                <div className="grid grid-cols-2 gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEmail('admin@uniajs.edu.co');
+                      setPassword('Password123!');
+                      setErrorMessage('');
+                    }}
+                    className="p-1.5 px-2 rounded-lg bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-800 font-bold text-[11px] font-space flex items-center justify-center gap-1 transition-all cursor-pointer"
+                    title="Cargar credenciales de Administrador: admin@uniajs.edu.co"
+                  >
+                    <span className="material-symbols-outlined text-[14px] text-indigo-600">shield_person</span>
+                    <span>Administrador</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEmail('estudiante@uajs.edu.co');
+                      setPassword('Password123!');
+                      setErrorMessage('');
+                    }}
+                    className="p-1.5 px-2 rounded-lg bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-800 font-bold text-[11px] font-space flex items-center justify-center gap-1 transition-all cursor-pointer"
+                    title="Cargar credenciales de Estudiante: estudiante@uajs.edu.co"
+                  >
+                    <span className="material-symbols-outlined text-[14px] text-sky-600">school</span>
+                    <span>Estudiante</span>
+                  </button>
+                </div>
+              </div>
+
               {/* Authentication Form */}
               <form className="space-y-3" onSubmit={handleSubmit}>
                 
@@ -275,11 +310,11 @@ export const LandingAuth = () => {
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="ejemplo@uajs.edu.co"
-                      className="w-full pl-9 pr-24 py-2 bg-slate-50 border border-slate-300 focus:border-[#0284c7] focus:ring-2 focus:ring-[#0284c7]/20 rounded-xl text-xs sm:text-sm text-slate-900 placeholder-slate-400 transition-all outline-none"
+                      placeholder="admin@uniajs.edu.co"
+                      className="w-full pl-9 pr-28 py-2 bg-slate-50 border border-slate-300 focus:border-[#0284c7] focus:ring-2 focus:ring-[#0284c7]/20 rounded-xl text-xs sm:text-sm text-slate-900 placeholder-slate-400 transition-all outline-none"
                     />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[10px] text-[#0284c7] font-semibold font-mono">
-                      @uajs.edu.co
+                    <div className="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none text-[10px] text-[#0284c7] font-semibold font-mono">
+                      @uajs / @uniajs
                     </div>
                   </div>
                 </div>

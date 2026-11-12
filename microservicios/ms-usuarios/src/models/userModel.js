@@ -2,13 +2,18 @@ const db = require('../config/db');
 
 const UserModel = {
   findByEmail: async (email) => {
+    const normalized = (email || '').trim().toLowerCase();
+    const alias = normalized.endsWith('@uniajs.edu.co')
+      ? normalized.replace('@uniajs.edu.co', '@uajs.edu.co')
+      : normalized.replace('@uajs.edu.co', '@uniajs.edu.co');
+
     const query = `
       SELECT u.*, r.nombre AS rol_nombre, r.descripcion AS rol_descripcion
       FROM usuarios u
       JOIN roles r ON u.rol_id = r.id
-      WHERE u.email = $1;
+      WHERE LOWER(u.email) = $1 OR LOWER(u.email) = $2;
     `;
-    const { rows } = await db.query(query, [email]);
+    const { rows } = await db.query(query, [normalized, alias]);
     return rows[0];
   },
 
