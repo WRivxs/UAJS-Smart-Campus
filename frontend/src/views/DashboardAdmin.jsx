@@ -18,7 +18,11 @@ export const DashboardAdmin = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [vistaEstudiante, setVistaEstudiante] = useState(false);
 
-  const { token } = useAuth();
+  const { token, user, rol } = useAuth();
+  const currentRole = (rol || user?.rol_nombre || '').trim();
+  const isAdministrativo = currentRole === 'Administrativo';
+  const navbarTitle = isAdministrativo ? "Smart Campus • Portal Administrativo" : "Smart Campus • Módulo de Administrador";
+
   const [counts, setCounts] = useState({
     usuarios: 0,
     solicitudes: 0,
@@ -73,7 +77,7 @@ export const DashboardAdmin = () => {
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
             <span className="material-symbols-outlined text-base text-amber-300">visibility</span>
-            <span>Previsualización: <strong>Vista de Estudiante</strong> (Sesión activa: Administrador)</span>
+            <span>Previsualización: <strong>Vista de Estudiante</strong> (Sesión activa: {currentRole || 'Personal de Gestión'})</span>
           </div>
           <button
             type="button"
@@ -81,7 +85,7 @@ export const DashboardAdmin = () => {
             className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0a47b8] hover:bg-blue-600 text-white rounded-lg text-xs font-bold transition shadow-md cursor-pointer border border-blue-400/30"
           >
             <span className="material-symbols-outlined text-sm">admin_panel_settings</span>
-            <span>Volver a Modo Administrador</span>
+            <span>Volver a Modo {isAdministrativo ? 'Administrativo' : 'Administrador'}</span>
           </button>
         </div>
 
@@ -91,10 +95,10 @@ export const DashboardAdmin = () => {
             type="button"
             onClick={() => setVistaEstudiante(false)}
             className="flex items-center gap-2 px-5 py-3 bg-[#081f56] hover:bg-[#0a47b8] text-white rounded-2xl shadow-2xl text-xs sm:text-sm font-bold font-space border-2 border-white transition-all transform hover:scale-105 cursor-pointer"
-            title="Regresar al panel de control de administrador"
+            title="Regresar al panel de control de gestión"
           >
             <span className="material-symbols-outlined text-lg text-amber-400">admin_panel_settings</span>
-            <span>Volver al Panel Administrador</span>
+            <span>Volver al Panel {isAdministrativo ? 'Administrativo' : 'Administrador'}</span>
           </button>
         </div>
 
@@ -112,7 +116,7 @@ export const DashboardAdmin = () => {
       case 'resumen':
         return <AdminResumen onNavigateTab={(tab) => setActiveTab(tab)} counts={counts} />;
       case 'usuarios':
-        return <AdminUsuarios />;
+        return isAdministrativo ? <AdminResumen onNavigateTab={(tab) => setActiveTab(tab)} counts={counts} /> : <AdminUsuarios />;
       case 'solicitudes':
         return <AdminSolicitudes />;
       case 'pqrs':
@@ -134,7 +138,7 @@ export const DashboardAdmin = () => {
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800 flex flex-col">
       {/* Navbar Superior */}
       <Navbar
-        title="Smart Campus • Módulo de Administrador"
+        title={navbarTitle}
         onToggleSidebar={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
         onNavigateTab={(tab) => setActiveTab(tab)}
       />
@@ -147,6 +151,7 @@ export const DashboardAdmin = () => {
           onTabChange={(tab) => setActiveTab(tab)}
           isCollapsed={isSidebarCollapsed}
           counts={counts}
+          userRole={currentRole}
           onTogglePortalEstudiante={() => setVistaEstudiante(true)}
         />
 
@@ -160,14 +165,14 @@ export const DashboardAdmin = () => {
           <div className="md:hidden mb-4 overflow-x-auto pb-2 flex items-center gap-1.5">
             {[
               { id: 'resumen', label: 'Resumen', icon: 'dashboard' },
-              { id: 'usuarios', label: 'Usuarios', icon: 'manage_accounts' },
+              { id: 'usuarios', label: 'Usuarios', icon: 'manage_accounts', adminOnly: true },
               { id: 'solicitudes', label: 'Solicitudes', icon: 'fact_check' },
               { id: 'pqrs', label: 'PQRS', icon: 'support_agent' },
               { id: 'recursos', label: 'Recursos', icon: 'devices_other' },
               { id: 'reservas', label: 'Reservas', icon: 'calendar_month' },
               { id: 'eventos', label: 'Eventos', icon: 'campaign' },
               { id: 'perfil', label: 'Perfil', icon: 'badge' },
-            ].map((tab) => (
+            ].filter((tab) => !tab.adminOnly || !isAdministrativo).map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
