@@ -17,8 +17,11 @@ URL DEL FRONTEND DESPLEGADO EN VERCEL:
 ------------------------------------------------------------------------
 https://uajs-smart-campus.vercel.app
 
-(Reemplaza la URL anterior por tu enlace oficial generado tras presionar Deploy en Vercel)
+Estado: Activo y en producción
+Fecha de Despliegue: 13 de Noviembre de 2026
+
 ------------------------------------------------------------------------
-REPOSITORIO EN GITHUB:
+REPOSITORIO OFICIAL EN GITHUB:
+------------------------------------------------------------------------
 https://github.com/WRivxs/UAJS-Smart-Campus
 ========================================================================
