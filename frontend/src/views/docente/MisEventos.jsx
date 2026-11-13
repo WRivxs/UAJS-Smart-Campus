@@ -52,23 +52,21 @@ export const MisEventos = () => {
     setTimeout(() => setFeedback(null), 4000);
   };
 
-  // Filtrar eventos pertenecientes al docente
+  // Filtrar eventos pertenecientes estrictamente al docente autenticado
   const misEventosList = useMemo(() => {
     const list = Array.isArray(eventos) ? eventos : [];
     return list.filter((ev) => {
       if (!ev) return false;
-      // Coincidencia por id de organizador o nombre
       const matchOwner =
         (userId && String(ev.organizador_id) === String(userId)) ||
-        (ev.organizador && ev.organizador.toLowerCase().includes(docenteNombre.toLowerCase())) ||
-        // Si no tiene organizador_id explícito pero fue creado en sesión
-        (ev.creado_por && String(ev.creado_por) === String(userId));
+        (ev.creado_por && String(ev.creado_por) === String(userId)) ||
+        (ev.organizador && ev.organizador.trim().toLowerCase() === docenteNombre.trim().toLowerCase());
       return matchOwner;
     });
   }, [eventos, userId, docenteNombre]);
 
-  // Si aún no hay eventos filtrados por ID exacto, permitimos ver todos los que correspondan o todos si es el único docente activo
-  const eventosAMostrar = misEventosList.length > 0 ? misEventosList : (Array.isArray(eventos) ? eventos.filter(e => TIPOS_DOCENTE.includes(e?.tipo)) : []);
+  // Solo se muestran los eventos propios del docente
+  const eventosAMostrar = misEventosList;
 
   const filteredEventos = useMemo(() => {
     return eventosAMostrar.filter((ev) => {

@@ -37,8 +37,9 @@ const PqrsModel = {
     const params = [];
     let paramIndex = 1;
 
-    // Si es estudiante, solo consulta sus propios tickets de PQRS
-    if (rol_nombre === 'Estudiante') {
+    // Estudiantes y Docentes solo consultan sus propios tickets de PQRS. Administradores y Administrativos atienden todo.
+    const esPersonalGestion = rol_nombre === 'Administrador' || rol_nombre === 'Administrativo';
+    if (!esPersonalGestion) {
       query += ` AND usuario_id = $${paramIndex}`;
       params.push(usuario_id);
       paramIndex++;

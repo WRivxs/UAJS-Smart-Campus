@@ -46,8 +46,9 @@ const SolicitudModel = {
     const params = [];
     let paramIndex = 1;
 
-    // Estudiantes y Docentes solo ven sus propias solicitudes, a menos que sean Administrativo o Admin
-    if (rol_nombre === 'Estudiante') {
+    // Estudiantes y Docentes solo ven sus propias solicitudes, a menos que sean Administrativo o Administrador
+    const esPersonalGestion = rol_nombre === 'Administrador' || rol_nombre === 'Administrativo';
+    if (!esPersonalGestion) {
       query += ` AND usuario_id = $${paramIndex}`;
       params.push(usuario_id);
       paramIndex++;

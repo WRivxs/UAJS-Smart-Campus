@@ -45,8 +45,12 @@ export const ResumenDocente = ({ onNavigateTab = () => {}, counts = {} }) => {
         ? eRes.value
         : [];
       const propios = userId
-        ? allEventos.filter((ev) => String(ev.organizador_id) === String(userId))
-        : allEventos;
+        ? allEventos.filter((ev) => 
+            String(ev.organizador_id) === String(userId) ||
+            String(ev.creado_por) === String(userId) ||
+            (ev.organizador && ev.organizador.trim().toLowerCase() === docenteName.trim().toLowerCase())
+          )
+        : [];
       setMisEventos(propios.slice(0, 3));
       setLoadingData(false);
     });

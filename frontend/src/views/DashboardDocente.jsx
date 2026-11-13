@@ -50,8 +50,12 @@ export const DashboardDocente = () => {
         : [];
       const userId = user?.id || user?.user_id;
       const misEventos = userId
-        ? allEventos.filter((ev) => String(ev.organizador_id) === String(userId))
-        : allEventos;
+        ? allEventos.filter((ev) => 
+            String(ev.organizador_id) === String(userId) ||
+            String(ev.creado_por) === String(userId) ||
+            (ev.organizador && ev.organizador.trim().toLowerCase() === (user?.nombre || '').trim().toLowerCase())
+          )
+        : [];
 
       setCounts({
         solicitudes: (sRes.value?.solicitudes || []).length,
