@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import useAdminEventos from '../../hooks/useAdminEventos';
+import { useAuth } from '../../hooks/useAuth';
 
 const ESTADOS_EVENTO = ['TODOS', 'PROGRAMADO', 'EN_CURSO', 'FINALIZADO', 'CANCELADO'];
 const TIPOS_EVENTO = ['TODOS', 'ACADEMICO', 'CULTURAL', 'DEPORTIVO', 'INSTITUCIONAL', 'TALLER'];
@@ -17,6 +18,10 @@ export const AdminEventos = () => {
     eliminarEvento,
     emitirDifusion,
   } = useAdminEventos();
+
+  const { user } = useAuth();
+  const currentRole = (user?.rol_nombre || user?.rol || '').trim();
+  const isAdmin = currentRole === 'Administrador' || Number(user?.rol_id) === 1;
 
   // Filtros
   const [searchTerm, setSearchTerm] = useState('');
@@ -508,13 +513,15 @@ export const AdminEventos = () => {
                     >
                       <span className="material-symbols-outlined text-base">edit</span>
                     </button>
-                    <button
-                      onClick={() => handleOpenDelete(ev)}
-                      className="p-2 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
-                      title="Eliminar evento"
-                    >
-                      <span className="material-symbols-outlined text-base">delete</span>
-                    </button>
+                    {isAdmin && (
+                      <button
+                        onClick={() => handleOpenDelete(ev)}
+                        className="p-2 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                        title="Eliminar evento (Solo Administrador TI)"
+                      >
+                        <span className="material-symbols-outlined text-base">delete</span>
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -941,8 +948,8 @@ export const AdminEventos = () => {
         </div>
       )}
 
-      {/* MODAL ELIMINAR EVENTO */}
-      {showDeleteModal && selectedEvento && (
+      {/* MODAL ELIMINAR EVENTO (Solo Administrador TI) */}
+      {isAdmin && showDeleteModal && selectedEvento && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
           <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl border border-slate-100 p-6 text-center space-y-4">
             <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-600 mx-auto flex items-center justify-center">

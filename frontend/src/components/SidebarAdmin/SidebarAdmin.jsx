@@ -6,20 +6,25 @@ export const SidebarAdmin = ({
   onTabChange = () => {},
   isCollapsed = false,
   counts = {},
+  userRole = '',
   onTogglePortalEstudiante = () => {}
 }) => {
   const { user } = useAuth();
+  const effectiveRole = (userRole || user?.rol_nombre || '').trim();
+  const isAdministrativo = effectiveRole === 'Administrativo';
 
-  const menuItems = [
+  const baseMenuItems = [
     { id: 'resumen', label: 'Panel de Control', icon: 'dashboard', badge: null },
-    { id: 'usuarios', label: 'Gestión Usuarios', icon: 'manage_accounts', badge: counts.usuarios },
+    { id: 'usuarios', label: 'Gestión Usuarios', icon: 'manage_accounts', badge: counts.usuarios, adminOnly: true },
     { id: 'solicitudes', label: 'Solicitudes y Trámites', icon: 'fact_check', badge: counts.solicitudes },
     { id: 'pqrs', label: 'Atención de PQRS', icon: 'support_agent', badge: counts.pqrs },
     { id: 'recursos', label: 'Recursos del Campus', icon: 'devices_other', badge: counts.recursos },
     { id: 'reservas', label: 'Auditoría de Reservas', icon: 'calendar_month', badge: counts.reservas },
     { id: 'eventos', label: 'Eventos y Alertas', icon: 'campaign', badge: counts.eventos },
-    { id: 'perfil', label: 'Mi Perfil Admin', icon: 'badge', badge: null },
+    { id: 'perfil', label: isAdministrativo ? 'Mi Perfil Funcionario' : 'Mi Perfil Admin', icon: 'badge', badge: null },
   ];
+
+  const menuItems = baseMenuItems.filter(item => !item.adminOnly || !isAdministrativo);
 
   return (
     <aside
@@ -33,17 +38,19 @@ export const SidebarAdmin = ({
         <div className="px-2 pt-1">
           {!isCollapsed ? (
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[10px] font-bold text-indigo-700 uppercase tracking-widest font-space flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-indigo-600 animate-pulse" />
-                ADMINISTRADOR
+              <span className={`text-[10px] font-bold ${isAdministrativo ? 'text-sky-700' : 'text-indigo-700'} uppercase tracking-widest font-space flex items-center gap-1.5`}>
+                <span className={`h-2 w-2 rounded-full ${isAdministrativo ? 'bg-sky-600' : 'bg-indigo-600'} animate-pulse`} />
+                {isAdministrativo ? 'ADMINISTRATIVO' : 'ADMINISTRADOR'}
               </span>
-              <span className="text-[9px] font-mono bg-indigo-50 border border-indigo-200 text-indigo-700 font-bold px-1.5 py-0.5 rounded">
-                CONTROL TOTAL
+              <span className={`text-[9px] font-mono ${isAdministrativo ? 'bg-sky-50 border-sky-200 text-sky-700' : 'bg-indigo-50 border-indigo-200 text-indigo-700'} border font-bold px-1.5 py-0.5 rounded`}>
+                {isAdministrativo ? 'GESTIÓN CAMPUS' : 'CONTROL TOTAL'}
               </span>
             </div>
           ) : (
             <div className="flex justify-center mb-3">
-              <span className="material-symbols-outlined text-[20px] text-indigo-600">admin_panel_settings</span>
+              <span className={`material-symbols-outlined text-[20px] ${isAdministrativo ? 'text-sky-600' : 'text-indigo-600'}`}>
+                {isAdministrativo ? 'badge' : 'admin_panel_settings'}
+              </span>
             </div>
           )}
 

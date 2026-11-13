@@ -39,16 +39,21 @@ export const PerfilAdmin = () => {
     }, 4000);
   };
 
+  const currentRole = (profile?.rol_nombre || user?.rol_nombre || user?.rol || 'Administrativo').trim();
+  const isAdministrativo = currentRole === 'Administrativo';
+  const isAdmin = currentRole === 'Administrador' || Number(user?.rol_id) === 1;
+
   useEffect(() => {
-    if (profile) {
+    const dataSource = profile || user;
+    if (dataSource) {
       setContactForm({
-        celular: profile.celular || '3100000000',
-        telefono: profile.telefono || '6052814502',
-        email_personal: profile.email_personal || 'admin.smartcampus@uajs.edu.co',
-        estado_civil: profile.estado_civil || 'Casado(a)',
+        celular: dataSource.celular || (isAdministrativo ? '3159876543' : '3100000000'),
+        telefono: dataSource.telefono || (isAdministrativo ? '6052814501' : '6052814502'),
+        email_personal: dataSource.email_personal || (isAdministrativo ? 'carlos.perez.m@gmail.com' : 'admin.smartcampus@uajs.edu.co'),
+        estado_civil: dataSource.estado_civil || 'Casado(a)',
       });
     }
-  }, [profile]);
+  }, [profile, user, isAdministrativo]);
 
   // Guardar datos de contacto
   const handleSaveContact = async (e) => {
@@ -127,19 +132,17 @@ export const PerfilAdmin = () => {
     }
   };
 
-  const adminName = user?.email?.includes('admin')
-    ? (profile?.nombre || user?.nombre || 'Administrador General del Sistema')
-    : 'Administrador General del Sistema';
-  const adminCargo = profile?.cargo || 'Director de Tecnologías e Infraestructura';
-  const adminDependencia = profile?.facultad_departamento || profile?.facultad || 'Dirección de Tecnologías de la Información';
-  const adminCodigo = profile?.codigo_estudiantil || 'ADM-001';
-  const adminEmail = user?.email || profile?.email || 'admin@uajs.edu.co';
-  const adminDoc = profile?.numero_documento || '10000001';
-  const adminTipoDoc = profile?.tipo_documento || 'Cédula de Ciudadanía';
-  const adminVinculacion = profile?.tipo_vinculacion || 'Tiempo Completo';
+  const adminName = profile?.nombre || user?.nombre || (isAdministrativo ? 'Carlos Arturo Pérez Montes' : 'Administrador General del Sistema');
+  const adminCargo = profile?.cargo || user?.cargo || (isAdministrativo ? 'Coordinador de Trámites y Matrículas' : 'Director de Tecnologías e Infraestructura');
+  const adminDependencia = profile?.facultad_departamento || profile?.facultad || user?.facultad_departamento || user?.facultad || (isAdministrativo ? 'Registro y Control Académico' : 'Dirección de Tecnologías de la Información');
+  const adminCodigo = profile?.codigo_estudiantil || user?.codigo_estudiantil || (isAdministrativo ? 'ADM-205' : 'ADM-001');
+  const adminEmail = profile?.email || user?.email || (isAdministrativo ? 'administrativo@uajs.edu.co' : 'admin@uajs.edu.co');
+  const adminDoc = profile?.numero_documento || user?.numero_documento || (isAdministrativo ? '73123456' : '10000001');
+  const adminTipoDoc = profile?.tipo_documento || user?.tipo_documento || 'Cédula de Ciudadanía';
+  const adminVinculacion = profile?.tipo_vinculacion || user?.tipo_vinculacion || 'Tiempo Completo';
 
   const getInitials = (name) => {
-    if (!name) return 'AG';
+    if (!name) return isAdministrativo ? 'CP' : 'AG';
     const parts = name.trim().split(' ');
     if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
     return name.slice(0, 2).toUpperCase();
@@ -165,7 +168,7 @@ export const PerfilAdmin = () => {
         </div>
       )}
 
-      {/* Header Banner del Perfil de Administrador */}
+      {/* Header Banner del Perfil del Funcionario */}
       <div className="bg-gradient-to-r from-[#081f56] via-[#0a47b8] to-blue-700 rounded-2xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
         <div className="absolute -right-12 -bottom-12 w-64 h-64 rounded-full bg-white/10 blur-2xl pointer-events-none" />
         <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start gap-6">
@@ -176,11 +179,11 @@ export const PerfilAdmin = () => {
           <div className="space-y-2 text-center sm:text-left flex-1">
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-white/20 text-white font-mono tracking-wider">
-                ROL: ADMINISTRADOR DEL SISTEMA
+                ROL: {currentRole.toUpperCase()}
               </span>
               <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-400/20 text-emerald-200 border border-emerald-400/30 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Cuenta Activa • Control Total
+                Cuenta Activa • {isAdministrativo ? 'Gestión Campus' : 'Control Total'}
               </span>
             </div>
 
@@ -267,14 +270,21 @@ export const PerfilAdmin = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              {[
+              {(isAdministrativo ? [
+                { icon: 'fact_check', title: 'Gestión y Trámite de Solicitudes', desc: 'Revisar, asignar responsables y emitir dictamen oficial a trámites académicos y administrativos.' },
+                { icon: 'support_agent', title: 'Atención y Respuesta de PQRS', desc: 'Emisión de respuestas oficiales institucionales y resolución oportuna de radicados.' },
+                { icon: 'verified', title: 'Coordinación y Aprobación de Reservas', desc: 'Aprobar o rechazar reservas verificando disponibilidad de espacios y no traslape.' },
+                { icon: 'meeting_room', title: 'Gestión Operativa de Recursos Físicos', desc: 'Habilitar o inhabilitar recursos y programar mantenimientos preventivos del campus.' },
+                { icon: 'event', title: 'Coordinación de Eventos Institucionales', desc: 'Creación de eventos académicos/culturales y control de asistencia de la comunidad.' },
+                { icon: 'campaign', title: 'Monitoreo de Notificaciones y Alertas', desc: 'Seguimiento en tiempo real de notificaciones y novedades en el ecosistema campus.' },
+              ] : [
                 { icon: 'manage_accounts', title: 'Gestión Integral de Usuarios', desc: 'Crear, consultar, actualizar roles y desactivar perfiles.' },
                 { icon: 'fact_check', title: 'Gestión de Trámites y Solicitudes', desc: 'Validar y aplicar cambios de estado según el flujo oficial.' },
-                { icon: 'support_agent', title: 'Atención y Respuesta de PQRS', desc: 'Emisión de respuestas oficiales y cierre de radicados.' },
-                { icon: 'meeting_room', title: 'Administración de Recursos Físicos', desc: 'Creación, edición y órdenes de mantenimiento de espacios.' },
-                { icon: 'verified', title: 'Auditoría y Control de Reservas', desc: 'Aprobación institucional y control de disponibilidad de horarios.' },
-                { icon: 'campaign', title: 'Difusión de Alertas Masivas', desc: 'Emisión de comunicados en tiempo real a la comunidad.' },
-              ].map((p, idx) => (
+                { icon: 'support_agent', title: 'Atención y Respuesta de PQRS', desc: 'Supervisión y cierre de radicados institucionales.' },
+                { icon: 'meeting_room', title: 'Administración de Recursos Físicos', desc: 'Creación, edición, eliminación y mantenimiento de espacios.' },
+                { icon: 'verified', title: 'Auditoría y Control de Reservas', desc: 'Aprobación, rechazo y auditoría institucional de reservas.' },
+                { icon: 'shield_person', title: 'Gobernanza y Parámetros del Campus', desc: 'Control de seguridad, auditoría y configuración de microservicios.' },
+              ]).map((p, idx) => (
                 <div key={idx} className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-start gap-3">
                   <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center shrink-0">
                     <span className="material-symbols-outlined text-lg">{p.icon}</span>
@@ -364,15 +374,15 @@ export const PerfilAdmin = () => {
               <div className="space-y-3 text-xs">
                 <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl">
                   <span className="text-slate-400">Celular:</span>
-                  <span className="font-bold text-slate-800 font-mono">{contactForm.celular || '3100000000'}</span>
+                  <span className="font-bold text-slate-800 font-mono">{contactForm.celular || (isAdministrativo ? '3159876543' : '3100000000')}</span>
                 </div>
                 <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl">
                   <span className="text-slate-400">Teléfono:</span>
-                  <span className="font-bold text-slate-800 font-mono">{contactForm.telefono || '6052814502'}</span>
+                  <span className="font-bold text-slate-800 font-mono">{contactForm.telefono || (isAdministrativo ? '6052814501' : '6052814502')}</span>
                 </div>
                 <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl">
                   <span className="text-slate-400">Email Personal:</span>
-                  <span className="font-medium text-slate-800 break-all text-[11px]">{contactForm.email_personal || 'admin.smartcampus@uajs.edu.co'}</span>
+                  <span className="font-medium text-slate-800 break-all text-[11px]">{contactForm.email_personal || (isAdministrativo ? 'carlos.perez.m@gmail.com' : 'admin.smartcampus@uajs.edu.co')}</span>
                 </div>
               </div>
             )}

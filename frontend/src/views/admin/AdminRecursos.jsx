@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import useAdminRecursos from '../../hooks/useAdminRecursos';
+import { useAuth } from '../../hooks/useAuth';
 
 const TIPOS_RECURSO = ['TODOS', 'ESPACIO', 'EQUIPO', 'LABORATORIO', 'AUDITORIO', 'SALA', 'RECURSO_TECNOLOGICO', 'ESPACIO_ACADEMICO'];
 const ESTADOS_DISP = ['TODOS', 'DISPONIBLE', 'NO_DISPONIBLE', 'EN_MANTENIMIENTO'];
@@ -37,6 +38,10 @@ export const AdminRecursos = () => {
     eliminarRecurso,
     registrarMantenimiento,
   } = useAdminRecursos();
+
+  const { user } = useAuth();
+  const currentRole = (user?.rol_nombre || user?.rol || '').trim();
+  const isAdmin = currentRole === 'Administrador' || Number(user?.rol_id) === 1;
 
   // Filtros
   const [searchTerm, setSearchTerm] = useState('');
@@ -561,14 +566,16 @@ export const AdminRecursos = () => {
                     >
                       <span className="material-symbols-outlined text-base">edit</span>
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => handleOpenDelete(rec)}
-                      className="p-2 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer"
-                      title="Eliminar recurso"
-                    >
-                      <span className="material-symbols-outlined text-base">delete</span>
-                    </button>
+                    {isAdmin && (
+                      <button
+                        type="button"
+                        onClick={() => handleOpenDelete(rec)}
+                        className="p-2 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer"
+                        title="Eliminar recurso (Solo Administrador TI)"
+                      >
+                        <span className="material-symbols-outlined text-base">delete</span>
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1062,8 +1069,8 @@ export const AdminRecursos = () => {
         </div>
       )}
 
-      {/* MODAL ELIMINAR RECURSO */}
-      {showDeleteModal && selectedRecurso && (
+      {/* MODAL ELIMINAR RECURSO (Solo Administrador TI) */}
+      {isAdmin && showDeleteModal && selectedRecurso && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
           <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl border border-slate-100 p-6 text-center space-y-4">
             <div className="w-14 h-14 rounded-full bg-rose-100 text-rose-600 mx-auto flex items-center justify-center">

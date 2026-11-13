@@ -33,9 +33,13 @@ const MainApp = () => {
   // Roles: 1: Administrador, 2: Docente, 3: Administrativo, 4: Estudiante
   const currentRole = (user?.rol_nombre || user?.rol || '').trim();
   const roleId = Number(user?.rol_id);
-  const isAdmin = currentRole === 'Administrador' || roleId === 1;
+  const isPersonalGestion =
+    currentRole === 'Administrador' ||
+    currentRole === 'Administrativo' ||
+    roleId === 1 ||
+    roleId === 3;
 
-  if (isAdmin) {
+  if (isPersonalGestion) {
     return <DashboardAdmin />;
   }
 

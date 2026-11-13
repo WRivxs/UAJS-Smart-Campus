@@ -16,8 +16,8 @@ router.get('/perfil', authController.getProfile);
 router.put('/profile', userController.updateProfile);
 router.put('/perfil', userController.updateProfile);
 
-// Obtener todos los usuarios (Requerido: Administrador)
-router.get('/', authMiddleware.checkRole(['Administrador']), userController.getUsers);
+// Obtener todos los usuarios (Requerido: Administrador o Administrativo)
+router.get('/', authMiddleware.checkRole(['Administrador', 'Administrativo']), userController.getUsers);
 
 // Obtener usuario por ID
 router.get('/:id', userController.getUserById);

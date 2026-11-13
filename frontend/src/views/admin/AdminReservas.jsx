@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import useAdminReservas from '../../hooks/useAdminReservas';
+import { useAuth } from '../../hooks/useAuth';
 
 const ESTADOS_RESERVA = ['TODAS', 'PENDIENTE', 'APROBADA', 'FINALIZADA', 'RECHAZADA', 'CANCELADA'];
 
@@ -17,6 +18,11 @@ export const AdminReservas = () => {
     eliminarReserva,
     consultarDisponibilidad,
   } = useAdminReservas();
+
+  const { user } = useAuth();
+  const currentRole = (user?.rol_nombre || user?.rol || '').trim();
+  const isAdmin = currentRole === 'Administrador' || Number(user?.rol_id) === 1;
+  const isAdministrativo = currentRole === 'Administrativo' || Number(user?.rol_id) === 3;
 
   // Filtros
   const [activeTab, setActiveTab] = useState('TODAS');
@@ -90,7 +96,10 @@ export const AdminReservas = () => {
   // Manejo de Aprobación con detección estricta de HTTP 409
   const handleAprobar = async (reserva) => {
     setConflictAlert(null);
-    const res = await aprobarReserva(reserva.id, 'Aprobada por Administrador de Campus');
+    const defaultObs = isAdministrativo
+      ? 'Aprobada por Coordinación Administrativa'
+      : 'Aprobada por Administrador de Campus';
+    const res = await aprobarReserva(reserva.id, defaultObs);
 
     if (res.conflict) {
       // Conflicto de solapamiento de horarios HTTP 409
@@ -666,14 +675,16 @@ export const AdminReservas = () => {
                             <span className="material-symbols-outlined text-base">visibility</span>
                           </button>
 
-                          {/* Eliminar Definitivamente */}
-                          <button
-                            onClick={() => handleOpenDelete(res)}
-                            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg"
-                            title="Eliminar registro"
-                          >
-                            <span className="material-symbols-outlined text-base">delete</span>
-                          </button>
+                          {/* Eliminar Definitivamente (Solo Administrador TI) */}
+                          {isAdmin && (
+                            <button
+                              onClick={() => handleOpenDelete(res)}
+                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg"
+                              title="Eliminar registro"
+                            >
+                              <span className="material-symbols-outlined text-base">delete</span>
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -785,59 +796,90 @@ export const AdminReservas = () => {
         </div>
       )}
 
-      {/* MODAL RECHAZAR RESERVA */}
+      {/* MODAL RECHAZAR RESERVA (Diseño Institucional Elevado) */}
       {showRejectModal && selectedReserva && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl border border-slate-100 p-6 space-y-4">
-            <div className="flex items-center gap-2 text-rose-600">
-              <span className="material-symbols-outlined text-2xl">cancel</span>
-              <h3 className="text-base font-bold text-slate-800">
-                Rechazar Reserva #{selectedReserva.id}
-              </h3>
-            </div>
-
-            <p className="text-xs text-slate-500">
-              Indica la razón institucional por la cual se rechaza la solicitud de{' '}
-              <strong>{selectedReserva.usuario_nombre}</strong> para el recurso{' '}
-              <strong>{selectedReserva.recurso_nombre}</strong>.
-            </p>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Motivo del Rechazo / Observaciones
-              </label>
-              <textarea
-                rows="3"
-                value={observacionesRechazo}
-                onChange={(e) => setObservacionesRechazo(e.target.value)}
-                placeholder="Ej. Espacio reservado para evento rectoral, mantenimiento programado, etc."
-                className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500/20"
-              />
-            </div>
-
-            <div className="flex items-center justify-end gap-3 pt-2">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl border border-slate-100 overflow-hidden animate-fade-in">
+            <div className="bg-gradient-to-r from-rose-600 to-rose-700 p-5 text-white flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-2xl">event_busy</span>
+                </div>
+                <div>
+                  <h3 className="text-base font-bold font-space">
+                    Rechazar Reserva #{selectedReserva.id}
+                  </h3>
+                  <p className="text-xs text-rose-100">Coordinación Institucional del Campus</p>
+                </div>
+              </div>
               <button
                 type="button"
                 onClick={() => setShowRejectModal(false)}
-                className="px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-xl"
+                className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition"
               >
-                Volver
+                <span className="material-symbols-outlined text-lg">close</span>
               </button>
-              <button
-                type="button"
-                onClick={handleConfirmReject}
-                disabled={actionLoading}
-                className="px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-xl flex items-center gap-1.5"
-              >
-                <span>Confirmar Rechazo</span>
-              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl space-y-1.5 text-xs">
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Solicitante:</span>
+                  <span className="font-bold text-slate-800">{selectedReserva.usuario_nombre}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Espacio Solicitado:</span>
+                  <span className="font-semibold text-slate-800">{selectedReserva.recurso_nombre}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Fecha y Horario:</span>
+                  <span className="font-mono text-slate-700">
+                    {selectedReserva.fecha_reserva} • {selectedReserva.hora_inicio} - {selectedReserva.hora_fin}
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5 font-space">
+                  Motivo Institucional del Rechazo <span className="text-rose-500">*</span>
+                </label>
+                <textarea
+                  rows="3"
+                  value={observacionesRechazo}
+                  onChange={(e) => setObservacionesRechazo(e.target.value)}
+                  placeholder="Ej. Espacio asignado a certamen académico rectoral o mantenimiento técnico prioritario."
+                  className="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400 font-sans"
+                />
+                <p className="text-[11px] text-slate-400 mt-1">
+                  Este motivo quedará registrado en el historial de la reserva para consulta del estudiante.
+                </p>
+              </div>
+
+              <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowRejectModal(false)}
+                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmReject}
+                  disabled={actionLoading}
+                  className="px-4 py-2 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-xl shadow-xs transition flex items-center gap-1.5 font-space cursor-pointer"
+                >
+                  {actionLoading && <span className="material-symbols-outlined text-xs animate-spin">progress_activity</span>}
+                  <span>Confirmar Rechazo</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* MODAL ELIMINAR RESERVA */}
-      {showDeleteModal && selectedReserva && (
+      {/* MODAL ELIMINAR RESERVA (Solo Administrador TI) */}
+      {isAdmin && showDeleteModal && selectedReserva && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
           <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl border border-slate-100 p-6 text-center space-y-4">
             <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-600 mx-auto flex items-center justify-center">
