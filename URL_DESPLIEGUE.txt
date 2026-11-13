@@ -1,0 +1,24 @@
+========================================================================
+UAJS SMART CAMPUS — ENLACE DE DESPLIEGUE EN PRODUCCIÓN (VERCEL)
+========================================================================
+
+Asignatura: Sistemas Distribuidos (2026)
+Institución: Corporación Universitaria Antonio José de Sucre (UNiAJS)
+Docente: Mag. Laura Patricia Paternina Álvarez
+
+Equipo de Trabajo:
+- Wadith Rivas
+- Edimer Paternina
+- Job David Pérez Guzmán
+- Flor Florez
+
+------------------------------------------------------------------------
+URL DEL FRONTEND DESPLEGADO EN VERCEL:
+------------------------------------------------------------------------
+https://uajs-smart-campus.vercel.app
+
+(Reemplaza la URL anterior por tu enlace oficial generado tras presionar Deploy en Vercel)
+------------------------------------------------------------------------
+REPOSITORIO EN GITHUB:
+https://github.com/WRivxs/UAJS-Smart-Campus
+========================================================================
