@@ -537,17 +537,22 @@ export const AdminSolicitudes = () => {
               </div>
 
               {nuevoEstadoSeleccionado === 'RESUELTA' && (
-                <div>
-                  <label className="block text-[11px] font-bold text-emerald-800 uppercase font-space mb-1">
-                    Respuesta Final / Documento Resolutivo Oficial
+                <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl space-y-2">
+                  <label className="block text-[11px] font-bold text-emerald-800 uppercase font-space mb-1 flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-[15px] text-emerald-700">verified</span>
+                    Dictamen o Resolución Oficial del Trámite
+                    <span className="text-rose-500">*</span>
                   </label>
                   <textarea
                     rows={3}
                     value={respuestaFinal}
                     onChange={(e) => setRespuestaFinal(e.target.value)}
-                    placeholder="Ej: Se expide Certificado de Estudio Oficial con radicado digital CERT-2026-89..."
-                    className="w-full p-2.5 bg-emerald-50/50 border border-emerald-300 rounded-xl focus:bg-white resize-none"
+                    placeholder="Ej: Se expide Certificado de Estudio Oficial con radicado digital CERT-2026-89. Se notifica al estudiante mediante correo institucional..."
+                    className="w-full p-2.5 bg-white border border-emerald-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-400/20 resize-none font-sans"
                   />
+                  <p className="text-[10px] text-emerald-700 font-medium">
+                    Este dictamen quedará registrado como resolución final y será visible para el solicitante.
+                  </p>
                 </div>
               )}
 

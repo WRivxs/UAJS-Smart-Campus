@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import useAdminPqrs from '../../hooks/useAdminPqrs';
+import { useAuth } from '../../hooks/useAuth';
 
 export const AdminPqrs = () => {
   const {
@@ -11,6 +12,10 @@ export const AdminPqrs = () => {
     responderPqrs,
     eliminarPqrs,
   } = useAdminPqrs();
+
+  const { user } = useAuth();
+  const currentRole = (user?.rol_nombre || user?.rol || '').trim();
+  const isAdmin = currentRole === 'Administrador' || Number(user?.rol_id) === 1;
 
   const [tabEstado, setTabEstado] = useState('TODAS');
   const [tipoFiltro, setTipoFiltro] = useState('TODOS');
@@ -291,14 +296,16 @@ export const AdminPqrs = () => {
                       >
                         <span className="material-symbols-outlined text-[17px]">reply</span>
                       </button>
-                      <button
-                        onClick={() => setPqrsAEliminar(p)}
-                        title="Eliminar Radicado"
-                        type="button"
-                        className="p-1.5 rounded-lg text-slate-600 hover:bg-rose-50 hover:text-rose-700"
-                      >
-                        <span className="material-symbols-outlined text-[17px]">delete</span>
-                      </button>
+                      {isAdmin && (
+                        <button
+                          onClick={() => setPqrsAEliminar(p)}
+                          title="Eliminar Radicado (Solo Administrador TI)"
+                          type="button"
+                          className="p-1.5 rounded-lg text-slate-600 hover:bg-rose-50 hover:text-rose-700"
+                        >
+                          <span className="material-symbols-outlined text-[17px]">delete</span>
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -461,8 +468,8 @@ export const AdminPqrs = () => {
         </div>
       )}
 
-      {/* ── Modal Confirmar Eliminar ──────────────────────────────────── */}
-      {pqrsAEliminar && (
+      {/* ── Modal Confirmar Eliminar (Solo Administrador TI) ──────────── */}
+      {isAdmin && pqrsAEliminar && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in"
           onClick={() => !actionLoading && setPqrsAEliminar(null)}
