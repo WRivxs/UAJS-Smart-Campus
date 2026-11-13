@@ -1,4 +1,13 @@
 {
+  "name": "uajs-smart-campus",
+  "version": "2.0.0",
+  "description": "Plataforma Distribuida de Servicios Universitarios — UNiAJS",
+  "main": "start-backend.js",
+  "scripts": {
+    "start": "node start-backend.js",
+    "install:all": "npm --prefix api-gateway install && npm --prefix microservicios/ms-usuarios install && npm --prefix microservicios/ms-servicios install && npm --prefix microservicios/ms-solicitudes install && npm --prefix microservicios/ms-pqrs install && npm --prefix microservicios/ms-recursos install && npm --prefix microservicios/ms-reservas install && npm --prefix microservicios/ms-notificaciones install && npm --prefix microservicios/ms-eventos install",
+    "build": "npm run install:all"
+  },
   "dependencies": {
     "docx": "^9.15.2",
     "pdf-parse": "^2.4.5",

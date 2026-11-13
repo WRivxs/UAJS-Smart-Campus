@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: uajs-smart-campus-backend
+    env: node
+    plan: free
+    buildCommand: npm run install:all
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 20.0.0
+      - key: JWT_SECRET
+        value: uajs_smart_campus_jwt_secret_key_2026
+      - key: DATABASE_URL
+        sync: false
