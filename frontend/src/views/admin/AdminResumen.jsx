@@ -5,6 +5,8 @@ const API_GATEWAY_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhos
 
 export const AdminResumen = ({ onNavigateTab = () => {}, counts = {} }) => {
   const { user } = useAuth();
+  const currentRole = (user?.rol_nombre || user?.rol || '').trim();
+  const isAdministrativo = currentRole === 'Administrativo';
   const [healthStatus, setHealthStatus] = useState(null);
   const [loadingHealth, setLoadingHealth] = useState(false);
 
@@ -39,16 +41,16 @@ export const AdminResumen = ({ onNavigateTab = () => {}, counts = {} }) => {
 
         <div className="relative z-10 max-w-3xl space-y-3">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 border border-white/20 text-[11px] font-space font-semibold uppercase tracking-wider text-blue-100">
-            <span className="material-symbols-outlined text-[15px]">admin_panel_settings</span>
-            <span>Módulo de Control y Gobernanza • Rol Administrador</span>
+            <span className="material-symbols-outlined text-[15px]">{isAdministrativo ? 'badge' : 'admin_panel_settings'}</span>
+            <span>{isAdministrativo ? 'Portal de Gestión Operativa • Rol Administrativo' : 'Módulo de Control y Gobernanza • Rol Administrador'}</span>
           </div>
 
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-space text-white">
-            Panel de Administración del Campus
+            {isAdministrativo ? 'Panel de Gestión y Coordinación Institucional' : 'Panel de Administración del Campus'}
           </h1>
 
           <p className="text-sm text-blue-100/90 leading-relaxed font-normal">
-            Bienvenido, <strong className="text-white font-semibold">{user?.nombre || 'Administrador General del Sistema'}</strong>. Gestión institucional centralizada, supervisión operativa de servicios, control de reservas de espacios y seguimiento del ciclo de vida de trámites universitarios.
+            Bienvenido, <strong className="text-white font-semibold">{user?.nombre || (isAdministrativo ? 'Funcionario Administrativo' : 'Administrador General del Sistema')}</strong>. {isAdministrativo ? 'Atención de trámites y solicitudes académicas, emisión de respuestas oficiales a PQRS, auditoría y aprobación de reservas de espacios y control del estado operativo de recursos.' : 'Gestión institucional centralizada, supervisión operativa de servicios, control de reservas de espacios y seguimiento del ciclo de vida de trámites universitarios.'}
           </p>
 
           <div className="pt-2 flex flex-wrap items-center gap-3">
@@ -83,24 +85,26 @@ export const AdminResumen = ({ onNavigateTab = () => {}, counts = {} }) => {
       {/* ── KPIs Principales del Sistema ───────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
-        {/* KPI 1: Usuarios */}
+        {/* KPI 1: Para Admin es Usuarios, para Administrativo es PQRS */}
         <div
-          onClick={() => onNavigateTab('usuarios')}
+          onClick={() => onNavigateTab(isAdministrativo ? 'pqrs' : 'usuarios')}
           className="bg-white rounded-xl p-5 border border-slate-200/90 shadow-xs hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 font-space">
-              Usuarios del Campus
+              {isAdministrativo ? 'PQRS Radicadas' : 'Usuarios del Campus'}
             </span>
-            <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:scale-105 transition-transform">
-              <span className="material-symbols-outlined text-[22px]">group</span>
+            <div className={`w-10 h-10 rounded-xl ${isAdministrativo ? 'bg-amber-50 text-amber-600' : 'bg-indigo-50 text-indigo-600'} flex items-center justify-center group-hover:scale-105 transition-transform`}>
+              <span className="material-symbols-outlined text-[22px]">{isAdministrativo ? 'support_agent' : 'group'}</span>
             </div>
           </div>
           <div className="mt-3">
             <h3 className="text-3xl font-extrabold text-slate-900 font-space group-hover:text-[#0a47b8] transition-colors">
-              {counts.usuarios ?? '—'}
+              {isAdministrativo ? (counts.pqrs ?? '—') : (counts.usuarios ?? '—')}
             </h3>
-            <p className="text-[11px] text-slate-500 mt-1">Estudiantes, docentes y personal institucional</p>
+            <p className="text-[11px] text-slate-500 mt-1">
+              {isAdministrativo ? 'Peticiones, quejas y reclamos por atender' : 'Estudiantes, docentes y personal institucional'}
+            </p>
           </div>
         </div>
 

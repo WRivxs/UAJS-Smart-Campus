@@ -59,11 +59,12 @@ export const Navbar = ({ title = "Smart Campus", onToggleSidebar, onNavigateTab 
   const currentRole = profile?.rol_nombre || user?.rol_nombre || rol || "Estudiante";
   const roleId = Number(profile?.rol_id || user?.rol_id);
   const isAdmin = currentRole === "Administrador" || roleId === 1;
+  const isFuncionario = isAdmin || currentRole === "Administrativo" || roleId === 3;
 
   const displayName = profile?.nombre || user?.nombre || "Usuario Institucional";
   const displayEmail = profile?.email || user?.email || "";
-  const displayCodigo = profile?.codigo_estudiantil || user?.codigo_estudiantil || (isAdmin ? "ADM-001" : "N/A");
-  const displayFacultad = profile?.facultad || profile?.facultad_departamento || user?.facultad || user?.facultad_departamento || (isAdmin ? "Dirección de Tecnologías de la Información" : "Facultad de Ingenierías");
+  const displayCodigo = profile?.codigo_estudiantil || user?.codigo_estudiantil || (isFuncionario ? (isAdmin ? "ADM-001" : "ADM-205") : "N/A");
+  const displayFacultad = profile?.facultad_departamento || profile?.facultad || user?.facultad_departamento || user?.facultad || (isFuncionario ? (isAdmin ? "Dirección de Tecnologías de la Información" : "Registro y Control Académico") : "Facultad de Ingenierías");
 
   const displaySubtitle = profile?.cargo || profile?.programa_academico || user?.cargo || user?.programa_academico || `${currentRole} Institucional`;
 
@@ -303,12 +304,12 @@ export const Navbar = ({ title = "Smart Campus", onToggleSidebar, onNavigateTab 
               {/* Cuerpo de Información del Estudiante */}
               <div className="p-4 space-y-3 bg-slate-50 text-xs font-space border-b border-slate-200/80">
                 <div className="flex flex-col">
-                  <span className="text-slate-500 font-medium text-[11px]">{isAdmin ? 'Código Funcionario:' : 'Código Estudiantil:'}</span>
+                  <span className="text-slate-500 font-medium text-[11px]">{isFuncionario ? 'Código Funcionario:' : 'Código Estudiantil:'}</span>
                   <span className="text-slate-900 font-bold font-mono text-sm">{displayCodigo}</span>
                 </div>
 
                 <div className="flex flex-col">
-                  <span className="text-slate-500 font-medium text-[11px]">{isAdmin ? 'Dependencia / Unidad:' : 'Facultad:'}</span>
+                  <span className="text-slate-500 font-medium text-[11px]">{isFuncionario ? 'Dependencia / Unidad:' : 'Facultad:'}</span>
                   <span className="text-[#0284c7] font-semibold">{displayFacultad}</span>
                 </div>
 
