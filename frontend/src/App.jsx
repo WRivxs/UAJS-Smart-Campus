@@ -3,6 +3,7 @@ import { AuthProvider, AuthContext } from './context/AuthContext';
 import LandingAuth from './views/LandingAuth';
 import DashboardPrincipal from './views/DashboardPrincipal';
 import DashboardAdmin from './views/DashboardAdmin';
+import DashboardDocente from './views/DashboardDocente';
 
 const MainApp = () => {
   const { user, authLoading } = useContext(AuthContext);
@@ -41,6 +42,12 @@ const MainApp = () => {
 
   if (isPersonalGestion) {
     return <DashboardAdmin />;
+  }
+
+  // Docente → Portal Académico Docente (rol_id = 2)
+  const isDocente = currentRole === 'Docente' || roleId === 2;
+  if (isDocente) {
+    return <DashboardDocente />;
   }
 
   return <DashboardPrincipal />;

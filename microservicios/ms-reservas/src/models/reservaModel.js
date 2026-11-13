@@ -68,8 +68,9 @@ const ReservaModel = {
     const params = [];
     let paramIndex = 1;
 
-    // Estudiantes ven solo sus propias reservas
-    if (rol_nombre === 'Estudiante') {
+    // Estudiantes y Docentes solo ven sus propias reservas. Administradores y Administrativos auditan todo.
+    const esPersonalGestion = rol_nombre === 'Administrador' || rol_nombre === 'Administrativo';
+    if (!esPersonalGestion) {
       query += ` AND usuario_id = $${paramIndex}`;
       params.push(usuario_id);
       paramIndex++;
