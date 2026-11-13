@@ -1,5 +1,5 @@
 ========================================================================
-UAJS SMART CAMPUS — ENLACE DE DESPLIEGUE EN PRODUCCIÓN (VERCEL)
+UAJS SMART CAMPUS — ENLACES DE DESPLIEGUE EN PRODUCCIÓN
 ========================================================================
 
 Asignatura: Sistemas Distribuidos (2026)
@@ -13,15 +13,53 @@ Equipo de Trabajo:
 - Flor Florez
 
 ------------------------------------------------------------------------
-URL DEL FRONTEND DESPLEGADO EN VERCEL:
+FRONTEND — DESPLEGADO EN VERCEL:
 ------------------------------------------------------------------------
 https://uajs-smart-campus.vercel.app
 
-Estado: Activo y en producción
-Fecha de Despliegue: 13 de Noviembre de 2026
+------------------------------------------------------------------------
+BACKEND (API Gateway + 8 Microservicios) — DESPLEGADO EN RENDER:
+------------------------------------------------------------------------
+https://uajs-smart-campus-backend.onrender.com
+
+Endpoints de verificación:
+  GET  https://uajs-smart-campus-backend.onrender.com/health
+  GET  https://uajs-smart-campus-backend.onrender.com/api/usuarios
+  GET  https://uajs-smart-campus-backend.onrender.com/api/servicios
+  GET  https://uajs-smart-campus-backend.onrender.com/api/eventos
+  GET  https://uajs-smart-campus-backend.onrender.com/api/recursos
+
+Credenciales de prueba:
+  Admin:         admin@uajs.edu.co        / Admin2026*
+  Docente:       docente@uajs.edu.co      / Admin2026*
+  Administrativo: administrativo@uajs.edu.co / Admin2026*
+  Estudiante:    estudiante@uajs.edu.co   / Admin2026*
 
 ------------------------------------------------------------------------
 REPOSITORIO OFICIAL EN GITHUB:
 ------------------------------------------------------------------------
 https://github.com/WRivxs/UAJS-Smart-Campus
+
+------------------------------------------------------------------------
+BASE DE DATOS — POSTGRESQL EN RENDER:
+------------------------------------------------------------------------
+Nombre: uajs-smart-campus-db
+Motor: PostgreSQL 15
+Region: Oregon (US West)
+Tablas: 16 tablas distribuidas entre 8 microservicios
+
+------------------------------------------------------------------------
+ARQUITECTURA DE DESPLIEGUE:
+------------------------------------------------------------------------
+Frontend (Vercel) --> API Gateway :10000 (Render)
+                           |
+              +------------+------------+
+              |            |            |
+         ms-usuarios   ms-servicios  ms-solicitudes  ...
+         :3001         :3002         :3003
+              |
+         PostgreSQL (Render - uajs-smart-campus-db)
+
+Estado: Activo y en producción
+Fecha de Despliegue: 13 de Noviembre de 2026
 ========================================================================
