@@ -69,9 +69,22 @@ export const AgendaEventos = () => {
   const [eventoParaInscribir, setEventoParaInscribir] = useState(null);
   const [eventoPaseDigital, setEventoPaseDigital] = useState(null);
   const [eventoParaCancelar, setEventoParaCancelar] = useState(null);
+  const [showCreateModalDocente, setShowCreateModalDocente] = useState(false);
+  const [formCrearEvento, setFormCrearEvento] = useState({
+    titulo: '',
+    descripcion: '',
+    tipo: 'ACADEMICO',
+    lugar: '',
+    fecha_inicio: '',
+    fecha_fin: '',
+    aforo_maximo: 40,
+    organizador: user?.nombre || 'Docente UAJS',
+  });
+  const [creandoEvento, setCreandoEvento] = useState(false);
 
   // Rol para mostrar botón "Proponer actividad"
   const puedeCrear = ['Administrador', 'Docente', 'Administrativo'].includes(rol || user?.rol_nombre);
+  const isDocente = (rol || user?.rol_nombre) === 'Docente' || Number(user?.rol_id) === 2;
 
   // ─── Extraer Categorías Dinámicas desde los datos reales ────────────
   const categoriasDinamicas = useMemo(() => {
@@ -166,6 +179,52 @@ export const AgendaEventos = () => {
 
   const handleAbrirPaseDigital = (evento) => {
     setEventoPaseDigital(evento);
+  };
+
+  const handleCrearEventoSubmit = async (e) => {
+    e.preventDefault();
+    const API_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080';
+    const token = localStorage.getItem('uajs_token');
+    setCreandoEvento(true);
+
+    try {
+      const res = await fetch(`${API_URL}/api/eventos`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          ...formCrearEvento,
+          aforo_maximo: Number(formCrearEvento.aforo_maximo) || 40,
+          organizador_id: user?.id || user?.user_id,
+          estado: 'PROGRAMADO',
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || data.message || 'Error al publicar el evento.');
+      }
+
+      showToast('success', 'Evento publicado', 'La actividad académica se ha programado en la agenda institucional.');
+      setShowCreateModalDocente(false);
+      setFormCrearEvento({
+        titulo: '',
+        descripcion: '',
+        tipo: 'ACADEMICO',
+        lugar: '',
+        fecha_inicio: '',
+        fecha_fin: '',
+        aforo_maximo: 40,
+        organizador: user?.nombre || 'Docente UAJS',
+      });
+      if (refetch) refetch();
+    } catch (err) {
+      showToast('error', 'Error al crear evento', err.message);
+    } finally {
+      setCreandoEvento(false);
+    }
   };
 
   // ─── Columnas para la Vista Tabla (DataTable) ────────────────────────
@@ -271,9 +330,19 @@ export const AgendaEventos = () => {
               <span className="material-symbols-outlined text-[16px]">arrow_downward</span>
             </button>
             {puedeCrear && (
-              <button className="px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/30 text-white font-semibold text-xs backdrop-blur-sm transition-all flex items-center gap-1.5 cursor-pointer">
+              <button
+                type="button"
+                onClick={() => {
+                  setFormCrearEvento((prev) => ({
+                    ...prev,
+                    organizador: user?.nombre || prev.organizador,
+                  }));
+                  setShowCreateModalDocente(true);
+                }}
+                className="px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/30 text-white font-semibold text-xs backdrop-blur-sm transition-all flex items-center gap-1.5 cursor-pointer"
+              >
                 <span className="material-symbols-outlined text-[16px]">campaign</span>
-                <span>Proponer actividad</span>
+                <span>{isDocente ? 'Publicar Evento Académico' : 'Proponer actividad'}</span>
               </button>
             )}
           </div>
@@ -588,6 +657,137 @@ export const AgendaEventos = () => {
           onConfirmarCancelacion={handleConfirmarCancelacion}
           actionLoading={actionLoading}
         />
+      )}
+
+      {/* ── MODAL PARA PUBLICAR EVENTO (DOCENTE / ADMIN) ──────────────── */}
+      {showCreateModalDocente && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="bg-gradient-to-r from-[#081f56] via-[#0a47b8] to-violet-700 p-5 text-white flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-xl text-violet-300">event_available</span>
+                <h3 className="font-bold text-base font-space">Publicar Evento Académico</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowCreateModalDocente(false)}
+                className="text-white/80 hover:text-white transition"
+              >
+                <span className="material-symbols-outlined text-xl">close</span>
+              </button>
+            </div>
+
+            <form onSubmit={handleCrearEventoSubmit} className="p-6 space-y-4 text-xs">
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Título del Evento *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ej. Conferencia: Tendencias en Computación en la Nube"
+                  value={formCrearEvento.titulo}
+                  onChange={(e) => setFormCrearEvento({ ...formCrearEvento, titulo: e.target.value })}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/20"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Tipo de Evento</label>
+                  <select
+                    value={formCrearEvento.tipo}
+                    onChange={(e) => setFormCrearEvento({ ...formCrearEvento, tipo: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/20 font-semibold"
+                  >
+                    <option value="ACADEMICO">ACADEMICO</option>
+                    <option value="TALLER">TALLER</option>
+                    <option value="SEMINARIO">SEMINARIO</option>
+                    <option value="CONFERENCIA">CONFERENCIA</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Aforo Máximo</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="500"
+                    value={formCrearEvento.aforo_maximo}
+                    onChange={(e) => setFormCrearEvento({ ...formCrearEvento, aforo_maximo: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/20"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Lugar / Espacio Físico *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ej. Auditorio Principal / Sala 104"
+                  value={formCrearEvento.lugar}
+                  onChange={(e) => setFormCrearEvento({ ...formCrearEvento, lugar: e.target.value })}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/20"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Fecha y Hora Inicio *</label>
+                  <input
+                    type="datetime-local"
+                    required
+                    value={formCrearEvento.fecha_inicio}
+                    onChange={(e) => setFormCrearEvento({ ...formCrearEvento, fecha_inicio: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/20"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Fecha y Hora Fin</label>
+                  <input
+                    type="datetime-local"
+                    value={formCrearEvento.fecha_fin}
+                    onChange={(e) => setFormCrearEvento({ ...formCrearEvento, fecha_fin: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/20"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Descripción</label>
+                <textarea
+                  rows="3"
+                  placeholder="Detalles del evento académico..."
+                  value={formCrearEvento.descripcion}
+                  onChange={(e) => setFormCrearEvento({ ...formCrearEvento, descripcion: e.target.value })}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/20 resize-none"
+                />
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateModalDocente(false)}
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={creandoEvento}
+                  className="px-5 py-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold font-space shadow-md transition flex items-center gap-1.5"
+                >
+                  {creandoEvento && (
+                    <span className="material-symbols-outlined text-sm animate-spin">
+                      progress_activity
+                    </span>
+                  )}
+                  <span>Publicar en la Agenda</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
 
       {/* ── TOAST DE NOTIFICACIÓN FLOTANTE ────────────────────────────── */}
