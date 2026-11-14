@@ -1,0 +1,14 @@
+URL DEL PROYECTO DESPLEGADO EN PRODUCCIÓN (VERCEL):
+https://uajs-smart-campus.vercel.app
+
+URL DEL BACKEND Y API GATEWAY (RENDER):
+https://uajs-smart-campus-backend.onrender.com
+
+REPOSITORIO OFICIAL EN GITHUB:
+https://github.com/WRivxs/UAJS-Smart-Campus
+
+CREDENCIALES DE PRUEBA:
+- Administrador:  admin@uajs.edu.co         / Admin2026*
+- Docente:        docente@uajs.edu.co       / Admin2026*
+- Administrativo: administrativo@uajs.edu.co / Admin2026*
+- Estudiante:     estudiante@uajs.edu.co    / Admin2026*
