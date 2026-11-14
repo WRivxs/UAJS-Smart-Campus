@@ -12,10 +12,9 @@ const {
   AlignmentType,
   BorderStyle,
   Header,
-  Footer,
   PageNumber,
-  NumberFormat,
-  HeadingLevel
+  HeadingLevel,
+  ImageRun
 } = require('docx');
 
 // Configuración general de estilo APA 7
@@ -27,22 +26,6 @@ const SIZE_H2 = 24;        // 12 pt
 const SIZE_BODY = 24;      // 12 pt
 const SIZE_SMALL = 20;     // 10 pt
 const LINE_SPACING = 300;  // 1.25 - 1.5 interlineado
-
-function createTitle(text) {
-  return new Paragraph({
-    alignment: AlignmentType.CENTER,
-    spacing: { before: 200, after: 200, line: LINE_SPACING },
-    children: [
-      new TextRun({
-        text,
-        bold: true,
-        font: FONT_FAMILY,
-        size: SIZE_TITLE,
-        color: COLOR_BLACK
-      })
-    ]
-  });
-}
 
 function createHeading1(text) {
   return new Paragraph({
@@ -70,24 +53,6 @@ function createHeading2(text) {
       new TextRun({
         text,
         bold: true,
-        font: FONT_FAMILY,
-        size: SIZE_H2,
-        color: COLOR_BLACK
-      })
-    ]
-  });
-}
-
-function createHeading3(text) {
-  return new Paragraph({
-    heading: HeadingLevel.HEADING_3,
-    alignment: AlignmentType.LEFT,
-    spacing: { before: 200, after: 100, line: LINE_SPACING },
-    children: [
-      new TextRun({
-        text,
-        bold: true,
-        italics: true,
         font: FONT_FAMILY,
         size: SIZE_H2,
         color: COLOR_BLACK
@@ -141,6 +106,62 @@ function createBullet(text, boldPrefix = '') {
   });
 }
 
+function createEmbeddedFigure(figureNumber, caption, imagePath, width, height, note) {
+  const elements = [
+    new Paragraph({
+      spacing: { before: 280, after: 60, line: LINE_SPACING },
+      children: [
+        new TextRun({
+          text: `Figura ${figureNumber}. `,
+          bold: true,
+          font: FONT_FAMILY,
+          size: SIZE_BODY,
+          color: COLOR_BLACK
+        }),
+        new TextRun({
+          text: caption,
+          italics: true,
+          font: FONT_FAMILY,
+          size: SIZE_BODY,
+          color: COLOR_BLACK
+        })
+      ]
+    })
+  ];
+
+  if (fs.existsSync(imagePath)) {
+    elements.push(
+      new Paragraph({
+        alignment: AlignmentType.CENTER,
+        spacing: { before: 120, after: 120 },
+        children: [
+          new ImageRun({
+            data: fs.readFileSync(imagePath),
+            transformation: { width, height }
+          })
+        ]
+      })
+    );
+  }
+
+  elements.push(
+    new Paragraph({
+      spacing: { before: 60, after: 200, line: LINE_SPACING },
+      children: [
+        new TextRun({
+          text: `Nota. ${note}`,
+          font: FONT_FAMILY,
+          size: SIZE_SMALL,
+          italics: true,
+          color: COLOR_BLACK
+        })
+      ]
+    })
+  );
+
+  return elements;
+}
+
 function createFigureBox(figureNumber, caption, instructions) {
   return [
     new Paragraph({
@@ -169,10 +190,10 @@ function createFigureBox(figureNumber, caption, instructions) {
           children: [
             new TableCell({
               borders: {
-                top: { style: BorderStyle.DASHED, size: 4, color: '888888' },
-                bottom: { style: BorderStyle.DASHED, size: 4, color: '888888' },
-                left: { style: BorderStyle.DASHED, size: 4, color: '888888' },
-                right: { style: BorderStyle.DASHED, size: 4, color: '888888' }
+                top: { style: BorderStyle.DASHED, size: 4, color: '666666' },
+                bottom: { style: BorderStyle.DASHED, size: 4, color: '666666' },
+                left: { style: BorderStyle.DASHED, size: 4, color: '666666' },
+                right: { style: BorderStyle.DASHED, size: 4, color: '666666' }
               },
               children: [
                 new Paragraph({
@@ -184,14 +205,14 @@ function createFigureBox(figureNumber, caption, instructions) {
                       font: FONT_FAMILY,
                       size: SIZE_SMALL,
                       bold: true,
-                      color: '555555'
+                      color: '333333'
                     }),
                     new TextRun({
                       text: `\n${instructions}`,
                       font: FONT_FAMILY,
                       size: SIZE_SMALL,
                       italics: true,
-                      color: '666666'
+                      color: '555555'
                     })
                   ]
                 })
@@ -287,7 +308,7 @@ function createTableAPA(tableTitle, tableNumber, headers, dataRows, widths = [])
         },
         children: [
           new Paragraph({
-            alignment: i === 0 ? AlignmentType.LEFT : AlignmentType.LEFT,
+            alignment: AlignmentType.LEFT,
             spacing: { before: 60, after: 60 },
             children: [
               new TextRun({
@@ -329,7 +350,12 @@ function createTableAPA(tableTitle, tableNumber, headers, dataRows, widths = [])
 }
 
 async function buildDocument() {
-  console.log('Construyendo documento Word formal bajo normas APA 7...');
+  console.log('Construyendo documento Word formal bajo normas APA 7 con diagramas integrados...');
+
+  const assetsDir = path.join(__dirname, '../docs/assets');
+  const pathArch = path.join(assetsDir, 'diagrama_arquitectura.png');
+  const pathState = path.join(assetsDir, 'diagrama_ciclo_vida.png');
+  const pathErd = path.join(assetsDir, 'diagrama_entidad_relacion.png');
 
   const doc = new Document({
     styles: {
@@ -347,9 +373,6 @@ async function buildDocument() {
       }
     },
     sections: [
-      // ══════════════════════════════════════════════════════════════════════════
-      // SECCIÓN 1: PORTADA APA 7 (Estudiantes)
-      // ══════════════════════════════════════════════════════════════════════════
       {
         properties: {
           page: {
@@ -374,10 +397,8 @@ async function buildDocument() {
           })
         },
         children: [
-          // Espacio superior
+          // Portada APA
           new Paragraph({ spacing: { before: 1800, after: 200 } }),
-          
-          // Título
           new Paragraph({
             alignment: AlignmentType.CENTER,
             spacing: { before: 100, after: 200, line: 360 },
@@ -406,57 +427,35 @@ async function buildDocument() {
             ]
           }),
 
-          // Autores
           new Paragraph({
             alignment: AlignmentType.CENTER,
             spacing: { before: 200, after: 80, line: 300 },
             children: [
-              new TextRun({
-                text: "Wadith Rivas",
-                font: FONT_FAMILY,
-                size: SIZE_BODY,
-                color: COLOR_BLACK
-              })
+              new TextRun({ text: "Wadith Rivas", font: FONT_FAMILY, size: SIZE_BODY, color: COLOR_BLACK })
             ]
           }),
           new Paragraph({
             alignment: AlignmentType.CENTER,
             spacing: { before: 60, after: 80, line: 300 },
             children: [
-              new TextRun({
-                text: "Edimer Paternina",
-                font: FONT_FAMILY,
-                size: SIZE_BODY,
-                color: COLOR_BLACK
-              })
+              new TextRun({ text: "Edimer Paternina", font: FONT_FAMILY, size: SIZE_BODY, color: COLOR_BLACK })
             ]
           }),
           new Paragraph({
             alignment: AlignmentType.CENTER,
             spacing: { before: 60, after: 80, line: 300 },
             children: [
-              new TextRun({
-                text: "Job David Pérez Guzmán",
-                font: FONT_FAMILY,
-                size: SIZE_BODY,
-                color: COLOR_BLACK
-              })
+              new TextRun({ text: "Job David Pérez Guzmán", font: FONT_FAMILY, size: SIZE_BODY, color: COLOR_BLACK })
             ]
           }),
           new Paragraph({
             alignment: AlignmentType.CENTER,
             spacing: { before: 60, after: 800, line: 300 },
             children: [
-              new TextRun({
-                text: "Flor Florez",
-                font: FONT_FAMILY,
-                size: SIZE_BODY,
-                color: COLOR_BLACK
-              })
+              new TextRun({ text: "Flor Florez", font: FONT_FAMILY, size: SIZE_BODY, color: COLOR_BLACK })
             ]
           }),
 
-          // Afiliación institucional
           new Paragraph({
             alignment: AlignmentType.CENTER,
             spacing: { before: 100, after: 60, line: 300 },
@@ -518,15 +517,9 @@ async function buildDocument() {
             ]
           }),
 
-          // Salto de página formal
-          new Paragraph({
-            pageBreakBefore: true
-          }),
+          new Paragraph({ pageBreakBefore: true }),
 
-          // ══════════════════════════════════════════════════════════════════════
-          // SECCIÓN 2: CUERPO DEL TRABAJO ACADÉMICO
-          // ══════════════════════════════════════════════════════════════════════
-          
+          // 1. Resumen Ejecutivo
           createHeading1("1. Resumen Ejecutivo y Contexto Institucional"),
           createParagraph("La Corporación Universitaria Antonio José de Sucre (UNIAJS) cuenta con diferentes servicios digitales orientados a facilitar los procesos académicos y administrativos de estudiantes, docentes y demás miembros de la comunidad universitaria. A partir de este contexto, se propone y consolida el desarrollo de UAJS Smart Campus, una plataforma web concebida como un sistema distribuido de servicios universitarios, cuyo propósito es integrar y facilitar el acceso a diferentes funcionalidades institucionales desde una interfaz web moderna, intuitiva y unificada."),
           createParagraph("El proyecto experimentó una evolución técnica natural guiada por las competencias de la asignatura de Sistemas Distribuidos. En su etapa inicial, la solución se estructuró bajo el patrón arquitectónico Modelo-Vista-Controlador (MVC). Posteriormente, la solución evolucionó hacia una arquitectura basada en microservicios independientes, desacoplados y coordinados a través de un API Gateway centralizado, implementando interfaces de comunicación REST mediante el protocolo HTTP/HTTPS y formato de intercambio de datos JSON."),
@@ -545,6 +538,7 @@ async function buildDocument() {
             [25, 25, 35, 15]
           ),
 
+          // 2. Situación Problemática
           createHeading1("2. Situación Problemática, Problema y Justificación"),
           createHeading2("2.1 Situación Problemática"),
           createParagraph("En una institución de educación superior convergen diariamente diferentes procesos y actores con requerimientos sumamente disímiles: estudiantes de diversos semestres, docentes de cátedra y tiempo completo, coordinadores de programa, personal administrativo de registro y control, directivos y dependencias de soporte. Cada uno de estos actores requiere consultar información o realizar trámites con alta periodicidad."),
@@ -556,6 +550,7 @@ async function buildDocument() {
           createHeading2("2.3 Justificación Académica y Técnica"),
           createParagraph("El desarrollo de UAJS Smart Campus responde a una problemática sentida del contexto universitario regional en el departamento de Sucre. Desde la perspectiva formativa en la asignatura de Sistemas Distribuidos, la solución permite a los estudiantes aplicar de manera directa los principios fundamentales de la disciplina: transparencia de acceso y ubicación, concurrencia, independencia de procesos, tolerancia a fallos, comunicación síncrona mediante APIs REST, persistencia relacional con control transaccional estricto y despliegue modular en plataformas en la nube."),
 
+          // 3. Objetivos
           createHeading1("3. Objetivos del Proyecto"),
           createHeading2("3.1 Objetivo General"),
           createParagraph("Desarrollar un prototipo de plataforma web distribuida para la articulación y gestión de servicios universitarios de la Corporación Universitaria Antonio José de Sucre, utilizando una arquitectura desacoplada, tecnologías web modernas (HTML5, CSS3, JavaScript ES6+, React, Node.js y Express), APIs REST y servicios independientes que permitan demostrar principios de comunicación, escalabilidad y distribución de componentes."),
@@ -574,24 +569,27 @@ async function buildDocument() {
           createBullet("Analizar y aplicar mecanismos para garantizar disponibilidad, escalabilidad y tolerancia a fallos tanto en local como en la nube.", "11."),
           createBullet("Proponer mecanismos de integración futura con sistemas institucionales existentes mediante APIs estandarizadas.", "12."),
 
+          // 4. Arquitectura
           createHeading1("4. Arquitectura del Sistema Distribuido"),
-          createHeading2("4.1 Evolución Arquitectónica"),
-          createParagraph("La solución fue concebida inicialmente como una arquitectura MVC clásica monolítica orientada a validar la interfaz de usuario en React. No obstante, en cumplimiento de los requisitos de la asignatura de Sistemas Distribuidos, el sistema evolucionó hacia una topología distribuida basada en microservicios. En esta estructura, cada dominio del negocio universitario opera como un servicio autónomo con ciclo de vida independiente, aislado del resto y accesible exclusivamente mediante contratos de API bien definidos."),
+          createHeading2("4.1 Topología del Sistema y Componentes Distribuidos"),
+          createParagraph("La solución implementa una arquitectura desacoplada organizada en cuatro capas: Capa de Presentación en Vercel, Capa de Entrada y Seguridad (API Gateway en Render en el puerto 10000), Capa de Dominio Distribuido (8 Microservicios en puertos 3001 a 3008) y Capa de Persistencia Relacional gestionada en PostgreSQL 15. En la Figura 1 se ilustra la topología completa con las relaciones de comunicación entre cada componente."),
 
-          createHeading2("4.2 Componentes de la Arquitectura Distribuida"),
-          createParagraph("La arquitectura implementada consta de tres capas claramente diferenciadas:"),
-          createBullet("Capa de Presentación (Frontend SPA): Desarrollada en React 18 con empaquetado de alto rendimiento vía Vite, estilizada con Tailwind CSS y alojada globalmente en la red de borde (Edge CDN) de Vercel.", "a)"),
-          createBullet("Capa de Enrutamiento y Seguridad Perimetral (API Gateway): Implementada en Express.js en el puerto 10000. Actúa como el punto único de contacto (Single Point of Contact) para el frontend. Centraliza la verificación de tokens JWT, gestiona políticas de CORS, previene la exposición directa de puertos internos y reenvía las peticiones a los microservicios correspondientes inyectando los encabezados x-user-id y x-user-rol.", "b)"),
-          createBullet("Capa de Microservicios Distribuidos (Dominio de Negocio): Conjunto de 8 servicios independientes que se comunican internamente mediante HTTP en direcciones loopback (127.0.0.1:3001 a 3008) y gestionan sus propias operaciones de base de datos.", "c)"),
-          createBullet("Capa de Persistencia Relacional: Instancia gestionada de PostgreSQL 15 en Render que alberga 16 tablas normalizadas con control de integridad referencial estricto y conexiones cifradas bajo SSL/TLS.", "d)"),
+          ...createEmbeddedFigure(
+            1,
+            "Arquitectura física y lógica del sistema distribuido UAJS Smart Campus.",
+            pathArch,
+            470,
+            640,
+            "Esquema de comunicación entre cliente web, API Gateway perimetral, microservicios autónomos y base de datos relacional. Fuente: Elaboración propia."
+          ),
 
-          createHeading2("4.3 Principios Distribuidos Evidenciados"),
-          createParagraph("El sistema refleja rigurosamente los siguientes conceptos teóricos:"),
+          createHeading2("4.2 Principios Distribuidos Evidenciados"),
           createBullet("Transparencia de Ubicación: El cliente desconoce la dirección IP física y el puerto en el que reside cada microservicio; todas las solicitudes se formulan al Gateway.", "1."),
           createBullet("Tolerancia Parcial a Fallos: Si el microservicio de Eventos o el de PQRS experimenta una caída temporal, los módulos críticos de Autenticación, Catálogo de Servicios y Solicitudes continúan operando con total normalidad.", "2."),
           createBullet("Desacoplamiento Operacional: Cada microservicio puede modificarse, actualizarse o reiniciarse sin requerir la recompilación del resto de la plataforma.", "3."),
           createBullet("Comunicación Asíncrona Interna: Eventos como el cambio de estado de una solicitud o la confirmación de una reserva disparan notificaciones internas hacia ms-notificaciones de forma no bloqueante.", "4."),
 
+          // 5. Frontend
           createHeading1("5. Especificación del Frontend en React"),
           createHeading2("5.1 Cumplimiento de la Rúbrica Técnica"),
           createParagraph("El frontend fue construido íntegramente con React 18 utilizando el compilador Vite. Cumple a cabalidad con todos los criterios de evaluación exigidos en la guía integradora:"),
@@ -641,13 +639,10 @@ async function buildDocument() {
           createBullet("usePqrs: Administra la radicación de solicitudes formales de PQRS y la consulta de réplicas gubernamentales internas.", "7. "),
           createBullet("useNotificaciones: Implementa el sondeo periódico de alertas y el marcado de lectura síncrono.", "8. "),
 
+          // 6. Backend y Microservicios
           createHeading1("6. Especificación del Backend y Microservicios"),
-          createHeading2("6.1 Arquitectura del API Gateway"),
-          createParagraph("El API Gateway se diseñó como el componente neurálgico del clúster backend. Utiliza el módulo express-http-proxy para redirigir dinámicamente las solicitudes hacia los microservicios de destino. Su pipeline de ejecución incluye:"),
-          createBullet("Rutas Públicas (/api/auth/*): Permiten la autenticación inicial sin requerir cabeceras previas.", "1."),
-          createBullet("Middleware de Autenticación (authVerify): Intercepta todas las solicitudes hacia recursos protegidos, extrae el Bearer Token, valida la firma criptográfica HMAC-SHA256 con la clave maestra institucional y descarta peticiones con tokens expirados o adulterados.", "2."),
-          createBullet("Inyección de Contexto: Si el token es legítimo, el Gateway añade a la petición interna los encabezados x-user-id y x-user-rol, permitiendo que los microservicios finales conozcan la identidad y privilegios del usuario de forma transparente.", "3."),
-          createBullet("Endpoint de Monitoreo (/health): Devuelve un reporte en formato JSON con la latencia y disponibilidad de los 8 microservicios internos.", "4."),
+          createHeading2("6.1 Arquitectura del API Gateway y Catálogo de Endpoints"),
+          createParagraph("El API Gateway se diseñó como el componente neurálgico del clúster backend. Utiliza el módulo express-http-proxy para redirigir dinámicamente las solicitudes hacia los microservicios de destino. Su pipeline centraliza la validación de JWT, inyecta las cabeceras x-user-id y x-user-rol y expone el estado de salud en /health."),
 
           ...createTableAPA(
             "Catálogo técnico de los 8 microservicios del sistema distribuido",
@@ -666,17 +661,39 @@ async function buildDocument() {
             [18, 10, 37, 35]
           ),
 
-          createHeading2("6.2 Reglas de Negocio en Backend"),
+          createHeading2("6.2 Reglas de Negocio en Backend y Ciclo de Vida"),
           createParagraph("El sistema garantiza la integridad institucional mediante dos reglas de negocio centrales validadas en el servidor:"),
-          createParagraph("1. Máquina de Estados de Solicitudes: Las solicitudes nunca saltan de manera arbitraria. Toda solicitud se crea obligatoriamente en estado REGISTRADA y progresa secuencialmente a través de los estados EN_REVISION, ASIGNADA, EN_PROCESO, RESUELTA y CERRADA. Cada transición almacena automáticamente un registro inmutable en la tabla historial_estados_solicitud que documenta el identificador del funcionario, la fecha exacta y la observación motivada."),
+          createParagraph("1. Máquina de Estados de Solicitudes: Las solicitudes nunca saltan de manera arbitraria. Toda solicitud se crea obligatoriamente en estado REGISTRADA y progresa secuencialmente a través de los estados EN_REVISION, ASIGNADA, EN_PROCESO, RESUELTA y CERRADA, como se ilustra en la Figura 2. Cada transición almacena automáticamente un registro inmutable en la tabla historial_estados_solicitud que documenta el identificador del funcionario, la fecha exacta y la observación motivada."),
+
+          ...createEmbeddedFigure(
+            2,
+            "Máquina de estados y ciclo de vida secuencial de las solicitudes universitarias.",
+            pathState,
+            500,
+            50,
+            "Secuencia obligatoria de estados transitados en ms-solicitudes. Fuente: Elaboración propia."
+          ),
+
           createParagraph("2. Algoritmo de Prevención de Solapamiento Horario en Reservas: En el microservicio ms-reservas, antes de formalizar la inserción de una reserva se ejecuta una consulta de intersección temporal en el motor de base de datos. Si existe una reserva aprobada o pendiente en la misma fecha y cuyo intervalo horario intercepte el horario solicitado, la transacción se revoca inmediatamente arrojando un código HTTP 409 Conflict con un mensaje explicativo, imposibilitando la duplicidad de apartados sobre un mismo espacio."),
 
+          // 7. Base de Datos
           createHeading1("7. Modelo de Datos y Persistencia en PostgreSQL"),
           createHeading2("7.1 Justificación Técnica del Gestor Relacional"),
           createParagraph("Aunque las pautas iniciales sugerían MySQL o tecnologías afines, el equipo justificó técnicamente la elección de PostgreSQL 15 debido a su robustez transaccional (ACID), soporte nativo avanzado para concurrencia mediante el mecanismo MVCC (Multi-Version Concurrency Control), rigor en tipos de datos temporales (DATE, TIME, TIMESTAMP) y su adopción estándar en arquitecturas en la nube de nivel empresarial como Render PostgreSQL Managed Service."),
 
-          createHeading2("7.2 Diccionario de Datos Consolidado"),
-          createParagraph("La base de datos db_smartcampus integra 16 tablas normalizadas en tercera forma normal (3FN):"),
+          createHeading2("7.2 Modelo Entidad-Relación y Diccionario de Datos"),
+          createParagraph("La base de datos db_smartcampus integra 16 tablas normalizadas en tercera forma normal (3FN). En la Figura 3 se ilustra el diagrama entidad-relación con las llaves foráneas y cardinalidades del modelo."),
+
+          ...createEmbeddedFigure(
+            3,
+            "Modelo entidad-relación (ERD) de la base de datos relacional db_smartcampus.",
+            pathErd,
+            500,
+            396,
+            "Estructura relacional de las 16 tablas con claves primarias, foráneas y cardinalidad. Fuente: Elaboración propia."
+          ),
+
+          createParagraph("A continuación se describen las entidades que conforman el esquema:"),
           createBullet("roles: Catálogo institucional de roles con identificadores inmutables (1: Administrador, 2: Docente, 3: Administrativo, 4: Estudiante).", "1."),
           createBullet("permisos: Catálogo de operaciones atómicas autorizables en la plataforma.", "2."),
           createBullet("roles_permisos: Tabla de asociación n:m para asignación de privilegios según el rol.", "3."),
@@ -697,6 +714,7 @@ async function buildDocument() {
           createHeading2("7.3 Política de Datos de Prueba"),
           createParagraph("En estricto cumplimiento de la Ley Estatutaria 1581 de 2012 de Protección de Datos Personales de Colombia y las normas éticas institucionales, el 100% de los datos insertados en el script seed.sql corresponden a datos simulados y ficticios. No se utilizaron datos reales de funcionarios ni estudiantes."),
 
+          // 8. Seguridad
           createHeading1("8. Seguridad y Control de Acceso Basado en Roles (RBAC)"),
           createHeading2("8.1 Matriz de Roles y Privilegios"),
           createParagraph("El control de acceso sigue el principio de mínimo privilegio:"),
@@ -724,6 +742,7 @@ async function buildDocument() {
           createHeading2("8.2 Criptografía y Protección de Credenciales"),
           createParagraph("Las credenciales de los usuarios se resguardan mediante el algoritmo bcrypt aplicando un factor de costo (salt rounds) de 10. Las sesiones son totalmente desacopladas (stateless) mediante JSON Web Tokens firmados criptográficamente, garantizando que el servidor no mantenga sesiones en memoria y permitiendo la escalabilidad horizontal de los servicios."),
 
+          // 9. Despliegue
           createHeading1("9. Despliegue e Infraestructura"),
           createHeading2("9.1 Despliegue en la Nube Pública"),
           createParagraph("La arquitectura se encuentra operativa y accesible públicamente a través de proveedores cloud de primer nivel:"),
@@ -738,6 +757,7 @@ async function buildDocument() {
           createParagraph("Paso 3: Iniciar el entorno de desarrollo del cliente: cd frontend && npm install && npm run dev", { indent: false }),
           createParagraph("Paso 4: Abrir el navegador en http://localhost:5173 para interactuar con la aplicación local.", { indent: false }),
 
+          // 10. Pruebas
           createHeading1("10. Matriz de Pruebas y Evidencias de Ejecución"),
           createParagraph("Se ejecutó un plan de pruebas funcional exhaustivo para validar la estabilidad de los flujos de negocio:"),
 
@@ -760,39 +780,41 @@ async function buildDocument() {
             [10, 15, 25, 20, 20, 10]
           ),
 
+          // 11. Galería de Capturas de Pantalla
           createHeading1("11. Galería de Evidencias y Capturas de Pantalla"),
-          createParagraph("A continuación se presentan los espacios destinados a las evidencias visuales del correcto funcionamiento de la plataforma en su despliegue en producción:"),
+          createParagraph("A continuación se presentan los espacios formalmente catalogados para adjuntar las capturas de pantalla de la aplicación en producción:"),
 
           ...createFigureBox(
-            1,
+            4,
             "Vista de acceso y landing institucional de UAJS Smart Campus",
             "Pegar aquí la captura de la página inicial en https://uajs-smart-campus.vercel.app mostrando el logo institucional, la descripción de servicios y los botones de autenticación rápida."
           ),
 
           ...createFigureBox(
-            2,
+            5,
             "Tableros de mando (Dashboards) adaptados según el rol institucional",
             "Pegar aquí la captura del Dashboard del Estudiante con sus contadores en tiempo real (solicitudes, reservas, eventos y notificaciones activas)."
           ),
 
           ...createFigureBox(
-            3,
+            6,
             "Módulo de solicitudes universitarias y seguimiento a la trazabilidad",
             "Pegar aquí la captura de la vista de solicitudes mostrando la lista filtrada y la ventana modal con la línea de tiempo del ciclo de vida."
           ),
 
           ...createFigureBox(
-            4,
+            7,
             "Módulo de reservas de espacios académicos y verificación de disponibilidad",
             "Pegar aquí la captura de la grilla de reservas de laboratorios y aulas demostrando el estado de los recursos físicos."
           ),
 
           ...createFigureBox(
-            5,
+            8,
             "Paneles de administración y monitoreo en la nube (Vercel y Render)",
             "Pegar aquí las capturas de los paneles de control de Vercel (estado Ready del Frontend) y Render (estado Live del Web Service y la Base de Datos PostgreSQL)."
           ),
 
+          // 12. Conclusiones
           createHeading1("12. Conclusiones y Trabajo Futuro"),
           createHeading2("12.1 Conclusiones"),
           createParagraph("El proyecto integrador UAJS Smart Campus demostró exitosamente la viabilidad técnica y pedagógica de estructurar un sistema universitario bajo una arquitectura distribuida basada en microservicios y API Gateway. Se alcanzaron satisfactoriamente todos los requerimientos planteados en la guía de la asignatura, reemplazando completamente los datos simulados por una base de datos relacional PostgreSQL con persistencia real, validaciones transaccionales estrictas y despliegue operativo en la nube pública."),
@@ -810,7 +832,7 @@ async function buildDocument() {
   const outputPath = path.join(__dirname, '../docs/DOCUMENTACION_FINAL_UAJS_SMART_CAMPUS.docx');
   const buffer = await Packer.toBuffer(doc);
   fs.writeFileSync(outputPath, buffer);
-  console.log(`Documento Word generado exitosamente en: ${outputPath}`);
+  console.log(`Documento Word con diagramas integrados generado exitosamente en: ${outputPath}`);
 }
 
 buildDocument().catch(err => {
